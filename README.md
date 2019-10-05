@@ -1,7 +1,7 @@
 # angry-alex-csuci
 Angry Alex - The Game - CSU Channel Islands Project for Advance Software Engineering
 <br>
-![GitHub Logo](https://raw.githubusercontent.com/lampsonnguyen410/angey-alex-csuci/master/pasted%20image%200.png)
+![GitHub Logo](/logo.png)
 
 # Angry Alex
 ## He is Fast. He is Angery. He is Alex.
