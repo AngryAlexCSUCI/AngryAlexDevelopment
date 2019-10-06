@@ -410,7 +410,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1299734626}
+      - m_Target: {fileID: 1299734625}
         m_MethodName: RandomizeUsername
         m_Mode: 1
         m_Arguments:
@@ -719,7 +719,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1299734620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b523dfc0fe16430f865cd7eca05f173, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ff67a81f9985477493a6b075fa002f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   userNameField: {fileID: 2133691518}
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1299734620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 433f1b50a51cf49248e82585ff07245c, type: 3}
+  m_Script: {fileID: 11500000, guid: f6510d237ad414c8c9d3ef646f35685b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   userNameField: {fileID: 2133691518}
@@ -1049,7 +1049,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1299734625}
+      - m_Target: {fileID: 1299734626}
         m_MethodName: LoadByIndex
         m_Mode: 3
         m_Arguments:
