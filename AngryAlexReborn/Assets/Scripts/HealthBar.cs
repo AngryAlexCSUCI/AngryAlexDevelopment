@@ -33,8 +33,8 @@ public class HealthBar : MonoBehaviour
     public void TakeDamage(float amount)
     {
         // Reduce current health by the amount of damage done.
-        m_CurrentHealth -= amount;
-        Debug.Log("take damge 20)");
+        m_CurrentHealth -= amount; 
+
         // Change the UI elements appropriately.
         SetHealthUI();
 

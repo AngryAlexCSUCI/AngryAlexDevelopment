@@ -18,6 +18,22 @@ public class Projectile : MonoBehaviour
 
         rigidB.velocity = direction * Speed;
     }
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        Debug.Log("Bullet Hit!");
+
+        var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
+
+        if (!healthBar)
+        {
+            Debug.Log("return");
+            return;
+        }
+        Debug.Log("take damge");
+
+        healthBar.TakeDamage(10);
+
+    }
 
     // Update is called once per frame3
     void Update()
