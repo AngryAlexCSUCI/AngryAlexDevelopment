@@ -4,30 +4,28 @@ using UnityEngine;
 
 public class Burn : MonoBehaviour
 {
-     
-    void Start()
-    {
 
+    void Start()
+    {   //commented out to test
+        //player = GameObject.FindGameObjectWithTag("PlayerPrefs").GetComponent<PlayerPrefs>();
     }
 
     // Update is called once per frame
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collider)
     {
+        Debug.Log("Burn!");
 
-        Debug.Log("Touch the Mud");
+        var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
 
-        var gameObj = collision.gameObject.GetComponent<CarController>() as CarController;
-
-        Debug.Log("Slow the car");
-
-        gameObj.velocity += 40;
-    }
-
-    //this one put it in the player
-    public void Damage (int damage)
-    {   
-        //burn
-        //burn effect for 10 sseconds
+        if (!healthBar)
+        {
+            Debug.Log("return");
+            return;
+        }
+        Debug.Log("take damge");
+        healthBar.startBlinking = true;
+        healthBar.TakeDamage(10);
+        healthBar.carObject = collider.gameObject;
 
     }
 }
