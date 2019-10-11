@@ -333,8 +333,8 @@ MonoBehaviour:
   velocityToTurnSpeedRatio: 4
   normalTurnSideFricton: 0.1
   driftingSideFriction: 0.99
-  startDriftVelocity: 2.3
-  endDriftVelocity: 2.3
+  minDriftThreshold: 0.24
+  maxDriftThreshold: 6
 --- !u!96 &5289765049226041338
 TrailRenderer:
   serializedVersion: 2
