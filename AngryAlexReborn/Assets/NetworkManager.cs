@@ -119,7 +119,7 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
+
     //[Serializable]
     //public class PlayerJson
     //{
@@ -132,20 +132,7 @@ public class NetworkManager : MonoBehaviour
     //        return JsonUtility.FromJson<UserJson>(data);
     //    }
     //}
-=======
-    [Serializable]
-    public class PlayerJson
-    {
-        public string name;
-        public float[] position;
-        public float[] rotation;
 
-        public static UserJson CreateFromJson(string data)
-        {
-            return JsonUtility.FromJson<UserJson>(data);
-        }
-    }
->>>>>>> 53f5e5d11532f5d0e75fae41e893570188bb06a1
 
     [Serializable]
     public class HealthChangeJson
