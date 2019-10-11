@@ -123,7 +123,7 @@ public class NetworkManager : MonoBehaviour
     public class PlayerJson
     {
         public string name;
-        publuc float[] position;
+        public float[] position;
         public float[] rotation;
 
         public static UserJson CreateFromJson(string data)
