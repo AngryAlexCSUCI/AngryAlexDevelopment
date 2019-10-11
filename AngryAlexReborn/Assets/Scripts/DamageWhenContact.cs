@@ -12,22 +12,21 @@ public class DamageWhenContact : MonoBehaviour
     }
 
     // Update is called once per frame
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collider)
     {
-        Debug.Log("Touch the Fire!"); 
+        Debug.Log("Touch the cactus!");
+      
+        var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
 
-        var gameObj = collision.gameObject.GetComponent<CarController>() as CarController;
+        if (!healthBar)
+        {
+            Debug.Log("return");
+            return;
+        }
+        Debug.Log("take damge");
 
-        Debug.Log("Slow the car");
-
-        gameObj.velocity += 60;
-        Damage(gameObj);
-    }
-
-    //this one put it in the player
-    private void Damage (CarController carObj)
-    {   
-        //carObj health minus damage
+        healthBar.TakeDamage(10);
 
     }
+
 }
