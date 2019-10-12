@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,14 +26,14 @@ public class NetworkManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
     }
-    
-    // Start is called before the first frame update
-	void Start()
-    {
-        // todo after socket setup 
-    }
 
-    
+    //// Start is called before the first frame update
+    //void Start()
+    //{
+    //    // todo after socket setup 
+    //}
+
+
     public void JoinGame()
     {
         StartCoroutine(ConnectToServer());
