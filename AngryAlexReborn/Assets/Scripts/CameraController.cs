@@ -5,7 +5,8 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Transform target;
-
+    public float zValue = -10f;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -15,6 +16,6 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(target.position.x, target.position.y, -10f);
+        transform.position = new Vector3(target.position.x, target.position.y, zValue);
     }
 }
