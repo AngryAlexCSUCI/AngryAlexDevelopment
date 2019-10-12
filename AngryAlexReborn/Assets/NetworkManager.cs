@@ -63,16 +63,16 @@ public class NetworkManager : MonoBehaviour
         public List<PointJson> playerSpawnPoints;
 
 
-        //public PlayerJson(string _name, List<SpawnPoint> _playerSpawnPoint, List<SpawnPoint> _playerSpawnPoints)
-        //{
-        //    playerSpawnPoints = new List<PointJson>();
-        //    name = _name;
-        //    foreach (SpawnPoint playerSpawnPoint in playerSpawnPoints)
-        //    {
-        //        PointJson pointJson = new PointJson(playerSpawnPoint);
-        //        playerSpawnPoints.Add(pointJson);
-        //    }
-        //}
+        public PlayerJson(string _name, List<SpawnPoint> _playerSpawnPoint, List<SpawnPoint> _playerSpawnPoints)
+        {
+            playerSpawnPoints = new List<PointJson>();
+            //name = _name;
+            //foreach (SpawnPoint playerSpawnPoint in playerSpawnPoints)
+            //{
+            //    PointJson pointJson = new PointJson(playerSpawnPoint);
+            //    playerSpawnPoints.Add(pointJson);
+            //}
+        }
     }
 
     [Serializable]
@@ -80,21 +80,21 @@ public class NetworkManager : MonoBehaviour
     {
         public float[] position;
         public float[] rotation;
-        //public PointJson(SpawnPoint spawnPoint)
-        //{
-        //    position = new float[] {
-        //        spawnPoint.transform.position.x,
-        //        spawnPoint.transform.position.y,
-        //        spawnPoint.transform.position.z
-        //    };
-        //    rotation = new float[] {
-        //        spawnPoint.transform.eulerAngles.x,
-        //        spawnPoint.transform.eulerAngles.y,
-        //        spawnPoint.transform.eulerAngles.z
-        //    };
+        public PointJson(SpawnPoint spawnPoint)
+        {
+            position = new float[] {
+                spawnPoint.transform.position.x,
+                spawnPoint.transform.position.y,
+                spawnPoint.transform.position.z
+            };
+            rotation = new float[] {
+                spawnPoint.transform.eulerAngles.x,
+                spawnPoint.transform.eulerAngles.y,
+                spawnPoint.transform.eulerAngles.z
+            };
 
 
-        //}
+        }
     }
 
     [Serializable]
@@ -124,7 +124,7 @@ public class NetworkManager : MonoBehaviour
     //public class PlayerJson
     //{
     //    public string name;
-    //    publuc float[] position;
+    //    public float[] position;
     //    public float[] rotation;
 
     //    public static UserJson CreateFromJson(string data)
@@ -134,21 +134,21 @@ public class NetworkManager : MonoBehaviour
     //}
 
 
-    [Serializable]
-    public class HealthChangeJson
-    {
-        public string name;
-        public int healthChange;
-        public string from;
-        // todo add damage from enemy?
+    //[Serializable]
+    //public class HealthChangeJson
+    //{
+    //    public string name;
+    //    public int healthChange;
+    //    public string from;
+    //    // todo add damage from enemy?
 
-        public HealthChangeJson(string _name, int _healthChange, string _from)
-        {
-            name = _name;
-            healthChange = _healthChange;
-            from = _from;
-        }
-    }
+    //    public HealthChangeJson(string _name, int _healthChange, string _from)
+    //    {
+    //        name = _name;
+    //        healthChange = _healthChange;
+    //        from = _from;
+    //    }
+    //}
 
     // todo add enemy json ? 
 
