@@ -108,14 +108,15 @@ public class NetworkManager : MonoBehaviour
             return;
         }
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-
         CarController pc = p.GetComponent<CarController>();
+        
         //Transform tr1 = p.transform.Find("HealthBar Canvas");
         //Transform tr2 = tr1.transform.Find("Player Name");
         //Text playerName = // todo get player name from health bar canvas attached to player for display?
 
         pc.isLocalPlayer = false;
-        CameraController cc = p.GetComponent<CameraController>();
+
+        CameraController cc = Camera.main.GetComponent<CameraController>();
         cc.isLocalPlayer = false;
 
         // todo set health and reference on change health event 
@@ -131,13 +132,14 @@ public class NetworkManager : MonoBehaviour
         Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
 
-        GameObject obj = GameObject.Find(currentUserJson.name) as GameObject;
         GameObject p = Instantiate(player, position, rotation) as GameObject;
+
+        CameraController cc = Camera.main.GetComponent<CameraController>();
+        cc.isLocalPlayer = true;
+        cc.target = p.transform;
 
         CarController pc = p.GetComponent<CarController>();
         pc.isLocalPlayer = true;
-        CameraController cc = p.GetComponent<CameraController>();
-        cc.isLocalPlayer = true;
 
     }
 
