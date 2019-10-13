@@ -1,3 +1,4 @@
+using SocketIO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ public class NetworkManager : MonoBehaviour
 {
 
     public static NetworkManager instance;
-    public Canvas canvas;
-    //public SocketIOComponent socket;
-    public InputField playerNameInput;
+    //public Canvas canvas;
+    public SocketIOComponent socket;
+    //public InputField playerNameInput;
     public GameObject player;
 
 
@@ -27,11 +28,16 @@ public class NetworkManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-    //    // todo after socket setup 
-    //}
+    // Start is called before the first frame update
+    void Start()
+    {
+        socket.On("other player connected", OnOtherPlayerConnected);
+        socket.On("play", OnPlay);
+        socket.On("player move", OnPlayerMove);
+        socket.On("player rotate", OnPlayerRotate);
+        socket.On("other player disconnected", OnOtherPlayerDisconnect);
+
+    }
 
 
     public void JoinGame()
@@ -44,12 +50,56 @@ public class NetworkManager : MonoBehaviour
     IEnumerator ConnectToServer()
     {
         yield return new WaitForSeconds(0.5f);
+
+        socket.Emit("player connected");
+
+        yield return new WaitForSeconds(1f);
+
+        //string playerName = playerNameInput.text; // todo after user login canvas created
+        var rand = new System.Random(); // until then generate random player name
+        string playerName = "Player_" + rand.Next(1, 100);
+        List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
+        PlayerJson playerJson = new PlayerJson(playerName, playerSpawnPoints);
+        string data = JsonUtility.ToJson(playerJson);
+        socket.Emit("play", new JSONObject(data));
+        //canvas.gameObject.SetActive(false); // todo uncomment when login canvas is created
+
     }
 
     #endregion
 
 
     #region Listening
+
+    void OnOtherPlayerConnected(SocketIOEvent socketIOEvent)
+    {
+
+    }
+
+    void OnPlay(SocketIOEvent socketIOEvent)
+    {
+
+    }
+
+    void OnPlayerMove(SocketIOEvent socketIOEvent)
+    {
+
+    }
+
+    void OnPlayerRotate(SocketIOEvent socketIOEvent)
+    {
+
+    }
+
+    // todo add player health and bullet events
+
+    void OnOtherPlayerDisconnect(SocketIOEvent socketIOEvent)
+    {
+
+    }
+
+
+
 
     #endregion
 
@@ -62,7 +112,7 @@ public class NetworkManager : MonoBehaviour
         public string name;
         public List<PointJson> playerSpawnPoints;
 
-        public PlayerJson(string _name, List<SpawnPoint> _playerSpawnPoint, List<SpawnPoint> _playerSpawnPoints)
+        public PlayerJson(string _name, List<SpawnPoint> _playerSpawnPoints)
         {
             playerSpawnPoints = new List<PointJson>();
             name = _name;
