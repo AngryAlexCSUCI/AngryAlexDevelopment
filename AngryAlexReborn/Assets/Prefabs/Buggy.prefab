@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: 1429420263155196545}
   m_Layer: 0
   m_Name: Buggy
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -329,6 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25d310bc3315c946a73678fbb3a3a79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLocalPlayer: 0
   velocity: 80
   reverseVelocity: 20
   velocityToTurnSpeedRatio: 4
@@ -430,8 +431,8 @@ TrailRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
-  m_Autodestruct: 0
-  m_Emitting: 0
+  m_Autodestruct: 1
+  m_Emitting: 1
 --- !u!114 &1429420263155196545
 MonoBehaviour:
   m_ObjectHideFlags: 0

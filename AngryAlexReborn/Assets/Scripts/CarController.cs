@@ -7,6 +7,8 @@ public class CarController : MonoBehaviour
     protected Rigidbody2D rb;
     protected TrailRenderer[] skidMarkTrails;
 
+    public bool isLocalPlayer = false;
+
     //speed of the car (80 for default buggy)
     public float velocity;
     //reverse speed of the car (20 for default buggy)
@@ -34,8 +36,16 @@ public class CarController : MonoBehaviour
     }
 
     // Update is called once per frame
+
     void FixedUpdate()
     {
+
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
+
         if (Input.GetKey("w") || Input.GetKey("up"))
         {
             rb.AddForce(transform.up * velocity);
@@ -65,6 +75,7 @@ public class CarController : MonoBehaviour
         {
             currentSideFriction = normalTurnSideFricton;
             turnOffSkidMarks();
+            //skidMarkTrail.enabled = false;
             //skidMarkTrail.enabled = false;
             //skidMarkTrail.Clear();
         }

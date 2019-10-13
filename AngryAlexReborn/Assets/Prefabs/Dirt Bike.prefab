@@ -451,7 +451,7 @@ GameObject:
   - component: {fileID: 7918344653764907534}
   m_Layer: 0
   m_Name: Dirt Bike
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -587,8 +587,8 @@ MonoBehaviour:
   velocityToTurnSpeedRatio: 2
   normalTurnSideFricton: 0.05
   driftingSideFriction: 0.999
-  minDriftThreshold: 0
-  maxDriftThreshold: 0
+  startDriftVelocity: 0
+  endDriftVelocity: 0
 --- !u!96 &5238281335277983506
 TrailRenderer:
   serializedVersion: 2
@@ -710,21 +710,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5238281335277983518}
     m_Modifications:
-    - target: {fileID: 8392337946512720767, guid: dc632394845c24c40a4df145de5cc4a9,
-        type: 3}
-      propertyPath: m_Name
-      value: HealthBar
-      objectReference: {fileID: 0}
-    - target: {fileID: 2624318771472123432, guid: dc632394845c24c40a4df145de5cc4a9,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2624318771472123432, guid: dc632394845c24c40a4df145de5cc4a9,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2869760998236249347, guid: dc632394845c24c40a4df145de5cc4a9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -829,6 +814,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8392337946512720767, guid: dc632394845c24c40a4df145de5cc4a9,
+        type: 3}
+      propertyPath: m_Name
+      value: HealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624318771472123432, guid: dc632394845c24c40a4df145de5cc4a9,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624318771472123432, guid: dc632394845c24c40a4df145de5cc4a9,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc632394845c24c40a4df145de5cc4a9, type: 3}
