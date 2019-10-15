@@ -6,6 +6,9 @@ public class Projectile : MonoBehaviour
 {
     public float Speed;
     public int Damage;
+    [SerializeField]
+    public GameObject Owner;
+    public string Tag;
     
     // Start is called before the first frame update
     void Start()
@@ -20,19 +23,21 @@ public class Projectile : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D collider)
     {
-        Debug.Log("Bullet Hit!");
-
-        var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
-
-        if (!healthBar)
+        if (collider.gameObject.tag != this.gameObject.tag)
         {
-            Debug.Log("return");
-            return;
+            Debug.Log("Bullet Hit!");
+
+            var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
+
+            if (!healthBar)
+            {
+                Debug.Log("return");
+                return;
+            }
+            Debug.Log("take damge");
+
+            healthBar.TakeDamage(10);
         }
-        Debug.Log("take damge");
-
-        healthBar.TakeDamage(10);
-
     }
 
     // Update is called once per frame3
