@@ -20,7 +20,7 @@ public class CarController : MonoBehaviour
 
     private float currentSideFriction = 0;
 
-    public float minDriftThreshold; //2.3f
+    public float minDriftThreshold; //2.3f;
     public float maxDriftThreshold; //2.3f;
     protected float driftThreshold;
 
@@ -71,8 +71,6 @@ public class CarController : MonoBehaviour
             turnOnSkidMarks();
             Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
         }
-        
-
     }
 
     Vector2 getForwardVelocity()
