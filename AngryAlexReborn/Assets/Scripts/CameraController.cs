@@ -17,7 +17,6 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         transform.position = new Vector3(target.position.x, target.position.y, -10f);
-
         camera.orthographicSize = 10 + target.velocity.magnitude/8;
     }
 }
