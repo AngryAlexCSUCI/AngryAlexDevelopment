@@ -22,8 +22,9 @@ public class CarController : MonoBehaviour
 
     private float currentSideFriction = 0;
 
-    public float startDriftVelocity; //2.3f
-    public float endDriftVelocity; //2.3f;
+    public float minDriftThreshold; //2.3f;
+    public float maxDriftThreshold; //2.3f;
+    protected float driftThreshold;
 
     // Start is called before the first frame update
     void Start()
@@ -33,18 +34,18 @@ public class CarController : MonoBehaviour
         skidMarkTrails = gameObject.GetComponentsInChildren<TrailRenderer>();
         turnOffSkidMarks();
         //skidMarkTrail.enabled = false;
+
+        driftThreshold = minDriftThreshold;
+        //currentEndDriftVelocity = endDriftVelocity;
     }
 
     // Update is called once per frame
-
     void FixedUpdate()
     {
-
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-
+        // if (!isLocalPlayer)
+        // {
+        //     return;
+        // }
 
         if (Input.GetKey("w") || Input.GetKey("up"))
         {
@@ -58,29 +59,25 @@ public class CarController : MonoBehaviour
 
         //Torque is added only when the car is in motion, as a ratio of
         //the current magnitude to the velocityToTurnSpeedRatio declared above
-        rb.AddTorque(Input.GetAxis("Horizontal") * -rb.velocity.magnitude/velocityToTurnSpeedRatio);
+        rb.AddTorque(Input.GetAxis("Horizontal") * -rb.velocity.magnitude / velocityToTurnSpeedRatio);
 
         //Once torque and forces have been applied, mitigate some sideways velocity
         //Depending on whether we are "drifting" or not
-        
-        if (getRightVelocity().magnitude > startDriftVelocity)
-        {
-            Debug.Log("Drifting! : " + getRightVelocity().magnitude);
-            currentSideFriction = driftingSideFriction;
-            turnOnSkidMarks();
-            //skidMarkTrail.enabled = true;
-        }
-
-        if (getRightVelocity().magnitude < endDriftVelocity)
+        rb.velocity = getForwardVelocity() + (getRightVelocity() * currentSideFriction);
+        if (getRightVelocity().magnitude < driftThreshold)
         {
             currentSideFriction = normalTurnSideFricton;
+            driftThreshold = Mathf.Max(getRightVelocity().magnitude - 0.01f, minDriftThreshold);
             turnOffSkidMarks();
-            //skidMarkTrail.enabled = false;
-            //skidMarkTrail.enabled = false;
-            //skidMarkTrail.Clear();
+            Debug.Log("Not Drifting, driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
         }
-
-        rb.velocity = getForwardVelocity() + (getRightVelocity() * currentSideFriction);
+        else if (getRightVelocity().magnitude > driftThreshold) //possibly implicit
+        {
+            currentSideFriction = driftingSideFriction;
+            driftThreshold = Mathf.Min(getRightVelocity().magnitude + 0.01f, maxDriftThreshold);
+            turnOnSkidMarks();
+            Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+        }
     }
 
     Vector2 getForwardVelocity()
