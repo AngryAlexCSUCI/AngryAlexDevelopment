@@ -12,10 +12,17 @@ public class SlowWhenContact : MonoBehaviour
         Debug.Log("Slow the car");
         gameObj = collision.gameObject.GetComponent<CarController>() as CarController;
         m_originalVelocity = gameObj.velocity;
-        gameObj.velocity -= 30;
+        gameObj.velocity -= 40;
+
+        //minimum speed
+        if (gameObj.velocity > 10)
+            gameObj.velocity = 10;
+
         Debug.Log("Slow the car by 30");
 
-        Invoke("ChangeBackVelocity", 20);
+        // change back to original speed after n seconds
+        int slowTime = 15;
+        Invoke("ChangeBackVelocity", slowTime);
     }
 
     private void ChangeBackVelocity()
