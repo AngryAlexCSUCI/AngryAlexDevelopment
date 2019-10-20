@@ -26,6 +26,7 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        camera = GetComponent<Camera>();
         if (!isLocalPlayer)
         {
             return;
@@ -42,12 +43,12 @@ public class CameraController : MonoBehaviour
     {
         if (!isLocalPlayer)
         {
-            return;
+            //return;
         }
 
         if (!target)
         {
-            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+            //target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
         }
 
         //follow target and zoom aut slightly based off magnitued of the velocity of object we are following

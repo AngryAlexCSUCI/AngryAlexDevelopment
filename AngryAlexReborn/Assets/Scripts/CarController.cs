@@ -6,6 +6,7 @@ public class CarController : MonoBehaviour
 {
     protected Rigidbody2D rb;
     protected TrailRenderer[] skidMarkTrails;
+    protected AudioSource engineSound;
 
     public bool isLocalPlayer = false;
 
@@ -37,6 +38,8 @@ public class CarController : MonoBehaviour
 
         driftThreshold = minDriftThreshold;
         //currentEndDriftVelocity = endDriftVelocity;
+
+        engineSound = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -59,7 +62,8 @@ public class CarController : MonoBehaviour
 
         //Torque is added only when the car is in motion, as a ratio of
         //the current magnitude to the velocityToTurnSpeedRatio declared above
-        rb.AddTorque(Input.GetAxis("Horizontal") * -rb.velocity.magnitude / velocityToTurnSpeedRatio);
+        //We also leave a little bit (0.1f) so that the car can be slowly tuned while in standstill
+        rb.AddTorque(Input.GetAxis("Horizontal") * ((-rb.velocity.magnitude / velocityToTurnSpeedRatio) - 0.1f));
 
         //Once torque and forces have been applied, mitigate some sideways velocity
         //Depending on whether we are "drifting" or not
@@ -77,6 +81,24 @@ public class CarController : MonoBehaviour
             driftThreshold = Mathf.Min(getRightVelocity().magnitude + 0.01f, maxDriftThreshold);
             turnOnSkidMarks();
             Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+        }
+
+
+        //handle sound
+        if (rb.velocity.magnitude > 0.2f)
+        {
+            if (!engineSound.isPlaying)
+            {
+                engineSound.Play();
+            }
+            Debug.Log("Sound pitch at start: " + engineSound.pitch);
+            engineSound.pitch = 1f + (Mathf.Pow(rb.velocity.magnitude, 1.18f)) / velocity;
+        } else
+        {
+            if (engineSound.isPlaying)
+            {
+                engineSound.Stop();
+            }
         }
     }
 
