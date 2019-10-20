@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ public class CarController : MonoBehaviour
     protected Rigidbody2D rb;
     protected TrailRenderer[] skidMarkTrails;
 
-    public bool isLocalPlayer = false;
+//    public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
     public float velocity;
@@ -39,11 +39,11 @@ public class CarController : MonoBehaviour
 
     void FixedUpdate()
     {
-
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+//
+//        if (!isLocalPlayer)
+//        {
+//            return;
+//        }
 
 
         if (Input.GetKey("w") || Input.GetKey("up"))

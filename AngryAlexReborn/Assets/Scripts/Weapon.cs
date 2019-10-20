@@ -24,7 +24,11 @@ public class Weapon : MonoBehaviour
         if (Input.GetMouseButton(0) && Time.time > NextFire)
         {
             NextFire = Time.time + FireRate;
-            Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
+            var bullet = Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
+            string tag = this.transform.parent.gameObject.tag;
+            bullet.gameObject.tag = tag;
+            Physics2D.IgnoreCollision(bullet.GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
+            Physics2D.IgnoreCollision(bullet.GetComponent<Collider2D>(), this.transform.parent.gameObject.GetComponent<Collider2D>());
         }
     }
 
