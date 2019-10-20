@@ -9,11 +9,13 @@ public class Weapon : MonoBehaviour
     public Transform ProjectileSpawn;
     public float FireRate = 0.02F;
     private float NextFire = 0.0F;
+
+    protected AudioSource fireSound;
     
     // Start is called before the first frame update
     void Start()
     {
-
+        fireSound = GetComponent<AudioSource>();
     }
     
     // Update is called once per frame
@@ -25,6 +27,7 @@ public class Weapon : MonoBehaviour
         {
             NextFire = Time.time + FireRate;
             Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
+            fireSound.PlayOneShot(fireSound.clip);
         }
     }
 
