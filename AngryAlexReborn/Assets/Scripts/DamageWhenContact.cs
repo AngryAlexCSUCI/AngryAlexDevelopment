@@ -15,7 +15,7 @@ public class DamageWhenContact : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collider)
     {
         Debug.Log("Touch the cactus!");
-
+      
         var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
 
         if (!healthBar)

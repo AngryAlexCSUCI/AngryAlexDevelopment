@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ public class CarController : MonoBehaviour
     protected TrailRenderer[] skidMarkTrails;
     protected AudioSource engineSound;
 
-    public bool isLocalPlayer = false;
+//    public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
     public float velocity;

@@ -1,4 +1,4 @@
-using SocketIO;
+//using SocketIO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ public class NetworkManager : MonoBehaviour
     public static NetworkManager instance;
     public Canvas enterCanvas;
     public Canvas uiCanvas;
-    public SocketIOComponent socket;
+//    public SocketIOComponent socket;
     //public InputField playerNameInput;
     private string playerNameStr;
     public GameObject player;
@@ -33,18 +33,18 @@ public class NetworkManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        socket.On("other player connected", OnOtherPlayerConnected);
-        socket.On("play", OnPlay);
-        socket.On("player move", OnPlayerMove);
-        socket.On("player rotate", OnPlayerRotate);
-        socket.On("other player disconnected", OnOtherPlayerDisconnect);
+//        socket.On("other player connected", OnOtherPlayerConnected);
+//        socket.On("play", OnPlay);
+//        socket.On("player move", OnPlayerMove);
+//        socket.On("player rotate", OnPlayerRotate);
+//        socket.On("other player disconnected", OnOtherPlayerDisconnect);
 
     }
 
 
     public void JoinGame()
     {
-        StartCoroutine(ConnectToServer());
+//        StartCoroutine(ConnectToServer());
     }
 
     #region Commands
@@ -53,7 +53,7 @@ public class NetworkManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        socket.Emit("player connected");
+//        socket.Emit("player connected");
 
         yield return new WaitForSeconds(1f);
 
@@ -67,7 +67,7 @@ public class NetworkManager : MonoBehaviour
         PlayerJson playerJson = new PlayerJson(playerName, playerSpawnPoints);
         string data = JsonUtility.ToJson(playerJson);
 
-        socket.Emit("play", new JSONObject(data));
+//        socket.Emit("play", new JSONObject(data));
 
         enterCanvas.gameObject.SetActive(false); 
         uiCanvas.gameObject.SetActive(true);
@@ -77,13 +77,13 @@ public class NetworkManager : MonoBehaviour
     public void CommandMove(Vector3 vec)
     {
         string data = JsonUtility.ToJson(new PositionJson(vec));
-        socket.Emit("player move", new JSONObject(data));
+//        socket.Emit("player move", new JSONObject(data));
     }
 
     public void CommandRotate(Quaternion quat)
     {
         string data = JsonUtility.ToJson(new RotationJson(quat));
-        socket.Emit("player rotate", new JSONObject(data));
+//        socket.Emit("player rotate", new JSONObject(data));
     }
 
 
@@ -94,101 +94,102 @@ public class NetworkManager : MonoBehaviour
 
     #region Listening
 
-    void OnOtherPlayerConnected(SocketIOEvent socketIOEvent)
-    {
-        print("Another player joined Angry Alex.");
-        string data = socketIOEvent.data.ToString();
-        UserJson userJson = UserJson.CreateFromJson(data);
-        Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
-        Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
 
-        GameObject obj = GameObject.Find(userJson.name) as GameObject;
-        if (obj != null)
-        {
-            return;
-        }
-        GameObject p = Instantiate(player, position, rotation) as GameObject;
-        CarController pc = p.GetComponent<CarController>();
-        
-        //Transform tr1 = p.transform.Find("HealthBar Canvas");
-        //Transform tr2 = tr1.transform.Find("Player Name");
-        //Text playerName = // todo get player name from health bar canvas attached to player for display?
-
-        pc.isLocalPlayer = false;
-
-        CameraController cc = Camera.main.GetComponent<CameraController>();
-        cc.isLocalPlayer = false;
-
-        // todo set health and reference on change health event 
-
-
-    }
-
-    void OnPlay(SocketIOEvent socketIOEvent)
-    {
-        print("You have joined Angry Alex.");
-        string data = socketIOEvent.data.ToString();
-        UserJson currentUserJson = UserJson.CreateFromJson(data);
-        Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
-        Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
-
-        GameObject p = Instantiate(player, position, rotation) as GameObject;
-
-        CameraController cc = Camera.main.GetComponent<CameraController>();
-        cc.isLocalPlayer = true;
-        cc.target = p.GetComponent<Rigidbody2D>();
-
-        CarController pc = p.GetComponent<CarController>();
-        pc.isLocalPlayer = true;
-
-    }
-
-    void OnPlayerMove(SocketIOEvent socketIOEvent)
-    {
-        string data = socketIOEvent.data.ToString();
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
-        // if it is the current player exit
-        //if (userJSON.name == playerNameInput.text)
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.position = position;
-        }
-
-    }
-
-    void OnPlayerRotate(SocketIOEvent socketIOEvent)
-    {
-        string data = socketIOEvent.data.ToString();
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        // if it is the current player exit
-        //if (userJSON.name == playerNameInput.text)
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.rotation = rotation;
-        }
-    }
-
-    // todo add player health and bullet events
-    
-    void OnOtherPlayerDisconnect(SocketIOEvent socketIOEvent)
-    {
-        print("Player disconnected");
-        string data = socketIOEvent.data.ToString();
-        UserJson userJson = UserJson.CreateFromJson(data);
-        Destroy(GameObject.Find(userJson.name));
-    }
+//    void OnOtherPlayerConnected(SocketIOEvent socketIOEvent)
+//    {
+//        //print("Another player joined Angry Alex.");
+//        string data = socketIOEvent.data.ToString();
+//        UserJson userJson = UserJson.CreateFromJson(data);
+//        Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
+//        Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
+//
+//        GameObject obj = GameObject.Find(userJson.name) as GameObject;
+//        if (obj != null)
+//        {
+//            return;
+//        }
+//        GameObject p = Instantiate(player, position, rotation) as GameObject;
+//        CarController pc = p.GetComponent<CarController>();
+//        
+//        //Transform tr1 = p.transform.Find("HealthBar Canvas");
+//        //Transform tr2 = tr1.transform.Find("Player Name");
+//        //Text playerName = // todo get player name from health bar canvas attached to player for display?
+//
+//        pc.isLocalPlayer = false;
+//
+//        CameraController cc = Camera.main.GetComponent<CameraController>();
+//        cc.isLocalPlayer = false;
+//
+//        // todo set health and reference on change health event 
+//
+//
+//    }
+//
+//    void OnPlay(SocketIOEvent socketIOEvent)
+//    {
+//        //print("You have joined Angry Alex.");
+//        string data = socketIOEvent.data.ToString();
+//        UserJson currentUserJson = UserJson.CreateFromJson(data);
+//        Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
+//        Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
+//
+//        GameObject p = Instantiate(player, position, rotation) as GameObject;
+//
+//        CameraController cc = Camera.main.GetComponent<CameraController>();
+//        cc.isLocalPlayer = true;
+//        cc.target = p.transform;
+//
+//        CarController pc = p.GetComponent<CarController>();
+//        pc.isLocalPlayer = true;
+//
+//    }
+//
+//    void OnPlayerMove(SocketIOEvent socketIOEvent)
+//    {
+//        string data = socketIOEvent.data.ToString();
+//        UserJson userJSON = UserJson.CreateFromJson(data);
+//        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+//        // if it is the current player exit
+//        //if (userJSON.name == playerNameInput.text)
+//        if (userJSON.name == playerNameStr)
+//        {
+//            return;
+//        }
+//        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+//        if (p != null)
+//        {
+//            p.transform.position = position;
+//        }
+//
+//    }
+//
+//    void OnPlayerRotate(SocketIOEvent socketIOEvent)
+//    {
+//        string data = socketIOEvent.data.ToString();
+//        UserJson userJSON = UserJson.CreateFromJson(data);
+//        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+//        // if it is the current player exit
+//        //if (userJSON.name == playerNameInput.text)
+//        if (userJSON.name == playerNameStr)
+//        {
+//            return;
+//        }
+//        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+//        if (p != null)
+//        {
+//            p.transform.rotation = rotation;
+//        }
+//    }
+//
+//    // todo add player health and bullet events
+//    
+//    void OnOtherPlayerDisconnect(SocketIOEvent socketIOEvent)
+//    {
+//        //print("Player disconnected");
+//        string data = socketIOEvent.data.ToString();
+//        UserJson userJson = UserJson.CreateFromJson(data);
+//        Destroy(GameObject.Find(userJson.name));
+//    }
 
 
 

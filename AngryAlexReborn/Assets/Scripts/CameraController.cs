@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
 {
     public Rigidbody2D target;
     public float zValue = -10f;
-    protected new Camera camera; //reference to camera objec tat this script should be attached to
+    protected new Camera camera; //reference to camera objec that this script should be attached to
 
     public bool isLocalPlayer = false;
 
@@ -51,7 +51,7 @@ public class CameraController : MonoBehaviour
             //target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
         }
 
-        //follow target and zoom aut slightly based off magnitued of the velocity of object we are following
+        //follow target and zoom out slightly based off magnitude of the velocity of object we are following
         transform.position = new Vector3(target.position.x, target.position.y, zValue);
         camera.orthographicSize = 10 + target.velocity.magnitude / 8;
     }
@@ -62,8 +62,14 @@ public class CameraController : MonoBehaviour
         transform.position = new Vector3(target.position.x, target.position.y, zValue);
     }
 
-    public void isLocal(bool value)
-    {
-        isLocalPlayer = value; 
-    }
+//    public void setTarget(Transform _target)
+//    {
+//        target = _target;
+//        transform.position = new Vector3(target.position.x, target.position.y, zValue);
+//    }
+//
+//    public void isLocal(bool value)
+//    {
+//        isLocalPlayer = value; 
+//    }
 }
