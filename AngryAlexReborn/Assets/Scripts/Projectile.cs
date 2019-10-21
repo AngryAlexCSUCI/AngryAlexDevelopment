@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +9,17 @@ public class Projectile : MonoBehaviour
     [SerializeField]
     public GameObject Owner;
     public string Tag;
-    
+
+    public bool isLocalPlayer = false;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
         var rigidB = GetComponent<Rigidbody2D>();
 
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -21,8 +28,14 @@ public class Projectile : MonoBehaviour
 
         rigidB.velocity = direction * Speed;
     }
+
     void OnTriggerEnter2D(Collider2D collider)
     {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
         if (collider.gameObject.tag != this.gameObject.tag)
         {
             Debug.Log("Bullet Hit!");
