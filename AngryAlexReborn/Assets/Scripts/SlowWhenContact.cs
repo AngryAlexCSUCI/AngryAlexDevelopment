@@ -15,7 +15,7 @@ public class SlowWhenContact : MonoBehaviour
         gameObj.velocity -= 40;
 
         //minimum speed
-        if (gameObj.velocity > 10)
+        if (gameObj.velocity < 10)
             gameObj.velocity = 10;
 
         Debug.Log("Slow the car by 30");
