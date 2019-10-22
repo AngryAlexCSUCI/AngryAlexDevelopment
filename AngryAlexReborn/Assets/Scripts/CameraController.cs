@@ -5,8 +5,9 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Rigidbody2D target;
-    public float zValue = -10f;
-    protected new Camera camera; //reference to camera objec that this script should be attached to
+    public float zValue;
+    public int orthographicFloor;
+    protected new Camera camera; //reference to camera object that this script should be attached to
 
     public bool isLocalPlayer = false;
 
@@ -53,7 +54,7 @@ public class CameraController : MonoBehaviour
 
         //follow target and zoom out slightly based off magnitude of the velocity of object we are following
         transform.position = new Vector3(target.position.x, target.position.y, zValue);
-        camera.orthographicSize = 10 + target.velocity.magnitude / 8;
+        camera.orthographicSize = this.orthographicFloor + target.velocity.magnitude / 8;
     }
 
     public void setTarget(Rigidbody2D _target)
