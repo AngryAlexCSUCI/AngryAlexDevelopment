@@ -11,16 +11,21 @@ var WebSockets = {
     InitWebSocket: function (url) {
         console.log("Initializing web socket.");
         var init_url = Pointer_stringify(url);
+        console.log("Url generated: " + init_url);
         window.wsclient = new WebSocket(init_url);
+        console.log("Websocket created from url");
         window.wsclient.onopen = function (evt) {
             console.log("[open]" + init_url);
             window.wsclient.send("hello");
         };
         window.wsclient.onclose = function (evt) {
-            console.log("[close] " + evt.code + ":" + evt.reason);
+            var msg = evt.code && evt.reason ? evt.code + " " + evt.reason : JSON.stringify(evt);
+            console.log("[close] " + msg);
         };
         window.wsclient.onmessage = function (evt) {
             var received_msg = evt.data;
+            console.log("Message received:");
+            console.log(received_msg);
             if (received_msg == "hello") {
                 window.wsclient.send("hello");
             } else {

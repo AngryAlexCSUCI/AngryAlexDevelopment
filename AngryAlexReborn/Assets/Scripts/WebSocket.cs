@@ -70,29 +70,41 @@ public class WebSocket : MonoBehaviour
     IEnumerator RecvEvent()
     {
         print("Starting coroutine.");
-        InitWebSocket("wss://ec2-54-165-152-15.compute-1.amazonaws.com:3000"); //First we create the connection.
+        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
         while (true)
         {
             if (recvList.Count > 0)
             {         //When our message queue has string coming.
-                Dispatch(recvList.Dequeue());    //We will dequeue message and send to Dispatch function.
+                Dispatch("default",recvList.Dequeue());    //We will dequeue message and send to Dispatch function.
             }
             yield return null;
         }
     }
 
     //You can implement your game method here :)
-    void Dispatch(string msg)
+    public void Dispatch(string type, string msg)
     {
-        string[] splits = msg.Split(' ');
-        switch (splits[0])
+        // msg is a string json "{ "x": position.x, "y": position.y, "z": position.z }"
+        switch (type)
         {
+            case "play":
+                //DO SOMETHING
+                Send("Play " + msg); // send server player name and let server randomly pick spawn point from list of spawn points
+                break;
             case "turn":
                 //DO SOMETHING
-                Debug.LogWarning("Turn " + splits[1]);
+                Send("Turn " + msg);
+                break;
+            case "move":
+                //DO SOMETHING
+                Send("Move " + msg);
+                break;
+            case "shoot":
+                //DO SOMETHING
+                Send("Shoot " + msg);
                 break;
             default:
-                Debug.Log("Dispatch : " + msg);
+                Send("Dispatch : " + msg);
                 break;
         }
     }
@@ -100,7 +112,7 @@ public class WebSocket : MonoBehaviour
     //For UI, we defined it here
     void OnGUI()
     {
-        if (GUI.Button(new Rect(10, 10, 150, 30), "Hello,World"))
+        if (GUI.Button(new Rect(10, 110, 150, 30), "Hello,World"))
             Send("Hello there!");
 //
 //        if (GUI.Button(new Rect(10, 60, 150, 30), "Turn Right"))

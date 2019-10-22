@@ -1,10 +1,8 @@
-//using SocketIO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-//using System.Runtime.InteropServices;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -13,11 +11,9 @@ public class NetworkManager : MonoBehaviour
     public Canvas enterCanvas;
     public Canvas uiCanvas;
 //    public SocketIOComponent socket;
+    public WebSocket socket;
     private string playerNameStr = Player.UserName;
     public GameObject player;
-
-//    [DllImport("__Internal")]
-//    private static extern int Hello();
 
 
     private void Awake()
@@ -65,7 +61,7 @@ public class NetworkManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        // until then generate random player name
+        // generate random player name
         var rand = new System.Random();
         string playerName = "Player_" + rand.Next(1, 100);
         playerNameStr = playerName;
@@ -74,10 +70,8 @@ public class NetworkManager : MonoBehaviour
         PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints);
         string data = JsonUtility.ToJson(playerJson);
 
-        //        socket.Emit("play", new JSONObject(data));
-
-//        Application.ExternalCall("play", JsonUtility.ToJson(data));
-
+        socket.Dispatch("play", data);
+        
         enterCanvas.gameObject.SetActive(false); 
         uiCanvas.gameObject.SetActive(true);
 
@@ -329,3 +323,4 @@ public class NetworkManager : MonoBehaviour
 
     #endregion
 }
+
