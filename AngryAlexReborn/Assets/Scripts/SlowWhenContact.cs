@@ -6,30 +6,55 @@ using UnityEngine;
 public class SlowWhenContact : MonoBehaviour
 {
     CarController gameObj;
-    float m_originalVelocity = 80f;
+    public float m_originalVelocity;
+    public float currentVelocity;
+    public float timeLeft = 0;
+    public int Counter = 0;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Slow the car");
         gameObj = collision.gameObject.GetComponent<CarController>() as CarController;
-        m_originalVelocity = gameObj.velocity;
-        gameObj.velocity -= 40;
 
-        //minimum speed
-        if (gameObj.velocity < 10)
-            gameObj.velocity = 10;
+        if (gameObj != null)
+        {
+            if (Counter == 0)
+                m_originalVelocity = gameObj.velocity;
 
-        Debug.Log("Slow the car by 30");
+            Counter++;
 
-        // change back to original speed after n seconds
-        int slowTime = 15;
-        Invoke("ChangeBackVelocity", slowTime);
+            gameObj.velocity -= 40;
+
+            //minimum speed. prevent negative velocity
+            if (gameObj.velocity < 10)
+            {
+                gameObj.velocity = 10;
+            }
+            currentVelocity = gameObj.velocity;
+            Debug.Log("Slow the car by 40");
+
+            // change back to original speed after n seconds
+            timeLeft += 5.0f;
+            Update();
+        }
+    }
+
+    void Update()
+    {
+        timeLeft -= Time.deltaTime;
+        if (timeLeft < 0)
+        {
+            ChangeBackVelocity();
+            timeLeft = 0;
+            Counter = 0;
+        }
     }
 
     private void ChangeBackVelocity()
     {
+
         gameObj.velocity = m_originalVelocity;
         Debug.Log("Faster the car by 30");
 
-        gameObj = null;
     }
 }
