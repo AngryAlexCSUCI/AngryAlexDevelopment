@@ -9,12 +9,15 @@ public class Weapon : MonoBehaviour
     public Transform ProjectileSpawn;
     public float FireRate = 0.02F;
     private float NextFire = 0.0F;
+
+    protected AudioSource fireSound;
+    
     public bool isLocalPlayer = false;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        fireSound = GetComponent<AudioSource>();
     }
     
     // Update is called once per frame
@@ -25,6 +28,9 @@ public class Weapon : MonoBehaviour
         if (Input.GetMouseButton(0) && Time.time > NextFire)
         {
             NextFire = Time.time + FireRate;
+            //possibly old code for creating the bullet, imported when merging - Christian
+            //Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
+            fireSound.PlayOneShot(fireSound.clip);
             var bullet = Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
             string tag = this.transform.parent.gameObject.tag;
             bullet.gameObject.tag = tag;

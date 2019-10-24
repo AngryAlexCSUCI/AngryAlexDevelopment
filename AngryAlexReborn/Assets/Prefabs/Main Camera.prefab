@@ -98,4 +98,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   zValue: -10
+  orthographicFloor: 10
   isLocalPlayer: 0
