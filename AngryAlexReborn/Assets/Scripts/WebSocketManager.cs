@@ -19,9 +19,6 @@ public class WebSocketManager : MonoBehaviour
     Queue<string> recvList = new Queue<string>(); //keep receive messages
 
     [DllImport("__Internal")]
-    private static extern string Hello(); //test javascript plugin
-
-    [DllImport("__Internal")]
     private static extern void InitWebSocket(string url); //create websocket connection
 
     [DllImport("__Internal")]
@@ -99,7 +96,7 @@ public class WebSocketManager : MonoBehaviour
                 }
                 else
                 {
-                    Dispatch("default", dataArr[1]);    //We will dequeue message and send to Dispatch function.
+                    Dispatch("default", message);    //We will dequeue message and send to Dispatch function.
                 }
                 
             }
@@ -110,10 +107,10 @@ public class WebSocketManager : MonoBehaviour
     
     public void Dispatch(string type, string msg)
     {
-        // msg is a string json:
+        // msg is a string json, so for on 'play' send name and spawn points: 
         // "{
         //     name: playerName,
-        //     position: { x: position.x, y: position.y, z: position.z },
+        //     position: { x: position.x, y: position.y, z: position.z }, 
         //     rotation: { x: rotation.x, y: rotation.y, z: rotation.z },
         //     health: int,
         //     playerSpawnPoints: [
