@@ -24,13 +24,13 @@ var WebSockets = {
         window.wsclient.onmessage = function (evt) {
             var received_msg = evt.data;
             console.log("[received] " + received_msg);
-            SendMessage('WebSocket', 'RecvString', received_msg);
+            SendMessage('WebSocketManager', 'RecvString', received_msg);
         };
 
         window.wsclient.onerror = function (evt) {
             var error_msg = evt.data ? evt.data : JSON.stringify(evt);
             console.log("[error] " + error_msg);
-            SendMessage('WebSocket', 'ErrorString', "close");
+            SendMessage('WebSocketManager', 'ErrorString', "close");
         };
     },
 
