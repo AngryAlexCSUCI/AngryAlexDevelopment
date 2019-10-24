@@ -10,8 +10,7 @@ public class NetworkManager : MonoBehaviour
     public static NetworkManager instance;
     public Canvas enterCanvas;
     public Canvas uiCanvas;
-//    public SocketIOComponent socket;
-    public WebSocket socket;
+    public WebSocketManager socket;
     private string playerNameStr = Player.UserName;
     public GameObject player;
 
@@ -40,8 +39,6 @@ public class NetworkManager : MonoBehaviour
         //        socket.On("other player disconnected", OnOtherPlayerDisconnect);
         //        int result = Hello();
         //        print(result);
-
-
 
     }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +9,8 @@ public class Weapon : MonoBehaviour
     public Transform ProjectileSpawn;
     public float FireRate = 0.02F;
     private float NextFire = 0.0F;
-    
+    public bool isLocalPlayer = false;
+
     // Start is called before the first frame update
     void Start()
     {
