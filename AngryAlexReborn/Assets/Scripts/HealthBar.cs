@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityEngine; 
 using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class HealthBar : MonoBehaviour
     public Image m_Fill;                           // The image component of the slider.
     public Color m_FullHealthColor = Color.green;       // The color the health bar will be when on full health.
     public Color m_ZeroHealthColor = Color.red;         // The color the health bar will be when on no health.
-
+     
     public float m_CurrentHealth;                      // How much health the tank currently has.
     private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
 
@@ -34,7 +34,7 @@ public class HealthBar : MonoBehaviour
     {
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
-
+        Debug.Log("take damge 20)");
         // Change the UI elements appropriately.
         SetHealthUI();
 
@@ -61,5 +61,45 @@ public class HealthBar : MonoBehaviour
 
         // Turn the car off.
         gameObject.SetActive(false);
+    }
+    public float spriteBlinkingTimer = 0.0f;
+    public float spriteBlinkingMiniDuration = 0.1f;
+    public float spriteBlinkingTotalTimer = 0.0f;
+    public float spriteBlinkingTotalDuration = 1.0f;
+    public bool startBlinking = false;
+  public  GameObject carObject;
+    void Update()
+    {
+        if (startBlinking == true)
+        {
+            SpriteBlinkingEffect(  carObject);
+        }
+    }
+
+    public void SpriteBlinkingEffect(GameObject carObject)
+    {
+        spriteBlinkingTotalTimer += Time.deltaTime;
+        if (spriteBlinkingTotalTimer >= spriteBlinkingTotalDuration)
+        {
+            startBlinking = false;
+            spriteBlinkingTotalTimer = 0.0f;
+            carObject.GetComponent<SpriteRenderer>().enabled = true;   // according to 
+                                                                       //your sprite
+            return;
+        }
+
+        spriteBlinkingTimer += Time.deltaTime;
+        if (spriteBlinkingTimer >= spriteBlinkingMiniDuration)
+        {
+            spriteBlinkingTimer = 0.0f;
+            if (carObject.GetComponent<SpriteRenderer>().enabled == true)
+            {
+                carObject.GetComponent<SpriteRenderer>().enabled = false;  //make changes
+            }
+            else
+            {
+                carObject.GetComponent<SpriteRenderer>().enabled = true;   //make changes
+            }
+        }
     }
 }
