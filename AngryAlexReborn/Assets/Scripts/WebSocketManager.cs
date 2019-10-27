@@ -211,12 +211,12 @@ public class WebSocketManager : MonoBehaviour
             return;
         }
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-        CarController pc = p.GetComponent<CarController>();
-
-        pc.isLocalPlayer = false;
-
-        CameraController cc = Camera.main.GetComponent<CameraController>();
-        cc.isLocalPlayer = false;
+//        CarController pc = p.GetComponent<CarController>();
+//
+//        pc.isLocalPlayer = false;
+//
+//        CameraController cc = Camera.main.GetComponent<CameraController>();
+//        cc.isLocalPlayer = false;
 
         // todo set health and reference on change health event 
 
