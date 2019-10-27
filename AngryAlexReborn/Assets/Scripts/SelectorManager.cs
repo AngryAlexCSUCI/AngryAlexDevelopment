@@ -1,6 +1,8 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SelectorManager : MonoBehaviour
 {
@@ -234,4 +236,11 @@ public class SelectorManager : MonoBehaviour
         }
     }
 
+    public void LoadNextScene(int sceneIndex)
+    {
+        SceneManager.LoadScene(sceneIndex);
+        Player.VehicleLoadout = new Tuple<int, int>(_vehicleNumber, _weaponNumber);
+
+        Debug.Log(Player.VehicleLoadout);
+    }
 }
