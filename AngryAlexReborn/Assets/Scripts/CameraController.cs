@@ -18,10 +18,10 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        if (!target)
-        {
-            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-        }
+//        if (!target)
+//        {
+//            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+//        }
     }
 
     // Start is called before the first frame update
@@ -33,10 +33,10 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        if (!target)
-        {
-            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-        }
+//        if (!target)
+//        {
+//            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+//        }
     }
 
     // Update is called once per frame
@@ -44,13 +44,13 @@ public class CameraController : MonoBehaviour
     {
         if (!isLocalPlayer)
         {
-            //return;
+            return;
         }
 
-        if (!target)
-        {
-            //target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-        }
+//        if (!target)
+//        {
+//            //target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+//        }
 
         //follow target and zoom out slightly based off magnitude of the velocity of object we are following
         transform.position = new Vector3(target.position.x, target.position.y, zValue);

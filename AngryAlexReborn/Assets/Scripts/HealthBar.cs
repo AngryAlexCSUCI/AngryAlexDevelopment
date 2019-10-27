@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine; 
 using UnityEngine.UI;
@@ -12,7 +12,7 @@ public class HealthBar : MonoBehaviour
      
     public float m_CurrentHealth;                      // How much health the tank currently has.
     private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
-
+    public bool isLocalPlayer = false;
 
     private void Awake()
     {
@@ -32,6 +32,11 @@ public class HealthBar : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
         Debug.Log("take damge 20)");
@@ -47,6 +52,12 @@ public class HealthBar : MonoBehaviour
 
     private void SetHealthUI()
     {
+
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
         // Set the slider's value appropriately.
         m_Slider.value = m_CurrentHealth;
 
