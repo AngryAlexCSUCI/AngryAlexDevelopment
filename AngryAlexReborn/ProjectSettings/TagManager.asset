@@ -13,10 +13,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Minimap
+  - Map
+  - Player
+  - Interactable Objects
   - 
   - 
   - 
@@ -41,9 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Obstacles
-    uniqueID: 1401348563
-    locked: 0
   - name: Vehicle
     uniqueID: 1771784615
+    locked: 0
+  - name: Obstacles
+    uniqueID: 1401348563
     locked: 0

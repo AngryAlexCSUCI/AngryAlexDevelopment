@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +6,9 @@ public class CarController : MonoBehaviour
 {
     protected Rigidbody2D rb;
     protected TrailRenderer[] skidMarkTrails;
+    protected AudioSource engineSound;
+
+//    public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
     public float velocity;
@@ -20,8 +23,9 @@ public class CarController : MonoBehaviour
 
     private float currentSideFriction = 0;
 
-    public float startDriftVelocity; //2.3f
-    public float endDriftVelocity; //2.3f;
+    public float minDriftThreshold; //2.3f;
+    public float maxDriftThreshold; //2.3f;
+    protected float driftThreshold;
 
     // Start is called before the first frame update
     void Start()
@@ -31,11 +35,21 @@ public class CarController : MonoBehaviour
         skidMarkTrails = gameObject.GetComponentsInChildren<TrailRenderer>();
         turnOffSkidMarks();
         //skidMarkTrail.enabled = false;
+
+        driftThreshold = minDriftThreshold;
+        //currentEndDriftVelocity = endDriftVelocity;
+
+        engineSound = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        // if (!isLocalPlayer)
+        // {
+        //     return;
+        // }
+
         if (Input.GetKey("w") || Input.GetKey("up"))
         {
             rb.AddForce(transform.up * velocity);
@@ -48,28 +62,44 @@ public class CarController : MonoBehaviour
 
         //Torque is added only when the car is in motion, as a ratio of
         //the current magnitude to the velocityToTurnSpeedRatio declared above
-        rb.AddTorque(Input.GetAxis("Horizontal") * -rb.velocity.magnitude/velocityToTurnSpeedRatio);
+        //We also leave a little bit (0.1f) so that the car can be slowly tuned while in standstill
+        rb.AddTorque(Input.GetAxis("Horizontal") * ((-rb.velocity.magnitude / velocityToTurnSpeedRatio) - 0.1f));
 
         //Once torque and forces have been applied, mitigate some sideways velocity
         //Depending on whether we are "drifting" or not
-        
-        if (getRightVelocity().magnitude > startDriftVelocity)
-        {
-            Debug.Log("Drifting! : " + getRightVelocity().magnitude);
-            currentSideFriction = driftingSideFriction;
-            turnOnSkidMarks();
-            //skidMarkTrail.enabled = true;
-        }
-
-        if (getRightVelocity().magnitude < endDriftVelocity)
+        rb.velocity = getForwardVelocity() + (getRightVelocity() * currentSideFriction);
+        if (getRightVelocity().magnitude < driftThreshold)
         {
             currentSideFriction = normalTurnSideFricton;
+            driftThreshold = Mathf.Max(getRightVelocity().magnitude - 0.01f, minDriftThreshold);
             turnOffSkidMarks();
-            //skidMarkTrail.enabled = false;
-            //skidMarkTrail.Clear();
+            Debug.Log("Not Drifting, driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+        }
+        else if (getRightVelocity().magnitude > driftThreshold) //possibly implicit
+        {
+            currentSideFriction = driftingSideFriction;
+            driftThreshold = Mathf.Min(getRightVelocity().magnitude + 0.01f, maxDriftThreshold);
+            turnOnSkidMarks();
+            Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
         }
 
-        rb.velocity = getForwardVelocity() + (getRightVelocity() * currentSideFriction);
+
+        //handle sound
+        if (rb.velocity.magnitude > 0.2f)
+        {
+            if (!engineSound.isPlaying)
+            {
+                engineSound.Play();
+            }
+            Debug.Log("Sound pitch at start: " + engineSound.pitch);
+            engineSound.pitch = 1f + (Mathf.Pow(rb.velocity.magnitude, 1.18f)) / velocity;
+        } else
+        {
+            if (engineSound.isPlaying)
+            {
+                engineSound.Stop();
+            }
+        }
     }
 
     Vector2 getForwardVelocity()
