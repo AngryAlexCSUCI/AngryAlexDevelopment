@@ -54,8 +54,6 @@ public class WebSocketManager : MonoBehaviour
     {
         print("Starting web socket..");
 
-        player = GameObject.FindGameObjectWithTag("Player");
-
         StartCoroutine("RecvEvent");    //Then run the receive message loop
     }
 
@@ -65,6 +63,8 @@ public class WebSocketManager : MonoBehaviour
     {
         print("Starting coroutine.");
         InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+
+
         while (true)
         {
             if (recvList.Count > 0)
@@ -72,89 +72,112 @@ public class WebSocketManager : MonoBehaviour
                 //When our message queue has string coming.
                 // check message type: play, other_player_connected, move, turn, disconnect
                 string message = recvList.Dequeue();
-                print("Received message: " + message);
-                string[] dataArr = message.Split(' ');
-                if (dataArr[0] == "play")
+//                print("Received message: " + message);
+
+                if (message == "You are connected to the server!")
                 {
-                    Dispatch("play", dataArr[1]);
-                }
-                else if (dataArr[0] == "other_player_connected")
-                {
-                    Dispatch("other_player_connected", dataArr[1]);
-                }
-                else if (dataArr[0] == "move")
-                {
-                    Dispatch("move", dataArr[1]);
-                }
-                else if (dataArr[0] == "turn")
-                {
-                    Dispatch("turn", dataArr[1]);
-                }
-                else if (dataArr[0] == "disconnect")
-                {
-                    Dispatch("disconnect", dataArr[1]);
+                    // send server player name and let server randomly pick spawn point from list of spawn points
+                    // spawn point for player
+                    List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
+                    PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints);
+                    string data = JsonUtility.ToJson(playerJson);
+                    Dispatch("play", data, true);
                 }
                 else
                 {
-                    Dispatch("default", message);    //We will dequeue message and send to Dispatch function.
+
+                    string[] dataArr = message.Split(' ');
+                    if (dataArr[0] == "play")
+                    {
+                        // receive play from server means you need to get the spawn point from here and assign to player. 
+                        Dispatch("play", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "other_player_connected")
+                    {
+                        Dispatch("other_player_connected", dataArr[1], false);
+                    }
+//                else if (dataArr[0] == "move")
+//                {
+//                    Dispatch("move", dataArr[1]);
+//                }
+//                else if (dataArr[0] == "turn")
+//                {
+//                    Dispatch("turn", dataArr[1]);
+//                }
+//                else if (dataArr[0] == "disconnect")
+//                {
+//                    Dispatch("disconnect", dataArr[1]);
+//                }
+                    else
+                    {
+                        Dispatch("default", message, false); //We will dequeue message and send to Dispatch function.
+                    }
                 }
-                
+
             }
             yield return null; // yield return new WaitForSeconds(5); if too slow
         }
     }
 
     
-    public void Dispatch(string type, string msg)
+    public void Dispatch(string type, string msg, bool sendMsg)
     {
         // msg is a string json, so for on 'play' send name and spawn points: 
         // "{
         //     name: playerName,
-        //     position: { x: position.x, y: position.y, z: position.z }, 
-        //     rotation: { x: rotation.x, y: rotation.y, z: rotation.z },
+        //     position: [x, y, z],
+        //     rotation: [x, y, z],
         //     health: int,
         //     playerSpawnPoints: [
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z },
-        //         { x: position.x, y: position.y, z: position.z }
-        //     ]
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] },
+        //         { position: [ x, y, z], rotation: [x, y, z] }
         // }"
-        switch (type)
-        {
-            case "play":
-                Send(type + " " + msg); // send server player name and let server randomly pick spawn point from list of spawn points
-                OnPlay(msg);
-                break;
-            case "turn":
-                Send(type + " " + msg);
-//                OnPlayerRotate(msg);
-                break;
-            case "move":
-                Send(type + " " + msg);
-//                OnPlayerMove(msg);
-                break;
-            case "shoot":
-                Send(type + " " + msg);
-                break;
-            case "disconnect":
-                Send(type + " " + msg);
-                break;
-            case "health":
-                Send(type + " " + msg);
-                break;
-            default:
-                Send("dispatch " + msg);
-                break;
+        print("dispatching " + type + " with data: " + msg );
+        if (type == "play" && sendMsg) {
+            Send(type + " " + msg);
+        } else if (type == "play" && !sendMsg) {
+            OnPlay(msg);
+        } else if (type == "other_player_connected" && !sendMsg) {
+            OnOtherPlayerConnected(msg);
+        } else {
+            Send("dispatch " + msg);
         }
+//            switch (type)
+//        {
+//            case "play":
+//                
+//                OnPlay(msg);
+//                break;
+//            case "turn":
+//                Send(type + " " + msg);
+////                OnPlayerRotate(msg);
+//                break;
+//            case "move":
+//                Send(type + " " + msg);
+////                OnPlayerMove(msg);
+//                break;
+//            case "shoot":
+//                Send(type + " " + msg);
+//                break;
+//            case "disconnect":
+//                Send(type + " " + msg);
+//                break;
+//            case "health":
+//                Send(type + " " + msg);
+//                break;
+//            default:
+//                Send("dispatch " + msg);
+//                break;
+//        }
     }
 
     //For UI, we defined it here

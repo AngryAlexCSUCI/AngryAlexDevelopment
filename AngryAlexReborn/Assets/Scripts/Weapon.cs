@@ -20,6 +20,11 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+//        if (!isLocalPlayer)
+//        {
+//            return;
+//        }
+
         FollowMouse();
 
         if (Input.GetMouseButton(0) && Time.time > NextFire)

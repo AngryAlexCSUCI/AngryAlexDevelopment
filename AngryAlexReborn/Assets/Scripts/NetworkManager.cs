@@ -67,7 +67,7 @@ public class NetworkManager : MonoBehaviour
         PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints);
         string data = JsonUtility.ToJson(playerJson);
 
-        socket.Dispatch("play", data);
+//        socket.Dispatch("play", data);
         
         enterCanvas.gameObject.SetActive(false); 
         uiCanvas.gameObject.SetActive(true);

@@ -13,7 +13,7 @@ var WebSockets = {
         window.wsclient.onopen = function (evt) {
             console.log("[open]" + init_url);
             window.wsclient.send("connected");
-            window.wsclient.send("play "); // todo how to send player name and player spawnpoints in this message?
+//            window.wsclient.send("play "); // todo how to send player name and player spawnpoints in this message?
         };
 
         window.wsclient.onclose = function (evt) {
@@ -28,9 +28,11 @@ var WebSockets = {
             var received_msg = evt.data;
             console.log("[received] " + received_msg);
             // todo parse received message with player information in it
-            if (received_msg.startsWIth("play ")) {
-                SendMessage('WebSocketManager', 'OnPlay', received_msg); // call websocket manager? 
-            }
+//            if (received_msg === "You are connected to the server!") {
+//                SendMessage('WebSocketManager', 'RecvString', received_msg);
+//            } else if (received_msg.startsWith("play ")) {
+                SendMessage('WebSocketManager', 'RecvString', received_msg); // call websocket manager? 
+//            }
 //            SendMessage('WebSocketManager', 'RecvString', received_msg); // echos message back to server
         };
 
