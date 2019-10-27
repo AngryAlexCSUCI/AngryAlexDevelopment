@@ -7,12 +7,21 @@ public class RampLaunch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        var gameObj = collision.gameObject.GetComponent<CarController>() as CarController;
+        gameObj.height = 100;
+
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
