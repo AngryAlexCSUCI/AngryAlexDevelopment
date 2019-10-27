@@ -235,7 +235,7 @@ public class WebSocketManager : MonoBehaviour
 
         CameraController cc = Camera.main.GetComponent<CameraController>();
         cc.isLocalPlayer = true;
-        cc.target = p.transform;
+        cc.target = p.GetComponent<Rigidbody2D>();
 
         CarController pc = p.GetComponent<CarController>();
         pc.isLocalPlayer = true;
