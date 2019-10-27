@@ -233,12 +233,22 @@ public class WebSocketManager : MonoBehaviour
 
         GameObject p = Instantiate(player, position, rotation) as GameObject;
 
-        CameraController cc = Camera.main.GetComponent<CameraController>();
-        cc.isLocalPlayer = true;
-        cc.target = p.GetComponent<Rigidbody2D>();
+        Camera[] camArr = Camera.allCameras;
+        foreach (Camera cam in camArr)
+        {
+            CameraController cc = cam.GetComponent<CameraController>();
+            cc.isLocalPlayer = true;
+            cc.target = p.GetComponent<Rigidbody2D>();
+        }
+        
 
         CarController pc = p.GetComponent<CarController>();
         pc.isLocalPlayer = true;
+
+        HealthBar hb = uiCanvas.GetComponent<HealthBar>();
+        hb.carObject = p;
+        hb.isLocalPlayer = true;
+
 
     }
 
