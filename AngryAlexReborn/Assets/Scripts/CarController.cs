@@ -7,8 +7,8 @@ public class CarController : MonoBehaviour
     protected Rigidbody2D rb;
     protected TrailRenderer[] skidMarkTrails;
     protected AudioSource engineSound;
-
-//    public bool isLocalPlayer = false;
+    public int height;
+    public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
     public float velocity;
@@ -30,6 +30,7 @@ public class CarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        height = 0;
         rb = GetComponent<Rigidbody2D>();
         currentSideFriction = normalTurnSideFricton;
         skidMarkTrails = gameObject.GetComponentsInChildren<TrailRenderer>();
@@ -45,10 +46,11 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        // if (!isLocalPlayer)
-        // {
-        //     return;
-        // }
+
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
         if (Input.GetKey("w") || Input.GetKey("up"))
         {

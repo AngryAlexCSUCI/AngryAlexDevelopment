@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +9,8 @@ public class Projectile : MonoBehaviour
     [SerializeField]
     public GameObject Owner;
     public string Tag;
-    
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,8 +22,10 @@ public class Projectile : MonoBehaviour
 
         rigidB.velocity = direction * Speed;
     }
+
     void OnTriggerEnter2D(Collider2D collider)
     {
+
         if (collider.gameObject.tag != this.gameObject.tag)
         {
             Debug.Log("Bullet Hit!");
