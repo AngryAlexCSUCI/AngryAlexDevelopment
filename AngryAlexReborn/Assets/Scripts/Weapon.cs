@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +12,8 @@ public class Weapon : MonoBehaviour
 
     protected AudioSource fireSound;
     
+    public bool isLocalPlayer = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,11 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+//        if (!isLocalPlayer)
+//        {
+//            return;
+//        }
+
         FollowMouse();
 
         if (Input.GetMouseButton(0) && Time.time > NextFire)

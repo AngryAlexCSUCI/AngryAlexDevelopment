@@ -63,14 +63,8 @@ public class CameraController : MonoBehaviour
         transform.position = new Vector3(target.position.x, target.position.y, zValue);
     }
 
-//    public void setTarget(Transform _target)
-//    {
-//        target = _target;
-//        transform.position = new Vector3(target.position.x, target.position.y, zValue);
-//    }
-//
-//    public void isLocal(bool value)
-//    {
-//        isLocalPlayer = value; 
-//    }
+    public void isLocal(bool value)
+    {
+        isLocalPlayer = value;
+    }
 }

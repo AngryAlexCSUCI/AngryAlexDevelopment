@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5333845fedb564b4585d112c112d6e59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  playerNameInput: {fileID: 0}
+  enterCanvas: {fileID: 0}
+  uiCanvas: {fileID: 0}
+  socket: {fileID: 0}
   player: {fileID: 0}
