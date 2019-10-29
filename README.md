@@ -16,7 +16,7 @@ Members:
 * Samuel Decanio
 * Sarah Schmidt
 <br><br>
-[Play Here](https://angryalex.itch.io/angry-alex?secret=QlVBJKxqP8QZ6TGOgzIIltCibk)
+[Play Here](http://angryalex.s3-website-us-east-1.amazonaws.com/)
 <br><br>
 
  
