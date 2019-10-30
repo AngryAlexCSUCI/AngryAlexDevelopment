@@ -12,8 +12,7 @@ var WebSockets = {
 
         window.wsclient.onopen = function (evt) {
             console.log("[open]" + init_url);
-            window.wsclient.send("connected");
-//            window.wsclient.send("play "); // todo how to send player name and player spawnpoints in this message?
+            window.wsclient.send("connected"); // send connected to server
         };
 
         window.wsclient.onclose = function (evt) {
@@ -22,17 +21,12 @@ var WebSockets = {
             window.wsclient.send("disconnect");
         };
 
-        // todo send message when player connects to spawn player
-
+        
         window.wsclient.onmessage = function (evt) {
             var received_msg = evt.data;
             console.log("[received] " + received_msg);
-            // todo parse received message with player information in it
-//            if (received_msg === "You are connected to the server!") {
-//                SendMessage('WebSocketManager', 'RecvString', received_msg);
-//            } else if (received_msg.startsWith("play ")) {
-                SendMessage('WebSocketManager', 'RecvString', received_msg); // call websocket manager? 
-//            }
+            SendMessage('WebSocketManager', 'RecvString', received_msg); // call websocket manager and add to list of events 
+
 //            SendMessage('WebSocketManager', 'RecvString', received_msg); // echos message back to server
         };
 
