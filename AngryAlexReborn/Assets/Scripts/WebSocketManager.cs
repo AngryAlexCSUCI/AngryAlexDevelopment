@@ -128,7 +128,8 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
-    
+    #region Dispatch
+
     public void Dispatch(string type, string msg, bool sendMsg)
     {
         // msg is a string json, so for on 'play' send name and spawn points: 
@@ -200,6 +201,7 @@ public class WebSocketManager : MonoBehaviour
 
     }
 
+    #endregion
 
 
     /**
@@ -219,19 +221,39 @@ public class WebSocketManager : MonoBehaviour
         if (obj != null)
         {
             return;
-        }
+        } 
+        
+        // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-
 
     }
 
     void OnPlay(string data)
     {
         print("You have joined Angry Alex.");
-        UserJson currentUserJson = UserJson.CreateFromJson(data);
+        OnPlayJson playInfo = OnPlayJson.CreateFromJson(data);
+        UserJson currentUserJson = playInfo.userJson;
+        PlayerListJson players = playInfo.playerList;
+
+        // instantiate all current players as objects
+        foreach (UserJson user in players.playerList)
+        {
+            GameObject obj = GameObject.Find(user.name) as GameObject;
+            if (obj != null)
+            {
+                return;
+            }
+            Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
+            Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
+            
+            // todo need to get player vehicle type from json and use that to determine player type
+            GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
+        }
+
         Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
 
+        // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
 
         Camera[] camArr = Camera.allCameras;
@@ -248,7 +270,6 @@ public class WebSocketManager : MonoBehaviour
         HealthBar hb = uiCanvas.GetComponent<HealthBar>();
         hb.carObject = p;
         hb.isLocalPlayer = true;
-
 
     }
 
@@ -405,6 +426,32 @@ public class WebSocketManager : MonoBehaviour
             return JsonUtility.FromJson<UserJson>(data);
         }
     }
+
+    [Serializable]
+    public class OnPlayJson
+    {
+        public UserJson userJson;
+        public PlayerListJson playerList;
+
+        public static OnPlayJson CreateFromJson(string data)
+        {
+            return JsonUtility.FromJson<OnPlayJson>(data);
+        }
+    }
+
+    [Serializable]
+    public class PlayerListJson
+    {
+        public UserJson[] playerList;
+        
+        public static PlayerListJson CreateFromJson(string data)
+        {
+            return JsonUtility.FromJson<PlayerListJson>(data);
+        }
+    }
+
+
+
 
     // todo finish health json
     [Serializable]
