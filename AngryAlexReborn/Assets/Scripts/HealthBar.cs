@@ -12,6 +12,8 @@ public class HealthBar : MonoBehaviour
      
     public float m_CurrentHealth;                      // How much health the tank currently has.
     private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
+
+    [HideInInspector]
     public bool isLocalPlayer = false;
 
     private void Awake()

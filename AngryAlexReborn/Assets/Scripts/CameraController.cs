@@ -9,6 +9,7 @@ public class CameraController : MonoBehaviour
     public int orthographicFloor;
     protected new Camera camera; //reference to camera object that this script should be attached to
 
+    [HideInInspector]
     public bool isLocalPlayer = false;
 
     void Awake()

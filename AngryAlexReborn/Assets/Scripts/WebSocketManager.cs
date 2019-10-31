@@ -232,11 +232,11 @@ public class WebSocketManager : MonoBehaviour
     {
         print("You have joined Angry Alex.");
         OnPlayJson playInfo = OnPlayJson.CreateFromJson(data);
-        UserJson currentUserJson = playInfo.userJson;
-        PlayerListJson players = playInfo.playerList;
+        UserJson currentUserJson = playInfo.currentPlayer;
+        UserJson[] players = playInfo.otherPlayers;
 
         // instantiate all current players as objects
-        foreach (UserJson user in players.playerList)
+        foreach (UserJson user in players)
         {
             GameObject obj = GameObject.Find(user.name) as GameObject;
             if (obj != null)
@@ -247,6 +247,7 @@ public class WebSocketManager : MonoBehaviour
             Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
             
             // todo need to get player vehicle type from json and use that to determine player type
+            print("Instantiating other players");
             GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
         }
 
@@ -420,6 +421,7 @@ public class WebSocketManager : MonoBehaviour
         public float[] position;
         public float[] rotation;
         public int health;
+        public WeaponJson weapon;
 
         public static UserJson CreateFromJson(string data)
         {
@@ -430,8 +432,8 @@ public class WebSocketManager : MonoBehaviour
     [Serializable]
     public class OnPlayJson
     {
-        public UserJson userJson;
-        public PlayerListJson playerList;
+        public UserJson currentPlayer;
+        public UserJson[] otherPlayers;
 
         public static OnPlayJson CreateFromJson(string data)
         {
@@ -439,17 +441,19 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
+
     [Serializable]
-    public class PlayerListJson
+    public class WeaponJson
     {
-        public UserJson[] playerList;
+        public float[] rotation;
+        public bool fireBullet;
         
-        public static PlayerListJson CreateFromJson(string data)
+
+        public static WeaponJson CreateFromJson(string data)
         {
-            return JsonUtility.FromJson<PlayerListJson>(data);
+            return JsonUtility.FromJson<WeaponJson>(data);
         }
     }
-
 
 
 
@@ -458,14 +462,14 @@ public class WebSocketManager : MonoBehaviour
     public class HealthChangeJson
     {
         public string name;
-        public int healthChange;
+        public int damage;
         public string from;
         // todo add damage from enemy?
 
-        public HealthChangeJson(string _name, int _healthChange, string _from)
+        public HealthChangeJson(string _name, int _damage, string _from)
         {
             name = _name;
-            healthChange = _healthChange;
+            damage = _damage;
             from = _from;
         }
     }

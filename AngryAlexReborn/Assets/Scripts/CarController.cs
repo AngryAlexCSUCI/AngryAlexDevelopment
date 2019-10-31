@@ -8,6 +8,8 @@ public class CarController : MonoBehaviour
     protected TrailRenderer[] skidMarkTrails;
     protected AudioSource engineSound;
     public int height;
+
+    [HideInInspector]
     public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
