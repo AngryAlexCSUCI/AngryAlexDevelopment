@@ -160,38 +160,38 @@ public class WebSocketManager : MonoBehaviour
             }
         } else if (type == "other_player_connected") {
             if (sendMsg) {
-                Send("dispatch " + msg);
+                Send(type + " " + msg);
             } else {
                 OnOtherPlayerConnected(msg);
             }
         } else if (type == "move") {
             if (sendMsg) {
-                Send("dispatch " + msg);
+                Send(type + " " + msg);
             } else {
                 OnPlayerMove(msg);
             }
         } else if (type == "turn") {
             if (sendMsg) {
-                Send("dispatch " + msg);
+                Send(type + " " + msg);
             } else {
                 OnPlayerRotate(msg);
             }
         } else if (type == "weapon") {
             if (sendMsg) {
-                Send("dispatch " + msg);
+                Send(type + " " + msg);
             } else {
                 OnWeaponRotateAndFire(msg);
             }
         }
         else if (type == "health_damage") {
             if (sendMsg) {
-                Send("dispatch " + msg);
+                Send(type + " " + msg);
             } else {
                 OnPlayerDamage(msg);
             }
         } else if (type == "disconnect") {
             if (sendMsg) {
-                Send("dispatch " + msg);
+                Send(type + " " + msg);
             } else {
                 OnOtherPlayerDisconnect(msg);
             }
