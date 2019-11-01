@@ -405,10 +405,10 @@ public class WebSocketManager : MonoBehaviour
     [Serializable]
     public class RotationJson
     {
-        public float[] position;
+        public float[] rotation;
         public RotationJson(Quaternion _rotation)
         {
-            position = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
+            rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
 
         }
     }

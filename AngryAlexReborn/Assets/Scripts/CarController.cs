@@ -104,6 +104,17 @@ public class CarController : MonoBehaviour
                 engineSound.Stop();
             }
         }
+        // send position and turn updates
+        Vector3 vec = new Vector3(rb.position.x, rb.position.y, 0); // todo what if the player is up in the air? 
+        WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
+        string data = JsonUtility.ToJson(pos);
+        WebSocketManager.instance.Dispatch("move", data, true);
+
+        Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
+        WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
+        data = JsonUtility.ToJson(rot);
+        WebSocketManager.instance.Dispatch("turn", data, true);
+
     }
 
     Vector2 getForwardVelocity()
