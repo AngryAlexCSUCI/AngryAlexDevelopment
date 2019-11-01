@@ -225,7 +225,7 @@ public class WebSocketManager : MonoBehaviour
         
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-
+        p.name = userJson.name;
     }
 
     void OnPlay(string data)
@@ -247,15 +247,19 @@ public class WebSocketManager : MonoBehaviour
             Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
             
             // todo need to get player vehicle type from json and use that to determine player type
-            print("Instantiating other players");
+            print("Instantiating other player: " + user.name);
             GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
+            pTemp.name = user.name;
         }
 
+        // instantiate your own player object
         Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
 
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
+
+        p.name = playerNameStr;
 
         Camera[] camArr = Camera.allCameras;
         foreach (Camera cam in camArr)
