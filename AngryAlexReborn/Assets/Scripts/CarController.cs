@@ -114,7 +114,7 @@ public class CarController : MonoBehaviour
             WebSocketManager.instance.Dispatch("move", data, true);
         }
 
-        if (getRightVelocity().magnitude > 0)
+        if (rb.angularVelocity > 0)
         {
             Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
             WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
