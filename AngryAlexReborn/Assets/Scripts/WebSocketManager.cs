@@ -4,13 +4,14 @@
 //Websocket C# for UnityWebgl
 
 using System;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class WebSocketManager : MonoBehaviour
 {
@@ -48,7 +49,8 @@ public class WebSocketManager : MonoBehaviour
     public Canvas uiCanvas;
     private string playerNameStr = Player.UserName;
     public GameObject player;
-
+    public Slider healthSlider;
+    public Image healthFill;
 
     void Start()
     {
@@ -67,11 +69,11 @@ public class WebSocketManager : MonoBehaviour
         while (true)
         {
             if (recvList.Count > 0)
-            {        
+            {
                 //When our message queue has string coming.
                 // check message type: play, other_player_connected, move, turn, disconnect
                 string message = recvList.Dequeue();
-//                print("Received message: " + message);
+                //                print("Received message: " + message);
 
                 if (message == "You are connected to the server!")
                 {
@@ -118,7 +120,7 @@ public class WebSocketManager : MonoBehaviour
                     }
                     else
                     {
-                        Dispatch("default", message, false); 
+                        Dispatch("default", message, false);
                         //We will dequeue message and send to Dispatch function.
                     }
                 }
@@ -151,51 +153,86 @@ public class WebSocketManager : MonoBehaviour
         //         { position: [ x, y, z], rotation: [x, y, z] },
         //         { position: [ x, y, z], rotation: [x, y, z] }
         // }"
-        print("dispatching " + type + " with data: " + msg );
-        if (type == "play") {
-            if (sendMsg) {
+        print("dispatching " + type + " with data: " + msg);
+        if (type == "play")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnPlay(msg);
             }
-        } else if (type == "other_player_connected") {
-            if (sendMsg) {
+        }
+        else if (type == "other_player_connected")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnOtherPlayerConnected(msg);
             }
-        } else if (type == "move") {
-            if (sendMsg) {
+        }
+        else if (type == "move")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnPlayerMove(msg);
             }
-        } else if (type == "turn") {
-            if (sendMsg) {
+        }
+        else if (type == "turn")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnPlayerRotate(msg);
             }
-        } else if (type == "weapon") {
-            if (sendMsg) {
+        }
+        else if (type == "weapon")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnWeaponRotateAndFire(msg);
             }
         }
-        else if (type == "health_damage") {
-            if (sendMsg) {
+        else if (type == "health_damage")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnPlayerDamage(msg);
             }
-        } else if (type == "disconnect") {
-            if (sendMsg) {
+        }
+        else if (type == "disconnect")
+        {
+            if (sendMsg)
+            {
                 Send(type + " " + msg);
-            } else {
+            }
+            else
+            {
                 OnOtherPlayerDisconnect(msg);
             }
-        } else {
+        }
+        else
+        {
             Send("dispatch " + msg);
         }
 
@@ -209,7 +246,7 @@ public class WebSocketManager : MonoBehaviour
      */
     #region Listening
 
-    void OnOtherPlayerConnected(string data) 
+    void OnOtherPlayerConnected(string data)
     {
         // todo send message with current active players when other player connects to all other users
         print("Another player joined Angry Alex.");
@@ -221,8 +258,8 @@ public class WebSocketManager : MonoBehaviour
         if (obj != null)
         {
             return;
-        } 
-        
+        }
+
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
         p.name = userJson.name;
@@ -245,7 +282,7 @@ public class WebSocketManager : MonoBehaviour
             }
             Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
             Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
-            
+
             // todo need to get player vehicle type from json and use that to determine player type
             print("Instantiating other player: " + user.name);
             GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
@@ -268,13 +305,17 @@ public class WebSocketManager : MonoBehaviour
             cc.isLocalPlayer = true;
             cc.target = p.GetComponent<Rigidbody2D>();
         }
-        
+
         CarController pc = p.GetComponent<CarController>();
         pc.isLocalPlayer = true;
 
-        HealthBar hb = uiCanvas.GetComponent<HealthBar>();
+        HealthBar hb = p.GetComponent<HealthBar>();
         hb.carObject = p;
         hb.isLocalPlayer = true;
+        hb.m_Slider = healthSlider;
+        hb.m_Fill = healthFill;
+        
+
 
     }
 
@@ -451,7 +492,7 @@ public class WebSocketManager : MonoBehaviour
     {
         public float[] rotation;
         public bool fireBullet;
-        
+
 
         public static WeaponJson CreateFromJson(string data)
         {
