@@ -29,6 +29,14 @@ public class CarController : MonoBehaviour
     public float maxDriftThreshold; //2.3f;
     protected float driftThreshold;
 
+    // Booleans and ints controlling the application of force to the car's rigidbody
+    // Set in the Update method and linked to the message sending through the web socket manager
+    protected bool wPressed = false;
+    protected bool sPressed = false;
+    protected int torqueAmt = 0;
+    protected int LEFT = -1;
+    protected int RIGHT = 1;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,21 +53,70 @@ public class CarController : MonoBehaviour
         engineSound = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    // Update is called on every tick
+    private void Update()
     {
-
         if (!isLocalPlayer)
         {
             return;
         }
 
-        if (Input.GetKey("w") || Input.GetKey("up"))
+        if (Input.GetKeyDown("w") || Input.GetKeyDown("up"))
+        {
+            sendWPressed();
+            wPressed = true;
+        }
+        if (Input.GetKeyUp("w") || Input.GetKeyUp("up"))
+        {
+            sendWReleased();
+            wPressed = false;
+        }
+
+        if (Input.GetKeyDown("s") || Input.GetKeyDown("down"))
+        {
+            sendSPressed();
+            sPressed = true;
+        }
+        if (Input.GetKeyUp("s") || Input.GetKeyUp("down"))
+        {
+            sendSReleased();
+            sPressed = false;
+        }
+
+        if (Input.GetKeyDown("a") || Input.GetKeyDown("left"))
+        {
+            sendAPressed();
+            torqueAmt = LEFT;
+        }
+        if (Input.GetKeyUp("a") || Input.GetKeyUp("left"))
+        {
+            sendAReleased();
+            torqueAmt = 0;
+        }
+
+        if (Input.GetKeyDown("d") || Input.GetKeyDown("right"))
+        {
+            sendDPressed();
+            torqueAmt = RIGHT;
+        }
+        if (Input.GetKeyUp("d") || Input.GetKeyUp("right"))
+        {
+            sendDReleased();
+            torqueAmt = 0;
+        }
+    }
+
+
+
+    // FixedUpdate is called whenever the screen is refreshed
+    void FixedUpdate()
+    {
+        if (wPressed)
         {
             rb.AddForce(transform.up * velocity);
         }
 
-        if (Input.GetKey("s") || Input.GetKey("down"))
+        if (sPressed)
         {
             rb.AddForce(-transform.up * reverseVelocity);
         }
@@ -67,7 +124,7 @@ public class CarController : MonoBehaviour
         //Torque is added only when the car is in motion, as a ratio of
         //the current magnitude to the velocityToTurnSpeedRatio declared above
         //We also leave a little bit (0.1f) so that the car can be slowly tuned while in standstill
-        rb.AddTorque(Input.GetAxis("Horizontal") * ((-rb.velocity.magnitude / velocityToTurnSpeedRatio) - 0.1f));
+        rb.AddTorque(torqueAmt * ((-rb.velocity.magnitude / velocityToTurnSpeedRatio) - 0.1f));
 
         //Once torque and forces have been applied, mitigate some sideways velocity
         //Depending on whether we are "drifting" or not
@@ -106,21 +163,111 @@ public class CarController : MonoBehaviour
         }
 
         // send position and turn updates
-        if (getForwardVelocity().magnitude > 0)
-        {
-            Vector3 vec = new Vector3(rb.position.x, rb.position.y, 0); // todo what if the player is up in the air? 
-            WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
-            string data = JsonUtility.ToJson(pos);
-            WebSocketManager.instance.Dispatch("move", data, true);
-        }
+        //if (getForwardVelocity().magnitude > 0)
+        //{
+        //    Vector3 vec = new Vector3(rb.position.x, rb.position.y, 0); // todo what if the player is up in the air? 
+        //    WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
+        //    string data = JsonUtility.ToJson(pos);
+        //    WebSocketManager.instance.Dispatch("move", data, true);
+        //}
 
-        if (rb.angularVelocity > 0)
+        //if (rb.angularVelocity > 0)
+        //{
+        //    Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
+        //    WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
+        //    string data2 = JsonUtility.ToJson(rot);
+        //    WebSocketManager.instance.Dispatch("turn", data2, true);
+        //}
+    }
+
+    // All presses and releases of keys also update position/rotation to make sure the car hasn't desync'd
+    void sendWPressed()
+    {
+        WebSocketManager.instance.Dispatch("wpressed", vectorJson(), true);
+    }
+
+    void sendWReleased()
+    {
+        WebSocketManager.instance.Dispatch("wrelease", vectorJson(), true);
+    }
+
+    void sendSPressed()
+    {
+        WebSocketManager.instance.Dispatch("spressed", vectorJson(), true);
+    }
+
+    void sendSReleased()
+    {
+        WebSocketManager.instance.Dispatch("srelease", vectorJson(), true);
+    }
+
+    void sendAPressed()
+    {
+        WebSocketManager.instance.Dispatch("apressed", quatJson(), true);
+    }
+
+    void sendAReleased()
+    {
+        WebSocketManager.instance.Dispatch("arelease", quatJson(), true);
+    }
+
+    void sendDPressed()
+    {
+        WebSocketManager.instance.Dispatch("dpressed", quatJson(), true);
+    }
+
+    void sendDReleased()
+    {
+        WebSocketManager.instance.Dispatch("drelease", quatJson(), true);
+    }
+
+    public void setWPressed(bool isPressed)
+    {
+        wPressed = isPressed;
+    }
+
+    public void setSPressed(bool isPressed)
+    {
+        sPressed = isPressed;
+    }
+
+    public void setAPressed(bool isPressed)
+    {
+        if (isPressed)
         {
-            Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
-            WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
-            string data2 = JsonUtility.ToJson(rot);
-            WebSocketManager.instance.Dispatch("turn", data2, true);
+            torqueAmt = LEFT;
+        } else
+        {
+            torqueAmt = 0;
         }
+    }
+
+    public void setDPressed(bool isPressed)
+    {
+        if (isPressed)
+        {
+            torqueAmt = RIGHT;
+        } else
+        {
+            torqueAmt = 0;
+        }
+    }
+
+    string vectorJson()
+    {
+        // Get Current Position Vec 3
+        Vector3 vec = rb.position;
+        // JSON it
+        WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
+        // Then return as string
+        return JsonUtility.ToJson(pos);
+    }
+
+    string quatJson()
+    {
+        Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
+        WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
+        return JsonUtility.ToJson(rot);
     }
 
     Vector2 getForwardVelocity()

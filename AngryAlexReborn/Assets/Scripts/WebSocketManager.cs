@@ -101,6 +101,38 @@ public class WebSocketManager : MonoBehaviour
                     {
                         Dispatch("move", dataArr[1], false);
                     }
+                    else if (dataArr[0] == "wpressed")
+                    {
+                        Dispatch("wpressed", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "wrelease")
+                    {
+                        Dispatch("wrelease", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "spressed")
+                    {
+                        Dispatch("spressed", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "srelease")
+                    {
+                        Dispatch("srelease", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "apressed")
+                    {
+                        Dispatch("apressed", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "arelease")
+                    {
+                        Dispatch("arelease", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "dpressed")
+                    {
+                        Dispatch("dpressed", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "drelease")
+                    {
+                        Dispatch("drelease", dataArr[1], false);
+                    }
                     else if (dataArr[0] == "turn")
                     {
                         Dispatch("turn", dataArr[1], false);
@@ -171,7 +203,96 @@ public class WebSocketManager : MonoBehaviour
             } else {
                 OnPlayerMove(msg);
             }
-        } else if (type == "turn") {
+        }
+        else if (type == "wpressed")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnWPressed(msg);
+            }
+        }
+        else if (type == "wrelease")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnWRelease(msg);
+            }
+        }
+        else if (type == "spressed")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnSPressed(msg);
+            }
+        }
+        else if (type == "srelease")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnSRelease(msg);
+            }
+        }
+        else if (type == "apressed")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnAPressed(msg);
+            }
+        }
+        else if (type == "arelease")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnARelease(msg);
+            }
+        }
+        else if (type == "dpressed")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnDPressed(msg);
+            }
+        }
+        else if (type == "drelease")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnDRelease(msg);
+            }
+        }
+        else if (type == "turn") {
             if (sendMsg) {
                 Send(type + " " + msg);
             } else {
@@ -296,6 +417,80 @@ public class WebSocketManager : MonoBehaviour
 
     }
 
+    private void OnWPressed(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.position = position;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setWPressed(true);
+        }
+    }
+
+    private void OnWRelease(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.position = position;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setWPressed(false);
+        }
+    }
+
+    private void OnSPressed(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.position = position;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setSPressed(true);
+        }
+    }
+
+    private void OnSRelease(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.position = position;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setSPressed(false);
+        }
+    }
+
+
+
     void OnPlayerRotate(string data)
     {
         UserJson userJSON = UserJson.CreateFromJson(data);
@@ -309,6 +504,78 @@ public class WebSocketManager : MonoBehaviour
         if (p != null)
         {
             p.transform.rotation = rotation;
+        }
+    }
+
+    private void OnAPressed(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.rotation = rotation;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setAPressed(true);
+        }
+    }
+
+    private void OnARelease(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.rotation = rotation;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setAPressed(false);
+        }
+    }
+
+    private void OnDPressed(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.rotation = rotation;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setDPressed(true);
+        }
+    }
+
+    private void OnDRelease(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            p.transform.rotation = rotation;
+            CarController carController = p.GetComponent<CarController>();
+            carController.setDPressed(false);
         }
     }
 
