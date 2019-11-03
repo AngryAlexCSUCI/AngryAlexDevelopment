@@ -1017,11 +1017,11 @@ MonoBehaviour:
   Truck: {fileID: 266106531}
   Motorcycle: {fileID: 571439081}
   Cannon: {fileID: 131529024}
-  MachineGun: {fileID: 1419853923}
-  Lazer: {fileID: 1584779800}
+  MachineGun: {fileID: 1584779800}
+  Lazer: {fileID: 1419853923}
   MotorcycleCannon: {fileID: 2100388507}
-  MotorcycleMachineGun: {fileID: 1547564572}
-  MotorcycleLazer: {fileID: 1115126913}
+  MotorcycleMachineGun: {fileID: 1115126913}
+  MotorcycleLazer: {fileID: 1547564572}
   CurrentWeapon: {fileID: 0}
 --- !u!4 &719861367
 Transform:
