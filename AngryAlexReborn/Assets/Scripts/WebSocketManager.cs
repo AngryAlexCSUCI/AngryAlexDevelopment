@@ -49,6 +49,15 @@ public class WebSocketManager : MonoBehaviour
     private string playerNameStr = Player.UserName;
     public GameObject player;
 
+    private Dictionary<Tuple<int, int>, string> _vehicleWeaponNames = new Dictionary<Tuple<int, int>, string>()
+    {
+        { new Tuple<int, int>(1,1), "CannonCar" },
+        { new Tuple<int, int>(2,1), "CannonTruck" },
+        { new Tuple<int, int>(3,1), "CannonMotorcycle" },
+        { new Tuple<int, int>(1,2), "MachinegunCar" },
+        { new Tuple<int, int>(2,2), "MachinegunTruck" },
+        { new Tuple<int, int>(3,2), "MachinegunMotorcycle" }
+    };
 
     void Start()
     {
@@ -221,8 +230,9 @@ public class WebSocketManager : MonoBehaviour
         if (obj != null)
         {
             return;
-        } 
-        
+        }
+
+        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
         p.name = userJson.name;
@@ -248,6 +258,9 @@ public class WebSocketManager : MonoBehaviour
             
             // todo need to get player vehicle type from json and use that to determine player type
             print("Instantiating other player: " + user.name);
+            
+            player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+
             GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
             pTemp.name = user.name;
         }
