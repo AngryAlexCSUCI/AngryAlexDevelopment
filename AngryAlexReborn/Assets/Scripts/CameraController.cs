@@ -18,10 +18,10 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-//        if (!target)
-//        {
-//            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-//        }
+        if (!target)
+        {
+            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+        }
     }
 
     // Start is called before the first frame update
@@ -33,10 +33,10 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-//        if (!target)
-//        {
-//            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-//        }
+        if (!target)
+        {
+            target = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+        }
     }
 
     // Update is called once per frame
