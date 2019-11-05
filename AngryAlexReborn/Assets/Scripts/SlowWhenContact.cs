@@ -41,6 +41,7 @@ public class SlowWhenContact : MonoBehaviour
 
     void Update()
     {
+
         timeLeft -= Time.deltaTime;
         if (timeLeft < 0)
         {
@@ -52,9 +53,10 @@ public class SlowWhenContact : MonoBehaviour
 
     private void ChangeBackVelocity()
     {
-
-        gameObj.velocity = m_originalVelocity;
-        Debug.Log("Faster the car by 30");
-
+        if (gameObj != null)
+        {
+            gameObj.velocity = m_originalVelocity;
+            Debug.Log("Faster the car by 30");
+        }
     }
 }

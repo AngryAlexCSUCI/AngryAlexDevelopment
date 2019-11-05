@@ -4,13 +4,14 @@
 //Websocket C# for UnityWebgl
 
 using System;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class WebSocketManager : MonoBehaviour
 {
@@ -48,7 +49,18 @@ public class WebSocketManager : MonoBehaviour
     public Canvas uiCanvas;
     private string playerNameStr = Player.UserName;
     public GameObject player;
+    public Slider healthSlider;
+    public Image healthFill;
 
+    private Dictionary<Tuple<int, int>, string> _vehicleWeaponNames = new Dictionary<Tuple<int, int>, string>()
+    {
+        { new Tuple<int, int>(1,1), "CannonCar" },
+        { new Tuple<int, int>(2,1), "CannonTruck" },
+        { new Tuple<int, int>(3,1), "CannonMotorcycle" },
+        { new Tuple<int, int>(1,2), "MachinegunCar" },
+        { new Tuple<int, int>(2,2), "MachinegunTruck" },
+        { new Tuple<int, int>(3,2), "MachinegunMotorcycle" }
+    };
 
     void Start()
     {
@@ -64,15 +76,14 @@ public class WebSocketManager : MonoBehaviour
         print("Starting coroutine.");
         InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
 
-
         while (true)
         {
             if (recvList.Count > 0)
-            {        
+            {
                 //When our message queue has string coming.
                 // check message type: play, other_player_connected, move, turn, disconnect
                 string message = recvList.Dequeue();
-//                print("Received message: " + message);
+                //                print("Received message: " + message);
 
                 if (message == "You are connected to the server!")
                 {
@@ -94,23 +105,33 @@ public class WebSocketManager : MonoBehaviour
                     }
                     else if (dataArr[0] == "other_player_connected")
                     {
+                        // receive other player connected means you need to spawn another player in that spot to represent them
                         Dispatch("other_player_connected", dataArr[1], false);
                     }
-//                else if (dataArr[0] == "move")
-//                {
-//                    Dispatch("move", dataArr[1]);
-//                }
-//                else if (dataArr[0] == "turn")
-//                {
-//                    Dispatch("turn", dataArr[1]);
-//                }
-//                else if (dataArr[0] == "disconnect")
-//                {
-//                    Dispatch("disconnect", dataArr[1]);
-//                }
+                    else if (dataArr[0] == "move")
+                    {
+                        Dispatch("move", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "turn")
+                    {
+                        Dispatch("turn", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "weapon")
+                    {
+                        Dispatch("turn", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "health_damage")
+                    {
+                        Dispatch("turn", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "disconnect")
+                    {
+                        Dispatch("disconnect", dataArr[1], false);
+                    }
                     else
                     {
-                        Dispatch("default", message, false); //We will dequeue message and send to Dispatch function.
+                        Dispatch("default", message, false);
+                        //We will dequeue message and send to Dispatch function.
                     }
                 }
 
@@ -119,7 +140,8 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
-    
+    #region Dispatch
+
     public void Dispatch(string type, string msg, bool sendMsg)
     {
         // msg is a string json, so for on 'play' send name and spawn points: 
@@ -141,66 +163,103 @@ public class WebSocketManager : MonoBehaviour
         //         { position: [ x, y, z], rotation: [x, y, z] },
         //         { position: [ x, y, z], rotation: [x, y, z] }
         // }"
-        print("dispatching " + type + " with data: " + msg );
-        if (type == "play" && sendMsg) {
-            Send(type + " " + msg);
-        } else if (type == "play" && !sendMsg) {
-            OnPlay(msg);
-        } else if (type == "other_player_connected" && !sendMsg) {
-            OnOtherPlayerConnected(msg);
-        } else {
+        print("dispatching " + type + " with data: " + msg);
+        if (type == "play")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnPlay(msg);
+            }
+        }
+        else if (type == "other_player_connected")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnOtherPlayerConnected(msg);
+            }
+        }
+        else if (type == "move")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnPlayerMove(msg);
+            }
+        }
+        else if (type == "turn")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnPlayerRotate(msg);
+            }
+        }
+        else if (type == "weapon")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnWeaponRotateAndFire(msg);
+            }
+        }
+        else if (type == "health_damage")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnPlayerDamage(msg);
+            }
+        }
+        else if (type == "disconnect")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnOtherPlayerDisconnect(msg);
+            }
+        }
+        else
+        {
             Send("dispatch " + msg);
         }
-//            switch (type)
-//        {
-//            case "play":
-//                
-//                OnPlay(msg);
-//                break;
-//            case "turn":
-//                Send(type + " " + msg);
-////                OnPlayerRotate(msg);
-//                break;
-//            case "move":
-//                Send(type + " " + msg);
-////                OnPlayerMove(msg);
-//                break;
-//            case "shoot":
-//                Send(type + " " + msg);
-//                break;
-//            case "disconnect":
-//                Send(type + " " + msg);
-//                break;
-//            case "health":
-//                Send(type + " " + msg);
-//                break;
-//            default:
-//                Send("dispatch " + msg);
-//                break;
-//        }
+
     }
 
-    //For UI, we defined it here
-    //    void OnGUI()
-    //    {
-    //        if (GUI.Button(new Rect(10, 110, 150, 30), "Hello,World"))
-    //            Send("Hello there!");
-    ////
-    ////        if (GUI.Button(new Rect(10, 60, 150, 30), "Turn Right"))
-    ////            Send("turn r");
-    ////
-    ////        if (GUI.Button(new Rect(10, 110, 150, 30), "Turn Left"))
-    ////            Send("turn l");
-    //    }
+    #endregion
 
 
-
+    /**
+     * This region contains all the action
+     */
     #region Listening
 
-    void OnOtherPlayerConnected(string data)//SocketIOEvent socketIOEvent // todo some other socket event
+    void OnOtherPlayerConnected(string data)
     {
+        // todo send message with current active players when other player connects to all other users
         print("Another player joined Angry Alex.");
-//        string data = "";// socketIOEvent.data.ToString();
         UserJson userJson = UserJson.CreateFromJson(data);
         Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
         Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
@@ -210,28 +269,48 @@ public class WebSocketManager : MonoBehaviour
         {
             return;
         }
+
+        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+        // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-        CarController pc = p.GetComponent<CarController>();
-
-        pc.isLocalPlayer = false;
-
-        CameraController cc = Camera.main.GetComponent<CameraController>();
-        cc.isLocalPlayer = false;
-
-        // todo set health and reference on change health event 
-
-
+        p.name = userJson.name;
     }
 
-    void OnPlay(string data)//SocketIOEvent socketIOEvent // todo some other socket event
+    void OnPlay(string data)
     {
         print("You have joined Angry Alex.");
-//        string data = "";// socketIOEvent.data.ToString();
-        UserJson currentUserJson = UserJson.CreateFromJson(data);
+        OnPlayJson playInfo = OnPlayJson.CreateFromJson(data);
+        UserJson currentUserJson = playInfo.currentPlayer;
+        UserJson[] players = playInfo.otherPlayers;
+
+        // instantiate all current players as objects
+        foreach (UserJson user in players)
+        {
+            GameObject obj = GameObject.Find(user.name) as GameObject;
+            if (obj != null)
+            {
+                return;
+            }
+            Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
+            Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
+
+            // todo need to get player vehicle type from json and use that to determine player type
+            print("Instantiating other player: " + user.name);
+            
+            player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+
+            GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
+            pTemp.name = user.name;
+        }
+
+        // instantiate your own player object
         Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
 
+        // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
+
+        p.name = playerNameStr;
 
         Camera[] camArr = Camera.allCameras;
         foreach (Camera cam in camArr)
@@ -240,21 +319,22 @@ public class WebSocketManager : MonoBehaviour
             cc.isLocalPlayer = true;
             cc.target = p.GetComponent<Rigidbody2D>();
         }
-        
 
         CarController pc = p.GetComponent<CarController>();
         pc.isLocalPlayer = true;
 
-        HealthBar hb = uiCanvas.GetComponent<HealthBar>();
+        HealthBar hb = p.GetComponent<HealthBar>();
         hb.carObject = p;
         hb.isLocalPlayer = true;
+        hb.m_Slider = healthSlider;
+        hb.m_Fill = healthFill;
+        
 
 
     }
 
-    void OnPlayerMove(string data)//SocketIOEvent socketIOEvent // todo some other socket event
+    void OnPlayerMove(string data)
     {
-//        string data = "";// socketIOEvent.data.ToString();
         UserJson userJSON = UserJson.CreateFromJson(data);
         Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
         // if it is the current player exit
@@ -270,9 +350,8 @@ public class WebSocketManager : MonoBehaviour
 
     }
 
-    void OnPlayerRotate(string data)//SocketIOEvent socketIOEvent // todo some other socket event
+    void OnPlayerRotate(string data)
     {
-//        string data = "";// socketIOEvent.data.ToString();
         UserJson userJSON = UserJson.CreateFromJson(data);
         Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
         // if it is the current player exit
@@ -287,12 +366,33 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
-    // todo add player health and bullet events
 
-    void OnOtherPlayerDisconnect(string data)//SocketIOEvent socketIOEvent // todo some other socket event
+    void OnPlayerDamage(string data)
+    {
+        print("Player was damaged");
+        UserJson userJson = UserJson.CreateFromJson(data);
+
+        // todo player damage, use UserHealthJson or HealthChangeJson?
+        // include damage calculation here for player then send message
+
+
+
+    }
+
+
+    void OnWeaponRotateAndFire(string data)
+    {
+        print("Player weapon rotated and possibly fired");
+        UserJson userJson = UserJson.CreateFromJson(data);
+
+        // todo weapon rotates and fires (true/false), use or rework BulletJson?
+
+    }
+
+
+    void OnOtherPlayerDisconnect(string data)
     {
         print("Player disconnected");
-//        string data = "";// socketIOEvent.data.ToString();
         UserJson userJson = UserJson.CreateFromJson(data);
         Destroy(GameObject.Find(userJson.name));
     }
@@ -364,10 +464,10 @@ public class WebSocketManager : MonoBehaviour
     [Serializable]
     public class RotationJson
     {
-        public float[] position;
+        public float[] rotation;
         public RotationJson(Quaternion _rotation)
         {
-            position = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
+            rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
 
         }
     }
@@ -380,6 +480,7 @@ public class WebSocketManager : MonoBehaviour
         public float[] position;
         public float[] rotation;
         public int health;
+        public WeaponJson weapon;
 
         public static UserJson CreateFromJson(string data)
         {
@@ -387,19 +488,47 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
+    [Serializable]
+    public class OnPlayJson
+    {
+        public UserJson currentPlayer;
+        public UserJson[] otherPlayers;
+
+        public static OnPlayJson CreateFromJson(string data)
+        {
+            return JsonUtility.FromJson<OnPlayJson>(data);
+        }
+    }
+
+
+    [Serializable]
+    public class WeaponJson
+    {
+        public float[] rotation;
+        public bool fireBullet;
+
+
+        public static WeaponJson CreateFromJson(string data)
+        {
+            return JsonUtility.FromJson<WeaponJson>(data);
+        }
+    }
+
+
+
     // todo finish health json
     [Serializable]
     public class HealthChangeJson
     {
         public string name;
-        public int healthChange;
+        public int damage;
         public string from;
         // todo add damage from enemy?
 
-        public HealthChangeJson(string _name, int _healthChange, string _from)
+        public HealthChangeJson(string _name, int _damage, string _from)
         {
             name = _name;
-            healthChange = _healthChange;
+            damage = _damage;
             from = _from;
         }
     }
@@ -407,6 +536,7 @@ public class WebSocketManager : MonoBehaviour
     // todo add enemy json ? 
 
     // todo add shoot json for when players shoot stuff 
+
     [Serializable]
     public class BulletJson
     {

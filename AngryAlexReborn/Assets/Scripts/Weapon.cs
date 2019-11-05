@@ -11,7 +11,8 @@ public class Weapon : MonoBehaviour
     private float NextFire = 0.0F;
 
     protected AudioSource fireSound;
-    
+
+    [HideInInspector]
     public bool isLocalPlayer = false;
 
     // Start is called before the first frame update

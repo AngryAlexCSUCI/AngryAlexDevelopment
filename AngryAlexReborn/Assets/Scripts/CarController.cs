@@ -8,6 +8,8 @@ public class CarController : MonoBehaviour
     protected TrailRenderer[] skidMarkTrails;
     protected AudioSource engineSound;
     public int height;
+
+    [HideInInspector]
     public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
@@ -101,6 +103,23 @@ public class CarController : MonoBehaviour
             {
                 engineSound.Stop();
             }
+        }
+
+        // send position and turn updates
+        if (getForwardVelocity().magnitude > 0)
+        {
+            Vector3 vec = new Vector3(rb.position.x, rb.position.y, 0); // todo what if the player is up in the air? 
+            WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
+            string data = JsonUtility.ToJson(pos);
+            WebSocketManager.instance.Dispatch("move", data, true);
+        }
+
+        if (getRightVelocity().magnitude > 0)
+        {
+            Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
+            WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
+            string data2 = JsonUtility.ToJson(rot);
+            WebSocketManager.instance.Dispatch("turn", data2, true);
         }
     }
 

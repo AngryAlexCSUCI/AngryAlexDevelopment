@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2594542503685046113}
   - component: {fileID: 8584609200478002417}
   m_Layer: 11
-  m_Name: Tire Spike (1)
+  m_Name: Tire Spike
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -141,7 +141,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.14, y: 2.5}
+  m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
 --- !u!1 &9186899959448483100
 GameObject:

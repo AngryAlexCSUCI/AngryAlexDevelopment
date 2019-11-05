@@ -1,6 +1,8 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SelectorManager : MonoBehaviour
 {
@@ -183,15 +185,15 @@ public class SelectorManager : MonoBehaviour
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
                 CurrentWeapon.transform.position = WeaponPositions[_vehicleNumber];
                 break;
+            //case 2:
+            //    _currentWeaponRender.enabled = false;
+            //    _weaponNumber++;
+            //    WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
+            //    _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
+            //    CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
+            //    CurrentWeapon.transform.position = WeaponPositions[_vehicleNumber];
+            //    break;
             case 2:
-                _currentWeaponRender.enabled = false;
-                _weaponNumber++;
-                WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
-                _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
-                CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
-                CurrentWeapon.transform.position = WeaponPositions[_vehicleNumber];
-                break;
-            case 3:
                 _currentWeaponRender.enabled = false;
                 WeaponRenderers[_vehicleNumber][1].enabled = true;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][1];
@@ -215,14 +217,14 @@ public class SelectorManager : MonoBehaviour
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
                 break;
+            //case 2:
+            //    _currentWeaponRender.enabled = false;
+            //    _weaponNumber--;
+            //    WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
+            //    _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
+            //    CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];                
+            //    break;
             case 2:
-                _currentWeaponRender.enabled = false;
-                _weaponNumber--;
-                WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
-                _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
-                CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];                
-                break;
-            case 3:
                 _currentWeaponRender.enabled = false;
                 _weaponNumber--;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
@@ -234,4 +236,11 @@ public class SelectorManager : MonoBehaviour
         }
     }
 
+    public void LoadNextScene(int sceneIndex)
+    {
+        SceneManager.LoadScene(sceneIndex);
+        Player.VehicleLoadout = new Tuple<int, int>(_vehicleNumber, _weaponNumber);
+
+        Debug.Log(Player.VehicleLoadout);
+    }
 }

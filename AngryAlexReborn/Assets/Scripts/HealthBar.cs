@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine; 
-using UnityEngine.UI;
+using UnityEngine;
+using UnityEngine.UI; 
 public class HealthBar : MonoBehaviour
 {
     public float m_StartingHealth = 100f;               // The amount of health each tank starts with.
@@ -12,13 +10,21 @@ public class HealthBar : MonoBehaviour
      
     public float m_CurrentHealth;                      // How much health the tank currently has.
     private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
+
+    [HideInInspector]
     public bool isLocalPlayer = false;
 
     private void Awake()
     {
 
     }
-
+    void Start()
+    {
+        if (isLocalPlayer)
+        {
+            GetComponentInChildren<Canvas>().enabled = false;
+        }
+    }
     private void OnEnable()
     {
         // When the tank is enabled, reset the tank's health and whether or not it's dead.
