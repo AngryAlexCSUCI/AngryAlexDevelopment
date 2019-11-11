@@ -606,6 +606,86 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1273970869
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5160951968077827120, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_Name
+      value: WebSocketManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827123, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: uiCanvas
+      value: 
+      objectReference: {fileID: 373203260}
+    - target: {fileID: 5160951968077827123, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: skipPlay
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 2243926352790365505, guid: f450b11cd764ebf478a196a28b4a504d, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: f450b11cd764ebf478a196a28b4a504d, type: 3}
 --- !u!1 &1299734620
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,7 +699,6 @@ GameObject:
   - component: {fileID: 1299734622}
   - component: {fileID: 1299734624}
   - component: {fileID: 1299734625}
-  - component: {fileID: 1299734626}
   m_Layer: 5
   m_Name: MainMenuPanel
   m_TagString: Untagged
@@ -719,20 +798,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1299734620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff67a81f9985477493a6b075fa002f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  userNameField: {fileID: 2133691518}
---- !u!114 &1299734626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1299734620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6510d237ad414c8c9d3ef646f35685b, type: 3}
+  m_Script: {fileID: 11500000, guid: c1d9a18492d474a919bfd4057480fd4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   userNameField: {fileID: 2133691518}
@@ -1049,9 +1115,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1299734626}
-        m_MethodName: LoadByIndex
-        m_Mode: 3
+      - m_Target: {fileID: 1299734625}
+        m_MethodName: StartButtonPress
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

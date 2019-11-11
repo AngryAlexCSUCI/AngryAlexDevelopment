@@ -11,6 +11,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class WebSocketManager : MonoBehaviour
@@ -51,7 +53,8 @@ public class WebSocketManager : MonoBehaviour
     public GameObject player;
     public Slider healthSlider;
     public Image healthFill;
-
+    public bool skipPlay;
+    
     private Dictionary<Tuple<int, int>, string> _vehicleWeaponNames = new Dictionary<Tuple<int, int>, string>()
     {
         { new Tuple<int, int>(1,1), "CannonCar" },
@@ -74,7 +77,8 @@ public class WebSocketManager : MonoBehaviour
     IEnumerator RecvEvent()
     {
         print("Starting coroutine.");
-        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        InitWebSocket("ws://localhost:8080"); //First we create the connection.
 
         while (true)
         {
@@ -85,8 +89,9 @@ public class WebSocketManager : MonoBehaviour
                 string message = recvList.Dequeue();
                 //                print("Received message: " + message);
 
-                if (message == "You are connected to the server!")
+                if (message == "You are connected to the server!" && !skipPlay)
                 {
+                    print("--- Sending play message!");
                     // send server player name and let server randomly pick spawn point from list of spawn points
                     // spawn point for player
                     List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
@@ -96,8 +101,11 @@ public class WebSocketManager : MonoBehaviour
                 }
                 else
                 {
-
                     string[] dataArr = message.Split(' ');
+                    
+                    print("Received message with data: 0 = " + dataArr[0]);
+                    print("1 = " + dataArr[1]);
+                    
                     if (dataArr[0] == "play")
                     {
                         // receive play from server means you need to get the spawn point from here and assign to player. 
@@ -127,6 +135,10 @@ public class WebSocketManager : MonoBehaviour
                     else if (dataArr[0] == "disconnect")
                     {
                         Dispatch("disconnect", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "name_registration")
+                    {
+                        Dispatch("name_registration", dataArr[1], false);
                     }
                     else
                     {
@@ -241,8 +253,22 @@ public class WebSocketManager : MonoBehaviour
                 OnOtherPlayerDisconnect(msg);
             }
         }
+        else if (type == "name_registration")
+        {
+            if (sendMsg)
+            {
+                print("Attempting to send name registration message...");
+                Send(type + " " + msg);
+            }
+            else
+            {
+                print("Received name registration response message");
+                OnNameRegistration(msg);
+            }
+        }
         else
         {
+            print("Unrecognized message: " + msg);
             Send("dispatch " + msg);
         }
 
@@ -398,6 +424,30 @@ public class WebSocketManager : MonoBehaviour
     }
 
 
+    void OnNameRegistration(string data)
+    {
+        print("Name Registration Msg Received");
+        NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
+        print("data = " + data);
+        print("name registration json = " + nameRegistrationJson);
+        print("name registration json name field = " + nameRegistrationJson.name);
+        print("name registration json success field = " + nameRegistrationJson.name_registration_success);
+
+        if (nameRegistrationJson.name_registration_success)
+        {
+            SceneManager.LoadScene(1);
+            //UsernameScene.NameRegistrationSuccessful(nameRegistrationJson.name);
+        }
+        else
+        {
+            print("registration failed.");
+            //UsernameScene.NameRegistrationFailed(nameRegistrationJson.name);
+        }
+
+        //TODO: Finish implementation of the name registration
+        //add logic for if the registration was successful
+        //add logic for if the name is already taken
+    }
 
 
     #endregion
@@ -557,6 +607,24 @@ public class WebSocketManager : MonoBehaviour
         public static UserHealthJson CreateFromJson(string data)
         {
             return JsonUtility.FromJson<UserHealthJson>(data);
+        }
+
+    }
+    
+    [Serializable]
+    public class NameRegistrationJson
+    {
+        [FormerlySerializedAs("registrationSuccessful")] public Boolean name_registration_success;
+        public string name;
+
+        public NameRegistrationJson(string _name)
+        {
+            name = _name;
+        }
+        
+        public static NameRegistrationJson CreateFromJson(string data)
+        {
+            return JsonUtility.FromJson<NameRegistrationJson>(data);
         }
 
     }
