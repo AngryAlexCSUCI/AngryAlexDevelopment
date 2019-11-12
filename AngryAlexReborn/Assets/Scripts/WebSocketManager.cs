@@ -54,6 +54,7 @@ public class WebSocketManager : MonoBehaviour
     public Slider healthSlider;
     public Image healthFill;
     public bool skipPlay;
+    public GameObject errorMessage;
     
     private Dictionary<Tuple<int, int>, string> _vehicleWeaponNames = new Dictionary<Tuple<int, int>, string>()
     {
@@ -428,25 +429,15 @@ public class WebSocketManager : MonoBehaviour
     {
         print("Name Registration Msg Received");
         NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
-        print("data = " + data);
-        print("name registration json = " + nameRegistrationJson);
-        print("name registration json name field = " + nameRegistrationJson.name);
-        print("name registration json success field = " + nameRegistrationJson.name_registration_success);
 
         if (nameRegistrationJson.name_registration_success)
         {
             SceneManager.LoadScene(1);
-            //UsernameScene.NameRegistrationSuccessful(nameRegistrationJson.name);
         }
         else
         {
-            print("registration failed.");
-            //UsernameScene.NameRegistrationFailed(nameRegistrationJson.name);
+            errorMessage.transform.localScale = new Vector3(1, 1, 1);
         }
-
-        //TODO: Finish implementation of the name registration
-        //add logic for if the registration was successful
-        //add logic for if the name is already taken
     }
 
 
