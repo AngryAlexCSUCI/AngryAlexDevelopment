@@ -134,14 +134,14 @@ public class CarController : MonoBehaviour
             currentSideFriction = normalTurnSideFricton;
             driftThreshold = Mathf.Max(getRightVelocity().magnitude - 0.01f, minDriftThreshold);
             turnOffSkidMarks();
-            Debug.Log("Not Drifting, driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+            //Debug.Log("Not Drifting, driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
         }
         else if (getRightVelocity().magnitude > driftThreshold) //possibly implicit
         {
             currentSideFriction = driftingSideFriction;
             driftThreshold = Mathf.Min(getRightVelocity().magnitude + 0.01f, maxDriftThreshold);
             turnOnSkidMarks();
-            Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+            //Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
         }
 
 
@@ -152,7 +152,7 @@ public class CarController : MonoBehaviour
             {
                 engineSound.Play();
             }
-            Debug.Log("Sound pitch at start: " + engineSound.pitch);
+            //Debug.Log("Sound pitch at start: " + engineSound.pitch);
             engineSound.pitch = 1f + (Mathf.Pow(rb.velocity.magnitude, 1.18f)) / velocity;
         } else
         {
@@ -268,6 +268,13 @@ public class CarController : MonoBehaviour
         Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
         WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
         return JsonUtility.ToJson(rot);
+    }
+
+    public void setLocalPlayer()
+    {
+        isLocalPlayer = true;
+        Weapon weapon = GetComponentInChildren<Weapon>();
+        weapon.isLocalPlayer = true;
     }
 
     Vector2 getForwardVelocity()

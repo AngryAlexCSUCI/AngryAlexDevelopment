@@ -63,7 +63,7 @@ public class WebSocketManager : MonoBehaviour
     {
         print("Starting coroutine.");
         // InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        InitWebSocket("ws://ec2-3-86-92-191.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
+        InitWebSocket("ws://ec2-54-166-78-255.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
         {
@@ -132,6 +132,10 @@ public class WebSocketManager : MonoBehaviour
                     else if (dataArr[0] == "drelease")
                     {
                         Dispatch("drelease", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "fire")
+                    {
+                        Dispatch("fire", dataArr[1], false);
                     }
                     else if (dataArr[0] == "turn")
                     {
@@ -292,6 +296,17 @@ public class WebSocketManager : MonoBehaviour
                 OnDRelease(msg);
             }
         }
+        else if (type == "fire")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnFire(msg);
+            }
+        }
         else if (type == "turn") {
             if (sendMsg) {
                 Send(type + " " + msg);
@@ -392,7 +407,7 @@ public class WebSocketManager : MonoBehaviour
         }
         
         CarController pc = p.GetComponent<CarController>();
-        pc.isLocalPlayer = true;
+        pc.setLocalPlayer();
 
         HealthBar hb = uiCanvas.GetComponent<HealthBar>();
         hb.carObject = p;
@@ -579,6 +594,23 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
+    private void OnFire(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            Weapon weapon = p.GetComponentInChildren<Weapon>();
+            weapon.transform.rotation = rotation;
+            weapon.fireWeapon();
+        }
+    }
 
     void OnPlayerDamage(string data)
     {
