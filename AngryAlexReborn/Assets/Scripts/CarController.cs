@@ -12,22 +12,23 @@ public class CarController : MonoBehaviour
     [HideInInspector]
     public bool isLocalPlayer = false;
 
+    protected float current_velocity;
     //speed of the car (80 for default buggy)
     public float velocity;
     //reverse speed of the car (20 for default buggy)
-    public float reverseVelocity;
+    public float reverse_velocity;
     //ratio of the car's speed vs its turn speed, higher value = bigger turn radius (4 for default buggy)
-    public float velocityToTurnSpeedRatio;
+    public float velocity_to_turn_speed_ratio;
 
     //Car "Drift" variables
-    public float normalTurnSideFricton; //0.1
-    public float driftingSideFriction; //0.99
+    public float normal_turn_side_fricton; //0.1
+    public float drifting_side_friction; //0.99
 
-    private float currentSideFriction = 0;
+    private float current_side_friction = 0;
 
-    public float minDriftThreshold; //2.3f;
-    public float maxDriftThreshold; //2.3f;
-    protected float driftThreshold;
+    public float min_drift_threshold; //2.3f;
+    public float max_drift_threshold; //2.3f;
+    protected float drift_threshold;
 
     // Booleans and ints controlling the application of force to the car's rigidbody
     // Set in the Update method and linked to the message sending through the web socket manager
@@ -37,20 +38,29 @@ public class CarController : MonoBehaviour
     protected int LEFT = -1;
     protected int RIGHT = 1;
 
+    // Controllers for velocity change when coming into contact with an oil spill
+    protected float slow_velocity;
+    protected int slow_time_remaining = 0;
+    protected int MAX_SLOW_DEBUFF_TIMER = 300; 
+
     // Start is called before the first frame update
     void Start()
     {
         height = 0;
         rb = GetComponent<Rigidbody2D>();
-        currentSideFriction = normalTurnSideFricton;
+        current_side_friction = normal_turn_side_fricton;
         skidMarkTrails = gameObject.GetComponentsInChildren<TrailRenderer>();
         turnOffSkidMarks();
         //skidMarkTrail.enabled = false;
 
-        driftThreshold = minDriftThreshold;
+        drift_threshold = min_drift_threshold;
         //currentEndDriftVelocity = endDriftVelocity;
 
         engineSound = GetComponent<AudioSource>();
+
+        // Assign slow velocity as half the normal velocity assigned to the vehicle
+        current_velocity = velocity;
+        slow_velocity = velocity / 2;
     }
 
     // Update is called on every tick
@@ -113,35 +123,35 @@ public class CarController : MonoBehaviour
     {
         if (wPressed)
         {
-            rb.AddForce(transform.up * velocity);
+            rb.AddForce(transform.up * current_velocity);
         }
 
         if (sPressed)
         {
-            rb.AddForce(-transform.up * reverseVelocity);
+            rb.AddForce(-transform.up * reverse_velocity);
         }
 
         //Torque is added only when the car is in motion, as a ratio of
-        //the current magnitude to the velocityToTurnSpeedRatio declared above
+        //the current magnitude to the velocity_to_turn_speed_ratio declared above
         //We also leave a little bit (0.1f) so that the car can be slowly tuned while in standstill
-        rb.AddTorque(torqueAmt * ((-rb.velocity.magnitude / velocityToTurnSpeedRatio) - 0.1f));
+        rb.AddTorque(torqueAmt * ((-rb.velocity.magnitude / velocity_to_turn_speed_ratio) - 0.1f));
 
         //Once torque and forces have been applied, mitigate some sideways velocity
         //Depending on whether we are "drifting" or not
-        rb.velocity = getForwardVelocity() + (getRightVelocity() * currentSideFriction);
-        if (getRightVelocity().magnitude < driftThreshold)
+        rb.velocity = getForwardVelocity() + (getRightVelocity() * current_side_friction);
+        if (getRightVelocity().magnitude < drift_threshold)
         {
-            currentSideFriction = normalTurnSideFricton;
-            driftThreshold = Mathf.Max(getRightVelocity().magnitude - 0.01f, minDriftThreshold);
+            current_side_friction = normal_turn_side_fricton;
+            drift_threshold = Mathf.Max(getRightVelocity().magnitude - 0.01f, min_drift_threshold);
             turnOffSkidMarks();
-            //Debug.Log("Not Drifting, driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+            //Debug.Log("Not Drifting, drift_threshold vs Vel : " + drift_threshold + ", " + getRightVelocity().magnitude);
         }
-        else if (getRightVelocity().magnitude > driftThreshold) //possibly implicit
+        else if (getRightVelocity().magnitude > drift_threshold) //possibly implicit
         {
-            currentSideFriction = driftingSideFriction;
-            driftThreshold = Mathf.Min(getRightVelocity().magnitude + 0.01f, maxDriftThreshold);
+            current_side_friction = drifting_side_friction;
+            drift_threshold = Mathf.Min(getRightVelocity().magnitude + 0.01f, max_drift_threshold);
             turnOnSkidMarks();
-            //Debug.Log("Drifting! driftThreshold vs Vel : " + driftThreshold + ", " + getRightVelocity().magnitude);
+            //Debug.Log("Drifting! drift_threshold vs Vel : " + drift_threshold + ", " + getRightVelocity().magnitude);
         }
 
 
@@ -153,12 +163,23 @@ public class CarController : MonoBehaviour
                 engineSound.Play();
             }
             //Debug.Log("Sound pitch at start: " + engineSound.pitch);
-            engineSound.pitch = 1f + (Mathf.Pow(rb.velocity.magnitude, 1.18f)) / velocity;
+            engineSound.pitch = 1f + (Mathf.Pow(rb.velocity.magnitude, 1.18f)) / current_velocity;
         } else
         {
             if (engineSound.isPlaying)
             {
                 engineSound.Stop();
+            }
+        }
+
+        //check for slow debuff
+        if (slow_time_remaining > 0)
+        {
+            slow_time_remaining -= 1;
+            if (slow_time_remaining <= 0)
+            {
+                current_velocity = velocity;
+                Debug.Log("Restoring behicle speed");
             }
         }
 
@@ -178,6 +199,13 @@ public class CarController : MonoBehaviour
         //    string data2 = JsonUtility.ToJson(rot);
         //    WebSocketManager.instance.Dispatch("turn", data2, true);
         //}
+    }
+
+    public void slowDebuff()
+    {
+        Debug.Log("VEHICLE CONTACTED OIL SPILL, SLOWING CAR DOWN");
+        current_velocity = slow_velocity;
+        slow_time_remaining = MAX_SLOW_DEBUFF_TIMER;
     }
 
     // All presses and releases of keys also update position/rotation to make sure the car hasn't desync'd

@@ -33,8 +33,8 @@ public class Weapon : MonoBehaviour
 
         if (Input.GetMouseButton(0) && Time.time > NextFire)
         {
-            fireWeapon();
             WebSocketManager.instance.Dispatch("fire", quatJson(), true);
+            fireWeapon();
         }
     }
 
@@ -57,11 +57,11 @@ public class Weapon : MonoBehaviour
         //possibly old code for creating the bullet, imported when merging - Christian
         //Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
         fireSound.PlayOneShot(fireSound.clip);
-        var bullet = Instantiate(Projectile, ProjectileSpawn.position, ProjectileSpawn.rotation);
+        var bullet = Instantiate(Projectile, ProjectileSpawn.position, transform.rotation);
         string tag = this.transform.parent.gameObject.tag;
         bullet.gameObject.tag = tag;
-        Physics2D.IgnoreCollision(bullet.GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
-        Physics2D.IgnoreCollision(bullet.GetComponent<Collider2D>(), this.transform.parent.gameObject.GetComponent<Collider2D>());
+        //Physics2D.IgnoreCollision(bullet.GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
+        //Physics2D.IgnoreCollision(bullet.GetComponent<Collider2D>(), this.transform.parent.gameObject.GetComponent<Collider2D>());
     }
 
     string quatJson()

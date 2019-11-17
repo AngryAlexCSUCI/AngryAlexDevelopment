@@ -18,37 +18,39 @@ public class SlowWhenContact : MonoBehaviour
 
         if (gameObj != null)
         {
-            if (Counter == 0)
-                m_originalVelocity = gameObj.velocity;
+            gameObj.slowDebuff();
 
-            Counter++;
+            //if (Counter == 0)
+            //    m_originalVelocity = gameObj.velocity;
 
-            gameObj.velocity -= 40;
+            //Counter++;
 
-            //minimum speed. prevent negative velocity
-            if (gameObj.velocity < 10)
-            {
-                gameObj.velocity = 10;
-            }
-            currentVelocity = gameObj.velocity;
-            Debug.Log("Slow the car by 40");
+            //gameObj.velocity -= 40;
 
-            // change back to original speed after n seconds
-            timeLeft += 5.0f;
-            Update();
+            ////minimum speed. prevent negative velocity
+            //if (gameObj.velocity < 10)
+            //{
+            //    gameObj.velocity = 10;
+            //}
+            //currentVelocity = gameObj.velocity;
+            //Debug.Log("Slow the car by 40");
+
+            //// change back to original speed after n seconds
+            //timeLeft += 5.0f;
+            //Update();
         }
     }
 
     void Update()
     {
 
-        timeLeft -= Time.deltaTime;
-        if (timeLeft < 0)
-        {
-            ChangeBackVelocity();
-            timeLeft = 0;
-            Counter = 0;
-        }
+        //timeLeft -= Time.deltaTime;
+        //if (timeLeft < 0)
+        //{
+        //    ChangeBackVelocity();
+        //    timeLeft = 0;
+        //    Counter = 0;
+        //}
     }
 
     private void ChangeBackVelocity()
@@ -56,7 +58,7 @@ public class SlowWhenContact : MonoBehaviour
         if (gameObj != null)
         {
             gameObj.velocity = m_originalVelocity;
-            Debug.Log("Faster the car by 30");
+            Debug.Log("Restore vehicle velocity (increase by 30)");
         }
     }
 }

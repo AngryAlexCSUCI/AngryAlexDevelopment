@@ -68,7 +68,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3f8aa097fc8623944a068afaf4db4add, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -118,7 +118,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Time: 5
   m_Parameters:
@@ -257,7 +257,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 748de2dd726cc1540a95ba1d334c6524, type: 3}
   m_Color: {r: 0.5188679, g: 0.5048443, b: 0.4968405, a: 1}
@@ -319,13 +319,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25d310bc3315c946a73678fbb3a3a79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  height: 0
+  isLocalPlayer: 0
   velocity: 80
-  reverseVelocity: 50
-  velocityToTurnSpeedRatio: 4
-  normalTurnSideFricton: 0.1
-  driftingSideFriction: 0.99
-  minDriftThreshold: 0.24
-  maxDriftThreshold: 6
+  reverse_velocity: 30
+  velocity_to_turn_speed_ratio: 4
+  normal_turn_side_fricton: 0.1
+  drifting_side_friction: 0.99
+  min_drift_threshold: 2.3
+  max_drift_threshold: 2.3
 --- !u!96 &5289765049226041338
 TrailRenderer:
   serializedVersion: 2
@@ -440,6 +442,13 @@ MonoBehaviour:
   m_FullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   m_ZeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
   m_CurrentHealth: 0
+  isLocalPlayer: 0
+  spriteBlinkingTimer: 0
+  spriteBlinkingMiniDuration: 0.1
+  spriteBlinkingTotalTimer: 0
+  spriteBlinkingTotalDuration: 1
+  startBlinking: 0
+  carObject: {fileID: 0}
 --- !u!82 &2955973396925997609
 AudioSource:
   m_ObjectHideFlags: 0
@@ -604,7 +613,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3f8aa097fc8623944a068afaf4db4add, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -654,7 +663,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Time: 5
   m_Parameters:
@@ -781,7 +790,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3f8aa097fc8623944a068afaf4db4add, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -831,7 +840,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Time: 5
   m_Parameters:
@@ -958,7 +967,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3f8aa097fc8623944a068afaf4db4add, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1008,7 +1017,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Time: 5
   m_Parameters:
@@ -1134,7 +1143,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1771784615
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 3965fbafb39fbb94cb253eaa5dd22a39, type: 3}
   m_Color: {r: 0.21698111, g: 0.13612494, b: 0.13612494, a: 1}
