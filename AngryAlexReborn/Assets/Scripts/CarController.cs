@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CarController : MonoBehaviour
+public class CarController : Player
 {
     protected Rigidbody2D rb;
     protected TrailRenderer[] skidMarkTrails;
     protected AudioSource engineSound;
     public int height;
-
-    [HideInInspector]
-    public bool isLocalPlayer = false;
 
     //speed of the car (80 for default buggy)
     public float velocity;
@@ -48,7 +45,6 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-
         if (!isLocalPlayer)
         {
             return;

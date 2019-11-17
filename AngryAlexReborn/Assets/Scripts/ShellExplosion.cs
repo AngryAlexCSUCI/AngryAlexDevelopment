@@ -15,7 +15,8 @@ public class ShellExplosion : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-   }
+    
+    }
 
     // Update is called once per frame
     void Update()

@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UsernameScene : MonoBehaviour
+public class UsernameScene : Player
 {
-    
+    public bool isUserNameUnique = true; //TODO: Need to implement
     public InputField userNameField;
-     
+
     public void StartButtonPress()
     {
         //input sanitization
@@ -19,13 +20,18 @@ public class UsernameScene : MonoBehaviour
         WebSocketManager.NameRegistrationJson nameJson = new WebSocketManager.NameRegistrationJson(nameString);
         string data = JsonUtility.ToJson(nameJson);
         WebSocketManager.instance.Dispatch("name_registration", data, true);
+
         print("StartButtonPress invoked.");
+        if (isUserNameUnique)
+            NameRegistrationSuccessful(nameString);
+        else
+            NameRegistrationFailed(nameString);
     }
 
-    public static void NameRegistrationSuccessful(string name)
+    public void NameRegistrationSuccessful(string name)
     {
         print("NameRegistrationSuccessful invoked");
-        Player.UserName = name;
+        UserName = name;
         SceneManager.LoadScene(1);
     }
 
@@ -34,7 +40,7 @@ public class UsernameScene : MonoBehaviour
         print("NameRegistrationFailed invoked");
         //todo: implement
     }
-    
+
     public void RandomizeUsername()
     {
         System.Random r = new System.Random();
@@ -43,7 +49,8 @@ public class UsernameScene : MonoBehaviour
         const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         StringBuilder result = new StringBuilder(nameLength);
-        for (int i = 0; i < nameLength; i++) {
+        for (int i = 0; i < nameLength; i++)
+        {
             result.Append(characters[r.Next(characters.Length)]);
         }
 

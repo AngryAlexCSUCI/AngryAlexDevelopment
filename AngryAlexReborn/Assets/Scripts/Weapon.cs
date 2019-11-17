@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class Weapon : Player
 {
     public GameObject Projectile;
     public Transform ProjectileSpawn;
@@ -24,10 +24,10 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-//        if (!isLocalPlayer)
-//        {
-//            return;
-//        }
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
         FollowMouse();
 

@@ -56,7 +56,7 @@ public class SlowWhenContact : MonoBehaviour
         if (gameObj != null)
         {
             gameObj.velocity = m_originalVelocity;
-            Debug.Log("Faster the car by 30");
+            Debug.Log($"Velocity back to {m_originalVelocity}");
         }
     }
 }

@@ -1,24 +1,42 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
+using System.Collections.Generic;
 
-public static class Player
+public class Player : MonoBehaviour
 {
-    private static string userName;
-    private static Tuple<int, int> vehicleLoadout;
+    [HideInInspector]
+    public static string UserName { get; set; }
 
-    public static string UserName 
+    [HideInInspector]
+    public static Tuple<int, int> VehicleLoadout { get; set; }
+
+    [HideInInspector]
+    public GameObject LocalPlayer { get; set; }
+
+    protected Dictionary<Tuple<int, int>, string> _vehicleWeaponNames = new Dictionary<Tuple<int, int>, string>()
     {
-        get 
+        { new Tuple<int, int>(1,1), "CannonCar" },
+        { new Tuple<int, int>(2,1), "CannonTruck" },
+        { new Tuple<int, int>(3,1), "CannonMotorcycle" },
+        { new Tuple<int, int>(1,2), "MachinegunCar" },
+        { new Tuple<int, int>(2,2), "MachinegunTruck" },
+        { new Tuple<int, int>(3,2), "MachinegunMotorcycle" }
+    };
+
+    private string _tag;
+
+    protected string Tag
+    {
+        get
         {
-            return userName;
+            _tag = LocalPlayer.tag;
+            return _tag;
         }
-        set 
-        {
-            userName = value;
-        }
+        set { _tag = value; }
     }
 
-    public static Tuple<int, int> VehicleLoadout { get => vehicleLoadout; set => vehicleLoadout = value; }
+  
+    public bool isLocalPlayer = false;
+
 }

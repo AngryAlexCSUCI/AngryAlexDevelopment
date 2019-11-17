@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class WebSocketManager : MonoBehaviour
+public class WebSocketManager : Player
 {
 
     #region WebSockets Implement
@@ -49,27 +49,17 @@ public class WebSocketManager : MonoBehaviour
 
     public static WebSocketManager instance;
     public Canvas uiCanvas;
-    private string playerNameStr = Player.UserName;
+    private string playerNameStr;
     public GameObject player;
     public Slider healthSlider;
     public Image healthFill;
     public bool skipPlay;
     public GameObject errorMessage;
-    
-    private Dictionary<Tuple<int, int>, string> _vehicleWeaponNames = new Dictionary<Tuple<int, int>, string>()
-    {
-        { new Tuple<int, int>(1,1), "CannonCar" },
-        { new Tuple<int, int>(2,1), "CannonTruck" },
-        { new Tuple<int, int>(3,1), "CannonMotorcycle" },
-        { new Tuple<int, int>(1,2), "MachinegunCar" },
-        { new Tuple<int, int>(2,2), "MachinegunTruck" },
-        { new Tuple<int, int>(3,2), "MachinegunMotorcycle" }
-    };
-
+     
     void Start()
     {
         print("Starting web socket..");
-
+        playerNameStr = UserName;
         StartCoroutine("RecvEvent");    //Then run the receive message loop
     }
 
@@ -78,8 +68,7 @@ public class WebSocketManager : MonoBehaviour
     IEnumerator RecvEvent()
     {
         print("Starting coroutine.");
-        //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        InitWebSocket("ws://localhost:8080"); //First we create the connection.
+        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
 
         while (true)
         {
@@ -297,7 +286,11 @@ public class WebSocketManager : MonoBehaviour
             return;
         }
 
-        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]); 
+        player.name = UserName;
+        player.tag = "LocalPlayer";
+        base.LocalPlayer = player;
+
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
         p.name = userJson.name;
@@ -325,6 +318,7 @@ public class WebSocketManager : MonoBehaviour
             print("Instantiating other player: " + user.name);
             
             player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+            player.name = UserName;
 
             GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
             pTemp.name = user.name;
@@ -336,7 +330,7 @@ public class WebSocketManager : MonoBehaviour
 
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-
+        UserName = playerNameStr;
         p.name = playerNameStr;
 
         Camera[] camArr = Camera.allCameras;
@@ -355,7 +349,9 @@ public class WebSocketManager : MonoBehaviour
         hb.isLocalPlayer = true;
         hb.m_Slider = healthSlider;
         hb.m_Fill = healthFill;
-        
+
+        Weapon gun = p.GetComponent<Weapon>();
+        gun.isLocalPlayer = true;
 
 
     }
@@ -442,11 +438,7 @@ public class WebSocketManager : MonoBehaviour
 
 
     #endregion
-
-
-
-
-
+     
 
 
     #region JsonMessageClasses
