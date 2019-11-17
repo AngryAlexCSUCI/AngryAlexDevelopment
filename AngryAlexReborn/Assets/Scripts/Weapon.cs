@@ -26,7 +26,8 @@ public class Weapon : Player
     {
         if (!isLocalPlayer)
         {
-            return;
+            //return;
+            Debug.Log("is local player");
         }
 
         FollowMouse();

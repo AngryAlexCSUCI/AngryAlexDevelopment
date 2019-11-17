@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public class Projectile : Weapon
 {
     public float Speed;
     public int Damage;
     [SerializeField]
     public GameObject Owner;
-    public string Tag;
 
 
     // Start is called before the first frame update
@@ -25,7 +24,7 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-
+        //if (collider.gameObject.name != this.gameObject.name)
         if (collider.gameObject.tag != this.gameObject.tag)
         {
             Debug.Log("Bullet Hit!");
@@ -46,7 +45,7 @@ public class Projectile : MonoBehaviour
     // Update is called once per frame3
     void Update()
     {
-        
+
     }
 
     private void OnBecameInvisible()

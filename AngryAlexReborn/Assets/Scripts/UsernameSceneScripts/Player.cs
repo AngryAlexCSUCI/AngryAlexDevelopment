@@ -37,6 +37,6 @@ public class Player : MonoBehaviour
     }
 
   
-    public bool isLocalPlayer = false;
+    //public bool isLocalPlayer = false;
 
 }

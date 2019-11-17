@@ -11,6 +11,9 @@ public class HealthBar : Player
     public Image m_Fill_self;                           // The image component of the slider.
     public Color m_FullHealthColor = Color.green;       // The color the health bar will be when on full health.
     public Color m_ZeroHealthColor = Color.red;         // The color the health bar will be when on no health.
+   
+    [HideInInspector]
+    public bool isLocalPlayer = false;
 
     [HideInInspector]
     public float m_CurrentHealth;                      // How much health the tank currently has.

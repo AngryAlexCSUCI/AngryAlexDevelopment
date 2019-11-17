@@ -26,6 +26,8 @@ public class CarController : Player
     public float maxDriftThreshold; //2.3f;
     protected float driftThreshold;
 
+    [HideInInspector]
+    public bool isLocalPlayer = false;
     // Start is called before the first frame update
     void Start()
     {
