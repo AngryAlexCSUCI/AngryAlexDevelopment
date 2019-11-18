@@ -15,11 +15,11 @@ public class Projectile : Weapon
     {
         var rigidB = GetComponent<Rigidbody2D>();
 
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = mousePosition - transform.position;
-        direction.Normalize();
+        //Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Vector2 direction = mousePosition - transform.position;
+        //direction.Normalize();
 
-        rigidB.velocity = direction * Speed;
+        rigidB.velocity = transform.up * Speed;
     }
 
     void OnTriggerEnter2D(Collider2D collider)
