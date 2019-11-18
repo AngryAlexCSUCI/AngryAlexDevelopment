@@ -322,12 +322,12 @@ MonoBehaviour:
   height: 0
   isLocalPlayer: 0
   velocity: 80
-  reverse_velocity: 30
+  reverse_velocity: 50
   velocity_to_turn_speed_ratio: 4
   normal_turn_side_fricton: 0.1
   drifting_side_friction: 0.99
-  min_drift_threshold: 2.3
-  max_drift_threshold: 2.3
+  min_drift_threshold: 0.24
+  max_drift_threshold: 6
 --- !u!96 &5289765049226041338
 TrailRenderer:
   serializedVersion: 2
