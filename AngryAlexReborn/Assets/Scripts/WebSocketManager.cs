@@ -411,17 +411,19 @@ public class WebSocketManager : Player
         // todo send message with current active players when other player connects to all other users
         print("Another player joined Angry Alex.");
         UserJson userJson = UserJson.CreateFromJson(data);
+        print("Player name: " + userJson.name);
         Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
         Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
 
         GameObject obj = GameObject.Find(userJson.name) as GameObject;
         if (obj != null)
         {
+            print("Found reference to obj associated with " + userJson.name + ", ending OnOtherPlayerConnected");
             return;
         }
 
-        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]); 
-        player.name = UserName;
+        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+        player.name = userJson.name;
         //player.tag = "LocalPlayer";
         //base.LocalPlayer = player;
 
@@ -452,7 +454,7 @@ public class WebSocketManager : Player
             print("Instantiating other player: " + user.name);
             
             player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
-            player.name = UserName;
+            player.name = user.name;
 
             GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
             pTemp.name = user.name;
@@ -463,8 +465,10 @@ public class WebSocketManager : Player
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
 
         // todo need to get player vehicle type from json and use that to determine player type
+        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+        player.name = playerNameStr;
         GameObject p = Instantiate(player, position, rotation) as GameObject;
-        UserName = playerNameStr;
+        //UserName = playerNameStr;
         p.name = playerNameStr;
 
         Camera[] camArr = Camera.allCameras;
