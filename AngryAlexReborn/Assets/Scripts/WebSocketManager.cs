@@ -422,8 +422,8 @@ public class WebSocketManager : Player
 
         player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]); 
         player.name = UserName;
-        player.tag = "LocalPlayer";
-        base.LocalPlayer = player;
+        //player.tag = "LocalPlayer";
+        //base.LocalPlayer = player;
 
         // todo need to get player vehicle type from json and use that to determine player type
         GameObject p = Instantiate(player, position, rotation) as GameObject;
