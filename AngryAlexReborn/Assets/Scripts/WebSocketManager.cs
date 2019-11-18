@@ -411,25 +411,28 @@ public class WebSocketManager : Player
         // todo send message with current active players when other player connects to all other users
         print("Another player joined Angry Alex.");
         UserJson userJson = UserJson.CreateFromJson(data);
-        print("Player name: " + userJson.name);
-        Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
-        Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
-
-        GameObject obj = GameObject.Find(userJson.name) as GameObject;
-        if (obj != null)
+        if (userJson.name != playerNameStr)
         {
-            print("Found reference to obj associated with " + userJson.name + ", ending OnOtherPlayerConnected");
-            return;
+            print("Player name: " + userJson.name);
+            Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
+            Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
+
+            GameObject obj = GameObject.Find(userJson.name) as GameObject;
+            if (obj != null)
+            {
+                print("Found reference to obj associated with " + userJson.name + ", ending OnOtherPlayerConnected");
+                return;
+            }
+
+            player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+            player.name = userJson.name;
+            //player.tag = "LocalPlayer";
+            //base.LocalPlayer = player;
+
+            // todo need to get player vehicle type from json and use that to determine player type
+            GameObject p = Instantiate(player, position, rotation) as GameObject;
+            p.name = userJson.name;
         }
-
-        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
-        player.name = userJson.name;
-        //player.tag = "LocalPlayer";
-        //base.LocalPlayer = player;
-
-        // todo need to get player vehicle type from json and use that to determine player type
-        GameObject p = Instantiate(player, position, rotation) as GameObject;
-        p.name = userJson.name;
     }
 
     void OnPlay(string data)
@@ -442,22 +445,25 @@ public class WebSocketManager : Player
         // instantiate all current players as objects
         foreach (UserJson user in players)
         {
-            GameObject obj = GameObject.Find(user.name) as GameObject;
-            if (obj != null)
+            if (user.name != playerNameStr)
             {
-                return;
-            }
-            Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
-            Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
+                GameObject obj = GameObject.Find(user.name) as GameObject;
+                if (obj != null)
+                {
+                    return;
+                }
+                Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
+                Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
 
-            // todo need to get player vehicle type from json and use that to determine player type
-            print("Instantiating other player: " + user.name);
+                // todo need to get player vehicle type from json and use that to determine player type
+                print("Instantiating other player: " + user.name);
             
-            player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
-            player.name = user.name;
+                player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+                player.name = user.name;
 
-            GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
-            pTemp.name = user.name;
+                GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
+                pTemp.name = user.name;
+            }
         }
 
         // instantiate your own player object
