@@ -68,8 +68,8 @@ public class WebSocketManager : Player
     IEnumerator RecvEvent()
     {
         print("Starting coroutine.");
-        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        //InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
+        //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
         {
@@ -146,6 +146,10 @@ public class WebSocketManager : Player
                     else if (dataArr[0] == "fire")
                     {
                         Dispatch("fire", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "projectileDamage")
+                    {
+                        Dispatch("projectileDamage", dataArr[1], false);
                     }
                     else if (dataArr[0] == "turn")
                     {
@@ -333,6 +337,17 @@ public class WebSocketManager : Player
             else
             {
                 OnFire(msg);
+            }
+        }
+        else if (type == "projectileDamage")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnProjectileDamage(msg);
             }
         }
         else if (type == "turn") {
@@ -697,6 +712,18 @@ public class WebSocketManager : Player
         }
     }
 
+    private void OnProjectileDamage(string data)
+    {
+        HealthChangeJson hcJSON = HealthChangeJson.CreateFromJson(data);
+
+        GameObject playerDealtTo = GameObject.Find(hcJSON.name);
+        if (player != null)
+        {
+            HealthBar dealtToHealthBar = player.GetComponent<HealthBar>();
+            dealtToHealthBar.TakeDamage(hcJSON.damage);
+        }
+    }
+
     void OnPlayerDamage(string data)
     {
         print("Player was damaged");
@@ -870,6 +897,11 @@ public class WebSocketManager : Player
             name = _name;
             damage = _damage;
             from = _from;
+        }
+
+        public static HealthChangeJson CreateFromJson(string data)
+        {
+            return JsonUtility.FromJson<HealthChangeJson>(data);
         }
     }
 

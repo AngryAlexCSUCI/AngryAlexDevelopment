@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 public class HealthBar : Player
 {
-    public float m_StartingHealth;               // The amount of health each tank starts with.
-    public Slider m_Slider;                             // The slider to represent how much health the tank currently has.
-    public Image m_Fill;      // The image component of the slider.
+    public float m_StartingHealth;     // The amount of health each tank starts with.
+    public Slider m_Slider;           // The slider to represent how much health the tank currently has.
+    public Image m_Fill;             // The image component of the slider.
 
-    public Slider m_Slider_self;                             // The slider to represent how much health the tank currently has.
+    public Slider m_Slider_self;     // The slider to represent how much health the tank currently has.
 
     public Image m_Fill_self;                           // The image component of the slider.
     public Color m_FullHealthColor = Color.green;       // The color the health bar will be when on full health.
@@ -16,8 +16,8 @@ public class HealthBar : Player
     public bool isLocalPlayer = false;
 
     [HideInInspector]
-    public float m_CurrentHealth;                      // How much health the tank currently has.
-    private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
+    public float m_CurrentHealth;            // How much health the tank currently has.
+    private bool m_Dead;                     // Has the tank been reduced beyond zero health yet?
 
     void FixedUpdate()
     {
@@ -45,14 +45,19 @@ public class HealthBar : Player
 
     public void TakeDamage(float amount)
     {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+        //if (!isLocalPlayer)
+        //{
+        //    return;
+        //}
 
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
-        Debug.Log("take damge 20)");
+        //make sure health doesn't go negative
+        if (m_CurrentHealth < 0)
+        {
+            m_CurrentHealth = 0;
+        }
+        Debug.Log("Dealt " + amount + " damage");
         // Change the UI elements appropriately.
         SetHealthUI();
 
@@ -66,10 +71,10 @@ public class HealthBar : Player
     private void SetHealthUI()
     {
 
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+        //if (!isLocalPlayer)
+        //{
+        //    return;
+        //}
 
         // Set the slider's value appropriately.
         m_Slider.value = m_CurrentHealth;
