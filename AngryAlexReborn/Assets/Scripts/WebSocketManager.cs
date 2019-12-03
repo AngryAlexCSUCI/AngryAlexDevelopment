@@ -68,8 +68,8 @@ public class WebSocketManager : Player
     IEnumerator RecvEvent()
     {
         print("Starting coroutine.");
-        // InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
+        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        //InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
         {
@@ -86,7 +86,8 @@ public class WebSocketManager : Player
                     // send server player name and let server randomly pick spawn point from list of spawn points
                     // spawn point for player
                     List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
-                    PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints);
+                    print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + "" + Player.VehicleLoadout.Item2);
+                    PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints, Player.VehicleLoadout);
                     string data = JsonUtility.ToJson(playerJson);
                     Dispatch("play", data, true);
                 }
@@ -423,8 +424,11 @@ public class WebSocketManager : Player
                 print("Found reference to obj associated with " + userJson.name + ", ending OnOtherPlayerConnected");
                 return;
             }
+            print("Other player selection: " + userJson.vehicleSelection[0] + " " + userJson.vehicleSelection[1]);
+            int vehicle = userJson.vehicleSelection[0] > 0 ? userJson.vehicleSelection[0] : 1;
+            int weapon = userJson.vehicleSelection[1] > 0 ? userJson.vehicleSelection[1] : 1;
 
-            player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+            player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(userJson.vehicleSelection[0], userJson.vehicleSelection[1])]);
             player.name = userJson.name;
             //player.tag = "LocalPlayer";
             //base.LocalPlayer = player;
@@ -441,62 +445,80 @@ public class WebSocketManager : Player
         OnPlayJson playInfo = OnPlayJson.CreateFromJson(data);
         UserJson currentUserJson = playInfo.currentPlayer;
         UserJson[] players = playInfo.otherPlayers;
-
+        print("pre-other player loop");
         // instantiate all current players as objects
         foreach (UserJson user in players)
         {
+            print("currentplayername = " + playerNameStr);
+            print("username = " + user.name);
             if (user.name != playerNameStr)
             {
+                print("other player");
                 GameObject obj = GameObject.Find(user.name) as GameObject;
                 if (obj != null)
                 {
                     return;
                 }
+                print("setting position");
                 Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
                 Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
 
                 // todo need to get player vehicle type from json and use that to determine player type
                 print("Instantiating other player: " + user.name);
-            
-                player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+                Tuple<int, int> vehicleSelection = new Tuple<int, int>(user.vehicleSelection[0], user.vehicleSelection[1]);
+                print("Other players selection: " + user.vehicleSelection[0] + " " + user.vehicleSelection[1]);
+                player = (GameObject)Resources.Load(_vehicleWeaponNames[vehicleSelection]);
                 player.name = user.name;
 
                 GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
                 pTemp.name = user.name;
             }
         }
-
+        print("Done with other players");
         // instantiate your own player object
         Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
-
-        // todo need to get player vehicle type from json and use that to determine player type
-        player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
-        player.name = playerNameStr;
-        GameObject p = Instantiate(player, position, rotation) as GameObject;
-        //UserName = playerNameStr;
-        p.name = playerNameStr;
-
-        Camera[] camArr = Camera.allCameras;
-        foreach (Camera cam in camArr)
+        print("Vehicle loadout = " + Player.VehicleLoadout);
+        try
         {
-            CameraController cc = cam.GetComponent<CameraController>();
-            cc.isLocalPlayer = true;
-            cc.target = p.GetComponent<Rigidbody2D>();
+            print("Prefab name: " + _vehicleWeaponNames[Player.VehicleLoadout]);
+            // todo need to get player vehicle type from json and use that to determine player type
+            player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
+            print("Player loadout = " + player);
+
+            player.name = playerNameStr;
+            print("Player name: " + player.name);
+            GameObject p = Instantiate(player, position, rotation) as GameObject;
+            //UserName = playerNameStr;
+            p.name = playerNameStr;
+            print("P.name = " + p.name);
+            Camera[] camArr = Camera.allCameras;
+            foreach (Camera cam in camArr)
+            {
+                CameraController cc = cam.GetComponent<CameraController>();
+                cc.isLocalPlayer = true;
+                cc.target = p.GetComponent<Rigidbody2D>();
+            }
+            print("here2");
+            CarController pc = p.GetComponent<CarController>();
+            pc.setLocalPlayer();
+            print("here3");
+
+            HealthBar hb = p.GetComponent<HealthBar>();
+            hb.carObject = p;
+            hb.isLocalPlayer = true;
+            hb.m_Slider = healthSlider;
+            hb.m_Fill = healthFill;
+            print("here4");
+
+            Weapon gun = p.GetComponent<Weapon>();
+            gun.isLocalPlayer = true;
+            print("here5");
         }
-
-        CarController pc = p.GetComponent<CarController>();
-        pc.setLocalPlayer();
-
-        HealthBar hb = p.GetComponent<HealthBar>();
-        hb.carObject = p;
-        hb.isLocalPlayer = true;
-        hb.m_Slider = healthSlider;
-        hb.m_Fill = healthFill;
-
-        Weapon gun = p.GetComponent<Weapon>();
-        gun.isLocalPlayer = true;
-
+        catch (Exception e)
+        {
+            print(e.Message);
+        }
 
     }
 
@@ -755,8 +777,9 @@ public class WebSocketManager : Player
     {
         public string name;
         public List<PointJson> playerSpawnPoints;
+        public int[] vehicleSelection;
 
-        public PlayerJson(string _name, List<SpawnPoint> _playerSpawnPoints)
+        public PlayerJson(string _name, List<SpawnPoint> _playerSpawnPoints, Tuple<int, int> _vehicleSelection)
         {
             playerSpawnPoints = new List<PointJson>();
             name = _name;
@@ -765,6 +788,10 @@ public class WebSocketManager : Player
                 PointJson pointJson = new PointJson(playerSpawnPoint);
                 playerSpawnPoints.Add(pointJson);
             }
+
+            vehicleSelection = new int[2];
+            vehicleSelection[0] = _vehicleSelection.Item1;
+            vehicleSelection[1] = _vehicleSelection.Item2;
         }
     }
 
@@ -821,6 +848,7 @@ public class WebSocketManager : Player
         public float[] rotation;
         public int health;
         public WeaponJson weapon;
+        public int[] vehicleSelection;
 
         public static UserJson CreateFromJson(string data)
         {
