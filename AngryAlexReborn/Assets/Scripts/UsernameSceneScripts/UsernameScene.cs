@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UsernameScene : MonoBehaviour
+public class UsernameScene : Player
 {
     public InputField userNameField;
     
@@ -20,6 +20,7 @@ public class UsernameScene : MonoBehaviour
         //input sanitization
         string nameString = userNameField.text;
         nameString = nameString.Replace(" ", "");
+        UserName = nameString;
         //we need to send a query to server to check the username
         WebSocketManager.NameRegistrationJson nameJson = new WebSocketManager.NameRegistrationJson(nameString);
         string data = JsonUtility.ToJson(nameJson);
