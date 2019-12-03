@@ -5,7 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 7487358298018284857}
+    m_TransformParent: {fileID: 7392469647820857662}
     m_Modifications:
     - target: {fileID: 2338228382901509577, guid: c685a5ab1b693634cb52a65bd0f09b5c,
         type: 3}
@@ -76,6 +76,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2338228382901509582, guid: c685a5ab1b693634cb52a65bd0f09b5c,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c685a5ab1b693634cb52a65bd0f09b5c, type: 3}
@@ -163,7 +168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2f8d6c0b5955a94398a016e92459982, type: 3}
---- !u!4 &7487358298018284857 stripped
+--- !u!4 &7392469647820857662 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 107843714672239723, guid: b2f8d6c0b5955a94398a016e92459982,
     type: 3}
