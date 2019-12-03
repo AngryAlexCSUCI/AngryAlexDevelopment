@@ -725,7 +725,7 @@ public class WebSocketManager : Player
         UserJson userJson = UserJson.CreateFromJson(data);
 
         // todo player damage, use UserHealthJson or HealthChangeJson?
-        // include damage calculation here for player then send message
+        // send message with damage = true and calculate damage and possible kill in server
 
 
 
@@ -847,6 +847,7 @@ public class WebSocketManager : Player
         public float[] position;
         public float[] rotation;
         public int health;
+        public int killCount;
         public WeaponJson weapon;
         public int[] vehicleSelection;
 
