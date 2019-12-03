@@ -6,11 +6,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UsernameScene : Player
+public class UsernameScene : MonoBehaviour
 {
-    public bool isUserNameUnique = true; //TODO: Need to implement
     public InputField userNameField;
-
+    
+    private void Start()
+    {
+        GameObject.Find ("ErrorMessageField").transform.localScale = new Vector3(0, 0, 0);
+    }
+    
     public void StartButtonPress()
     {
         //input sanitization
@@ -22,23 +26,6 @@ public class UsernameScene : Player
         WebSocketManager.instance.Dispatch("name_registration", data, true);
 
         print("StartButtonPress invoked.");
-        if (isUserNameUnique)
-            NameRegistrationSuccessful(nameString);
-        else
-            NameRegistrationFailed(nameString);
-    }
-
-    public void NameRegistrationSuccessful(string name)
-    {
-        print("NameRegistrationSuccessful invoked");
-        UserName = name;
-        SceneManager.LoadScene(1);
-    }
-
-    public static void NameRegistrationFailed(string name)
-    {
-        print("NameRegistrationFailed invoked");
-        //todo: implement
     }
 
     public void RandomizeUsername()
