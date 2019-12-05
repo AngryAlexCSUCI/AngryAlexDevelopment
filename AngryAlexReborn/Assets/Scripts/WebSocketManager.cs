@@ -518,6 +518,65 @@ public class WebSocketManager : Player
 
     }
 
+    void OnPlayerDamage(string data)
+    {
+        print("Player was damaged, updating health and leader board");
+        UserHealthUpdateJson userHealthUpdateJson = UserHealthUpdateJson.CreateFromJson(data);
+
+        // todo get user name that was damaged and update health bar
+
+
+        // todo get kill count and update leader board
+        if (userHealthUpdateJson.killerName != null)
+        {
+            leaderboardManager.ChangeScore(userHealthUpdateJson.killerName, "kills", userHealthUpdateJson.killerCount);
+        }
+    }
+
+    void OnOtherPlayerDisconnect(string data)
+    {
+        print("Player disconnected");
+        UserJson userJson = UserJson.CreateFromJson(data);
+        Destroy(GameObject.Find(userJson.name));
+    }
+
+    void OnNameRegistration(string data)
+    {
+        print("Name Registration Msg Received");
+        NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
+
+        if (nameRegistrationJson.name_registration_success)
+        {
+            SceneManager.LoadScene(1);
+        }
+        else
+        {
+            errorMessage.transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
+
+    private void OnFire(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            Weapon weapon = p.GetComponentInChildren<Weapon>();
+            weapon.transform.rotation = rotation;
+            weapon.fireWeapon();
+        }
+    }
+
+    #endregion
+
+    #region Listening Movement 
+
     void OnPlayerMove(string data)
     {
         UserJson userJSON = UserJson.CreateFromJson(data);
@@ -692,63 +751,6 @@ public class WebSocketManager : Player
             p.transform.rotation = rotation;
             CarController carController = p.GetComponent<CarController>();
             carController.setDPressed(false);
-        }
-    }
-
-    private void OnFire(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            Weapon weapon = p.GetComponentInChildren<Weapon>();
-            weapon.transform.rotation = rotation;
-            weapon.fireWeapon();
-        }
-    }
-
-    void OnPlayerDamage(string data)
-    {
-        print("Player was damaged, updating health and leader board");
-        UserHealthUpdateJson userHealthUpdateJson = UserHealthUpdateJson.CreateFromJson(data);
-
-        // todo get user name that was damaged and update health bar
-
-        
-        // todo get kill count and update leader board
-        if (userHealthUpdateJson.killerName != null)
-        {
-            leaderboardManager.ChangeScore(userHealthUpdateJson.killerName, "kills", userHealthUpdateJson.killerCount);
-        }
-    }
-
-
-    void OnOtherPlayerDisconnect(string data)
-    {
-        print("Player disconnected");
-        UserJson userJson = UserJson.CreateFromJson(data);
-        Destroy(GameObject.Find(userJson.name));
-    }
-
-
-    void OnNameRegistration(string data)
-    {
-        print("Name Registration Msg Received");
-        NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
-
-        if (nameRegistrationJson.name_registration_success)
-        {
-            SceneManager.LoadScene(1);
-        }
-        else
-        {
-            errorMessage.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
