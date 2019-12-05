@@ -154,11 +154,11 @@ public class WebSocketManager : Player
                     }
                     else if (dataArr[0] == "weapon")
                     {
-                        Dispatch("turn", dataArr[1], false);
+                        Dispatch("weapon", dataArr[1], false);
                     }
                     else if (dataArr[0] == "health_damage")
                     {
-                        Dispatch("turn", dataArr[1], false);
+                        Dispatch("health_damage", dataArr[1], false);
                     }
                     else if (dataArr[0] == "disconnect")
                     {
@@ -343,17 +343,6 @@ public class WebSocketManager : Player
             else
             {
                 OnPlayerRotate(msg);
-            }
-        }
-        else if (type == "weapon")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnWeaponRotateAndFire(msg);
             }
         }
         else if (type == "health_damage")
@@ -722,23 +711,14 @@ public class WebSocketManager : Player
 
     void OnPlayerDamage(string data)
     {
-        print("Player was damaged");
-        UserJson userJson = UserJson.CreateFromJson(data);
+        print("Player was damaged, updating health and leader board");
+        UserHealthUpdateJson userHealthUpdateJson = UserHealthUpdateJson.CreateFromJson(data);
 
-        // todo player damage, use UserHealthJson or HealthChangeJson?
-        // send message with damage = true and calculate damage and possible kill in server
-
+        // todo get user name that was damaged and update health bar
 
 
-    }
-
-
-    void OnWeaponRotateAndFire(string data)
-    {
-        print("Player weapon rotated and possibly fired");
-        UserJson userJson = UserJson.CreateFromJson(data);
-
-        // todo weapon rotates and fires (true/false), use or rework BulletJson?
+        // todo get kill count and update leader board
+        
 
     }
 
@@ -886,51 +866,36 @@ public class WebSocketManager : Player
 
 
 
-    // todo finish health json
     [Serializable]
     public class HealthChangeJson
     {
         public string name;
         public int damage;
         public string from;
-        // todo add damage from enemy?
 
-        public HealthChangeJson(string _name, int _damage, string _from)
+        public static HealthChangeJson CreateFromJson(string data)
         {
-            name = _name;
-            damage = _damage;
-            from = _from;
+            return JsonUtility.FromJson<HealthChangeJson>(data);
         }
     }
 
-    // todo add enemy json ? 
-
-    // todo add shoot json for when players shoot stuff 
 
     [Serializable]
-    public class BulletJson
-    {
-        public string name;
-
-        public static BulletJson CreateFromJson(string data)
-        {
-            return JsonUtility.FromJson<BulletJson>(data);
-        }
-    }
-
-    [Serializable]
-    public class UserHealthJson
+    public class UserHealthUpdateJson
     {
         public string name;
         public int health;
+        public string killerName;
+        public int killerCount;
 
-        public static UserHealthJson CreateFromJson(string data)
+        public static UserHealthUpdateJson CreateFromJson(string data)
         {
-            return JsonUtility.FromJson<UserHealthJson>(data);
+            return JsonUtility.FromJson<UserHealthUpdateJson>(data);
         }
 
     }
     
+
     [Serializable]
     public class NameRegistrationJson
     {
