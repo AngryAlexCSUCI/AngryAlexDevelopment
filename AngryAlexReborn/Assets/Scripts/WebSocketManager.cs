@@ -424,11 +424,12 @@ public class WebSocketManager : Player
                 print("Found reference to obj associated with " + userJson.name + ", ending OnOtherPlayerConnected");
                 return;
             }
-            print("Other player selection: " + userJson.vehicleSelection[0] + " " + userJson.vehicleSelection[1]);
             int vehicle = userJson.vehicleSelection[0] > 0 ? userJson.vehicleSelection[0] : 1;
             int weapon = userJson.vehicleSelection[1] > 0 ? userJson.vehicleSelection[1] : 1;
+            
+            print("Other player selection: " + vehicle + " " + weapon);
 
-            player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(userJson.vehicleSelection[0], userJson.vehicleSelection[1])]);
+            player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(vehicle, weapon)]);
             player.name = userJson.name;
             //player.tag = "LocalPlayer";
             //base.LocalPlayer = player;
