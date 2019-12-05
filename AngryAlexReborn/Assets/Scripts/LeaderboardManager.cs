@@ -8,20 +8,22 @@ public class LeaderboardManager : MonoBehaviour
 
     private Dictionary<string, Dictionary<string, int>> playerScores;
 
+    private int changeCounter = 0;
+
     // todo add from clients list received from server
 
     void Start()
     {
         SetScore("Player1", "kills", 124);
-        SetScore("Player1", "place", 1);
+//        SetScore("Player1", "place", 1);
         SetScore("Player2", "kills", 280);
-        SetScore("Player2", "place", 2);
+//        SetScore("Player2", "place", 2);
         SetScore("Player3", "kills", 53);
-        SetScore("Player3", "place", 3);
+//        SetScore("Player3", "place", 3);
         SetScore("Player4", "kills", 99);
-        SetScore("Player4", "place", 4);
+//        SetScore("Player4", "place", 4);
         SetScore("Player5", "kills", 1);
-        SetScore("Player5", "place", 5);
+//        SetScore("Player5", "place", 5);
         
     }
 
@@ -57,6 +59,7 @@ public class LeaderboardManager : MonoBehaviour
     public void SetScore(string playerName, string scoreType, int kills)
     {
         Init();
+        changeCounter++;
         if (playerScores.ContainsKey(playerName) == false)
         {
             playerScores[playerName] = new Dictionary<string, int>();
@@ -76,5 +79,18 @@ public class LeaderboardManager : MonoBehaviour
     {
         Init();
         return playerScores.Keys.ToArray();
+    }
+
+    public string[] GetPlayerNames(string sortBy)
+    {
+        Init();
+
+        string[] names = playerScores.Keys.ToArray();
+        return names.OrderByDescending(n => GetScore(n, sortBy)).ToArray();
+    }
+
+    public int getChangeCounter()
+    {
+        return changeCounter;
     }
 }
