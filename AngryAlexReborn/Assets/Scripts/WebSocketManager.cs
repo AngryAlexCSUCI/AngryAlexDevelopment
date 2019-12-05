@@ -55,12 +55,18 @@ public class WebSocketManager : Player
     public Image healthFill;
     public bool skipPlay;
     public GameObject errorMessage;
-     
+
+    private LeaderboardManager leaderboardManager;
+
+
     void Start()
     {
         print("Starting web socket..");
         playerNameStr = UserName;
         StartCoroutine("RecvEvent");    //Then run the receive message loop
+
+        leaderboardManager = GameObject.FindObjectOfType<LeaderboardManager>();
+
     }
 
 
@@ -601,8 +607,6 @@ public class WebSocketManager : Player
         }
     }
 
-
-
     void OnPlayerRotate(string data)
     {
         UserJson userJSON = UserJson.CreateFromJson(data);
@@ -716,10 +720,12 @@ public class WebSocketManager : Player
 
         // todo get user name that was damaged and update health bar
 
-
-        // todo get kill count and update leader board
         
-
+        // todo get kill count and update leader board
+        if (userHealthUpdateJson.killerName != null)
+        {
+            leaderboardManager.ChangeScore(userHealthUpdateJson.killerName, "kills", userHealthUpdateJson.killerCount);
+        }
     }
 
 
