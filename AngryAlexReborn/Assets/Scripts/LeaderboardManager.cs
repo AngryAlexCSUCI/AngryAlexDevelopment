@@ -14,6 +14,8 @@ public class LeaderboardManager : MonoBehaviour
 
     void Start()
     {
+        // todo set initial score for all players to zero, need to get player list somehow
+
         SetScore("Player1", "kills", 124);
 //        SetScore("Player1", "place", 1);
         SetScore("Player2", "kills", 280);
@@ -29,7 +31,7 @@ public class LeaderboardManager : MonoBehaviour
 
     void Update()
     {
-
+        
     }
 
     void Init()
