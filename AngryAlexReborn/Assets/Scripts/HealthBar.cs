@@ -56,14 +56,11 @@ public class HealthBar : Player
         Debug.Log("take damage 20)");
 
         HealthChangeObj healthChange = new HealthChangeObj(to, from, amount);
-        string healthJson = JsonUtility.ToJson(healthChange);
         Debug.Log("Health change dispatch to: " + to);
         Debug.Log("Health change dispatch from: " + from);
         Debug.Log("Health change dispatch amount: " + amount);
-        Debug.Log("Health change dispatch object: " + healthChange);
-        Debug.Log("Health change dispatch json string: " + healthJson);
         string healthJson2 = "{ name: " + to + ", from: " + (String.IsNullOrEmpty(from) ? "none" : from) + ", damage: " + amount + "}";
-        Debug.Log("Health change dispatch man made string: " + healthJson);
+        Debug.Log("Health change dispatch man made string: " + healthJson2);
         WebSocketManager.instance.Dispatch("health_damage", healthJson2, true);
         
         // Change the UI elements appropriately.
