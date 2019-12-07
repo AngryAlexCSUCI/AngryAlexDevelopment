@@ -468,6 +468,7 @@ public class WebSocketManager : Player
 
                 GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
                 pTemp.name = user.name;
+                leaderboardManager.ChangeScore(user.name, "kills", user.killCount);
             }
         }
         print("Done with other players");
@@ -510,6 +511,7 @@ public class WebSocketManager : Player
             Weapon gun = p.GetComponent<Weapon>();
             gun.isLocalPlayer = true;
             print("here5");
+            leaderboardManager.ChangeScore(p.name, "kills", 0);
         }
         catch (Exception e)
         {
