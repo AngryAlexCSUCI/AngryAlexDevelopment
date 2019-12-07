@@ -154,10 +154,9 @@ GameObject:
   - component: {fileID: 8990025562417322707}
   - component: {fileID: 1578286198469299991}
   - component: {fileID: 3351806447399648248}
-  - component: {fileID: 1234472259367040755}
   m_Layer: 8
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: MiniCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -170,8 +169,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9186899959448483100}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.05506, y: 1.05506, z: 1.05506}
+  m_LocalPosition: {x: -0.002, y: 0.007, z: 0}
+  m_LocalScale: {x: 0.3071266, y: 0.3071266, z: 0.3071266}
   m_Children: []
   m_Father: {fileID: 9167638885192028570}
   m_RootOrder: 0
@@ -222,16 +221,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!135 &1234472259367040755
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9186899959448483100}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.50000006
-  m_Center: {x: 0, y: 0, z: 0}

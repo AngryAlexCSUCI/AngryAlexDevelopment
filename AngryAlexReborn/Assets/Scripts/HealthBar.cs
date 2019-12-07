@@ -45,10 +45,10 @@ public class HealthBar : Player
 
     public void TakeDamage(float amount)
     {
-        //if (!isLocalPlayer)
-        //{
-        //    return;
-        //}
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
@@ -71,10 +71,10 @@ public class HealthBar : Player
     private void SetHealthUI()
     {
 
-        //if (!isLocalPlayer)
-        //{
-        //    return;
-        //}
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
         // Set the slider's value appropriately.
         m_Slider.value = m_CurrentHealth;
