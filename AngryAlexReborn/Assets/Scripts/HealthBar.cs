@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 public class HealthBar : Player
 {
-    public float m_StartingHealth;               // The amount of health each tank starts with.
-    public Slider m_Slider;                             // The slider to represent how much health the tank currently has.
-    public Image m_Fill;      // The image component of the slider.
+    public float m_StartingHealth;     // The amount of health each tank starts with.
+    public Slider m_Slider;           // The slider to represent how much health the tank currently has.
+    public Image m_Fill;             // The image component of the slider.
 
-    public Slider m_Slider_self;                             // The slider to represent how much health the tank currently has.
+    public Slider m_Slider_self;     // The slider to represent how much health the tank currently has.
 
     public Image m_Fill_self;                           // The image component of the slider.
     public Color m_FullHealthColor = Color.green;       // The color the health bar will be when on full health.
@@ -17,8 +17,8 @@ public class HealthBar : Player
     public bool isLocalPlayer = false;
 
     [HideInInspector]
-    public float m_CurrentHealth;                      // How much health the tank currently has.
-    private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
+    public float m_CurrentHealth;            // How much health the tank currently has.
+    private bool m_Dead;                     // Has the tank been reduced beyond zero health yet?
 
     void FixedUpdate()
     {
@@ -44,7 +44,7 @@ public class HealthBar : Player
     }
 
 
-    public void TakeDamage(float amount, string to, string from)
+    public void TakeDamage(float amount, string from, bool dispatch)
     {
         if (!isLocalPlayer)
         {
@@ -53,16 +53,25 @@ public class HealthBar : Player
 
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
-        Debug.Log("take damage 20)");
+        //make sure health doesn't go negative
+        if (m_CurrentHealth < 0)
+        {
+            m_CurrentHealth = 0;
+        }
+        Debug.Log("Dealt " + amount + " damage");
 
-        HealthChangeObj healthChange = new HealthChangeObj(to, from, amount);
-        Debug.Log("Health change dispatch to: " + to);
-        Debug.Log("Health change dispatch from: " + from);
-        Debug.Log("Health change dispatch amount: " + amount);
-        string healthJson2 = "{ name: " + to + ", from: " + (String.IsNullOrEmpty(from) ? "none" : from) + ", damage: " + amount + "}";
-        Debug.Log("Health change dispatch man made string: " + healthJson2);
-        WebSocketManager.instance.Dispatch("health_damage", healthJson2, true);
-        
+        if (dispatch)
+        {
+            HealthChangeObj healthChange = new HealthChangeObj(UserName, from, amount);
+            Debug.Log("Health change dispatch to: " + UserName);
+            Debug.Log("Health change dispatch from: " + from);
+            Debug.Log("Health change dispatch amount: " + amount);
+            string healthJson2 = "{ name: " + UserName + ", from: " + (String.IsNullOrEmpty(from) ? "none" : from) +
+                                 ", damage: " + amount + "}";
+            Debug.Log("Health change dispatch man made string: " + healthJson2);
+            WebSocketManager.instance.Dispatch("health_damage", healthJson2, dispatch);
+        }
+
         // Change the UI elements appropriately.
         SetHealthUI();
 
