@@ -66,8 +66,10 @@ public class HealthBar : Player
             Debug.Log("Health change dispatch to: " + UserName);
             Debug.Log("Health change dispatch from: " + from);
             Debug.Log("Health change dispatch amount: " + amount);
-            string healthJson2 = "{ name: " + UserName + ", from: " + (String.IsNullOrEmpty(from) ? "none" : from) +
-                                 ", damage: " + amount + "}";
+            string healthJson = JsonUtility.ToJson(healthChange);
+            string healthJson2 = "{ \"name\": \"" + UserName + "\", \"from\": \"" + (String.IsNullOrEmpty(from) ? "\"none\"" : "\"" + from + "\"") +
+                                 ", \"damage\": " + amount + "}";
+            Debug.Log("Health change dispatch json string: " + healthJson);
             Debug.Log("Health change dispatch man made string: " + healthJson2);
             WebSocketManager.instance.Dispatch("health_damage", healthJson2, dispatch);
         }
