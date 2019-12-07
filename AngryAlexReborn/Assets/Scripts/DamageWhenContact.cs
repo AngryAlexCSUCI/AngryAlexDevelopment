@@ -14,6 +14,6 @@ public class DamageWhenContact : MonoBehaviour
             Debug.Log("return");
             return;
         }
-        healthBar.TakeDamage(10);
+        healthBar.TakeDamage(10, collider.gameObject.name, null);
     }
 }

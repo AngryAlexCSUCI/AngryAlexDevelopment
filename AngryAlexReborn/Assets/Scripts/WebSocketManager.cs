@@ -466,8 +466,8 @@ public class WebSocketManager : Player
                 player = (GameObject)Resources.Load(_vehicleWeaponNames[vehicleSelection]);
                 player.name = user.name;
 
-                GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
-                pTemp.name = user.name;
+                GameObject pOther = Instantiate(player, pos, rot) as GameObject;
+                pOther.name = user.name;
                 leaderboardManager.ChangeScore(user.name, "kills", user.killCount);
             }
         }
@@ -837,7 +837,7 @@ public class WebSocketManager : Player
         public string name;
         public float[] position;
         public float[] rotation;
-        public int health;
+        public float health;
         public int killCount;
         public WeaponJson weapon;
         public int[] vehicleSelection;
@@ -874,17 +874,16 @@ public class WebSocketManager : Player
         }
     }
 
-
-
     [Serializable]
     public class HealthChangeJson
     {
         public string name;
-        public int damage;
+        public float damage;
         public string from;
 
         public static HealthChangeJson CreateFromJson(string data)
         {
+
             return JsonUtility.FromJson<HealthChangeJson>(data);
         }
     }
@@ -894,7 +893,7 @@ public class WebSocketManager : Player
     public class UserHealthUpdateJson
     {
         public string name;
-        public int health;
+        public float health;
         public string killerName;
         public int killerCount;
 
