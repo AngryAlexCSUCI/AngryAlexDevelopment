@@ -68,8 +68,8 @@ public class WebSocketManager : Player
     IEnumerator RecvEvent()
     {
         print("Starting coroutine.");
-        //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        InitWebSocket("ws://localhost:8080"); //First we create the connection.
+        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        //InitWebSocket("ws://localhost:8080"); //First we create the connection.
         //InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
