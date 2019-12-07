@@ -18,8 +18,6 @@ public class PlayerScoreList : MonoBehaviour
         leaderboardManager = GameObject.FindObjectOfType<LeaderboardManager>();
 
         lastChangeCounter = leaderboardManager.getChangeCounter();
-
-        leaderboardManager.ChangeScore("Player1", "kills", 1);
     }
 
     // Update is called once per frame
