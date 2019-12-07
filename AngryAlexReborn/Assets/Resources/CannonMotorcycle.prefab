@@ -1,11 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &5101117741716479050
+--- !u!1001 &2875539097215505286
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 7564488664000173773}
+    m_TransformParent: {fileID: 7603577094794064586}
     m_Modifications:
     - target: {fileID: 2580178584294227860, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
@@ -15,12 +15,12 @@ PrefabInstance:
     - target: {fileID: 2580178584294227856, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0003
+      value: 0.004
       objectReference: {fileID: 0}
     - target: {fileID: 2580178584294227856, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2992
+      value: 0.319
       objectReference: {fileID: 0}
     - target: {fileID: 2580178584294227856, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
@@ -70,12 +70,12 @@ PrefabInstance:
     - target: {fileID: 2580178584294227856, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.2
+      value: 1.43928
       objectReference: {fileID: 0}
     - target: {fileID: 2580178584294227856, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.2
+      value: 1.43928
       objectReference: {fileID: 0}
     - target: {fileID: 2580178584294227859, guid: 848ac67dc6d72b448832786a69224f0e,
         type: 3}
@@ -91,11 +91,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5194381004615791592, guid: b2f8d6c0b5955a94398a016e92459982,
-        type: 3}
-      propertyPath: m_Name
-      value: CannonMotorcycle
-      objectReference: {fileID: 0}
     - target: {fileID: 107843714672239721, guid: b2f8d6c0b5955a94398a016e92459982,
         type: 3}
       propertyPath: m_Name
@@ -166,9 +161,19 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5194381004615791592, guid: b2f8d6c0b5955a94398a016e92459982,
+        type: 3}
+      propertyPath: m_Name
+      value: CannonMotorcycle
+      objectReference: {fileID: 0}
+    - target: {fileID: 5194381004615791594, guid: b2f8d6c0b5955a94398a016e92459982,
+        type: 3}
+      propertyPath: m_Name
+      value: CannonMotorcycle
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2f8d6c0b5955a94398a016e92459982, type: 3}
---- !u!4 &7564488664000173773 stripped
+--- !u!4 &7603577094794064586 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 107843714672239723, guid: b2f8d6c0b5955a94398a016e92459982,
     type: 3}

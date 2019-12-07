@@ -941,6 +941,23 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5379434353091817413}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 445534191030944942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44897add60750db4bbae69ab2541dac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StartingHealth: 100
+  m_Slider: {fileID: 0}
+  m_Fill: {fileID: 0}
+  m_Slider_self: {fileID: 0}
+  m_Fill_self: {fileID: 0}
+  m_FullHealthColor: {r: 0, g: 1, b: 0, a: 1}
+  m_ZeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
+  isLocalPlayer: 0
+  m_CurrentHealth: 0
+  startBlinking: 0
+  carObject: {fileID: 0}
 --- !u!1001 &8226574773615807050
 PrefabInstance:
   m_ObjectHideFlags: 0

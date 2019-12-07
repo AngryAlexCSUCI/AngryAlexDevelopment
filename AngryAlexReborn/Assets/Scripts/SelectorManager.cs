@@ -96,7 +96,7 @@ public class SelectorManager : MonoBehaviour
                 _truckRender.enabled = true;
                 CurrentWeapon.transform.position = TruckWeaponPosition;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = false;
-                _vehicleNumber++;
+                _vehicleNumber = 2;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
                 break;
@@ -105,7 +105,7 @@ public class SelectorManager : MonoBehaviour
                 _motorcycleRender.enabled = true;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = false;
                 CurrentWeapon.transform.position = Offscreen;
-                _vehicleNumber++;
+                _vehicleNumber = 3;
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
                 CurrentWeapon.transform.position = MotorcycleWeaponPosition;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
@@ -147,7 +147,7 @@ public class SelectorManager : MonoBehaviour
                 _carRender.enabled = true;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = false;
                 CurrentWeapon.transform.position = Offscreen;
-                _vehicleNumber--;
+                _vehicleNumber = 1;
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
                 CurrentWeapon.transform.position = CarWeaponPosition;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
@@ -157,7 +157,7 @@ public class SelectorManager : MonoBehaviour
                 _truckRender.enabled = true;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = false;
                 CurrentWeapon.transform.position = Offscreen;
-                _vehicleNumber--;
+                _vehicleNumber = 2;
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
                 CurrentWeapon.transform.position = TruckWeaponPosition;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
@@ -174,7 +174,7 @@ public class SelectorManager : MonoBehaviour
         {
             case 1:
                 _currentWeaponRender.enabled = false;
-                _weaponNumber++;
+                _weaponNumber = 2;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
@@ -182,7 +182,7 @@ public class SelectorManager : MonoBehaviour
                 break;
             case 2:
                 _currentWeaponRender.enabled = false;
-                _weaponNumber--;
+                _weaponNumber = 1;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];
@@ -206,7 +206,7 @@ public class SelectorManager : MonoBehaviour
                 break;
             case 2:
                 _currentWeaponRender.enabled = false;
-                _weaponNumber--;
+                _weaponNumber = 1;
                 WeaponRenderers[_vehicleNumber][_weaponNumber].enabled = true;
                 _currentWeaponRender = WeaponRenderers[_vehicleNumber][_weaponNumber];
                 CurrentWeapon = Weapons[_vehicleNumber][_weaponNumber];

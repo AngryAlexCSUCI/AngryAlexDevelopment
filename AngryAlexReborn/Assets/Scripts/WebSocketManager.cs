@@ -75,6 +75,7 @@ public class WebSocketManager : Player
     {
         print("Starting coroutine.");
         InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        //InitWebSocket("ws://localhost:8080"); //First we create the connection.
         //InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
@@ -471,7 +472,11 @@ public class WebSocketManager : Player
                 print("Instantiating other player: " + user.name);
                 Tuple<int, int> vehicleSelection = new Tuple<int, int>(user.vehicleSelection[0], user.vehicleSelection[1]);
                 print("Other players selection: " + user.vehicleSelection[0] + " " + user.vehicleSelection[1]);
-                player = (GameObject)Resources.Load(_vehicleWeaponNames[vehicleSelection]);
+
+                int vehicle = user.vehicleSelection[0] > 0 ? user.vehicleSelection[0] : 1;
+                int weapon = user.vehicleSelection[1] > 0 ? user.vehicleSelection[1] : 1;
+
+                player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(vehicle, weapon)]);
                 player.name = user.name;
 
                 GameObject pOther = Instantiate(player, pos, rot) as GameObject;
