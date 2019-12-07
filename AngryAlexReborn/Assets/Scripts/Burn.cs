@@ -22,7 +22,7 @@ public class Burn : MonoBehaviour
             Debug.Log("return");
             return;
         }
-        Debug.Log("take damage");
+        Debug.Log(collider.gameObject.name + ": took damage from fire.");
         healthBar.startBlinking = true;
         healthBar.TakeDamage(10, collider.gameObject.name, null);
         healthBar.carObject = collider.gameObject;

@@ -164,10 +164,16 @@ public class WebSocketManager : Player
                     }
                     else if (dataArr[0] == "health_damage")
                     {
+                        print("Received message with data: 0 = " + dataArr[0]);
+                        print("Received message with data: 1 = " + dataArr[1]);
+
                         Dispatch("health_damage", dataArr[1], false);
                     }
                     else if (dataArr[0] == "disconnect")
                     {
+                        print("Received message with data: 0 = " + dataArr[0]);
+                        print("Received message with data: 1 = " + dataArr[1]);
+
                         Dispatch("disconnect", dataArr[1], false);
                     }
                     else if (dataArr[0] == "name_registration")
@@ -355,6 +361,7 @@ public class WebSocketManager : Player
         {
             if (sendMsg)
             {
+                print("dispatching " + type + " with data: " + msg);
                 Send(type + " " + msg);
             }
             else
@@ -366,6 +373,7 @@ public class WebSocketManager : Player
         {
             if (sendMsg)
             {
+                print("dispatching " + type + " with data: " + msg);
                 Send(type + " " + msg);
             }
             else
@@ -537,9 +545,9 @@ public class WebSocketManager : Player
 
     void OnOtherPlayerDisconnect(string data)
     {
-        print("Player disconnected");
         UserJson userJson = UserJson.CreateFromJson(data);
-        Destroy(GameObject.Find(userJson.name));
+        print("Player disconnected: " + userJson.name);
+        Destroy(GameObject.Find(userJson.name) as GameObject);
     }
 
     void OnNameRegistration(string data)

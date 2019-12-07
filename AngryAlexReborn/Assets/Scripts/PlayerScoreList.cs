@@ -45,11 +45,11 @@ public class PlayerScoreList : MonoBehaviour
         string[] names = leaderboardManager.GetPlayerNames("kills");
 
         int place = 1;
-        foreach (string name in names)
+        for (int i = 0; i < 10; ++i)
         {
             GameObject go = (GameObject)Instantiate(playerScoreEntryPrefab);
             go.transform.SetParent(this.transform);
-            go.transform.Find("Player Name").GetComponent<Text>().text = name;
+            go.transform.Find("Player Name").GetComponent<Text>().text = names[i];
             go.transform.Find("Place").GetComponent<Text>().text = place.ToString();
             go.transform.Find("Score").GetComponent<Text>().text = leaderboardManager.GetScore(name, "kills").ToString(); ;
             ++place;

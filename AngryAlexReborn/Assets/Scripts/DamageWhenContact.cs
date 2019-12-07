@@ -14,6 +14,7 @@ public class DamageWhenContact : MonoBehaviour
             Debug.Log("return");
             return;
         }
+        Debug.Log(collider.gameObject.name + ": took damage from obstacle.");
         healthBar.TakeDamage(10, collider.gameObject.name, null);
     }
 }

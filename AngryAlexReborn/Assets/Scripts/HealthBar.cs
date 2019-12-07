@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 public class HealthBar : Player
@@ -55,7 +56,15 @@ public class HealthBar : Player
         Debug.Log("take damage 20)");
 
         HealthChangeObj healthChange = new HealthChangeObj(to, from, amount);
-        WebSocketManager.instance.Dispatch("health_damage", JsonUtility.ToJson(healthChange), true);
+        string healthJson = JsonUtility.ToJson(healthChange);
+        Debug.Log("Health change dispatch to: " + to);
+        Debug.Log("Health change dispatch from: " + from);
+        Debug.Log("Health change dispatch amount: " + amount);
+        Debug.Log("Health change dispatch object: " + healthChange);
+        Debug.Log("Health change dispatch json string: " + healthJson);
+        string healthJson2 = "{ name: " + to + ", from: " + (String.IsNullOrEmpty(from) ? "none" : from) + ", damage: " + amount + "}";
+        Debug.Log("Health change dispatch man made string: " + healthJson);
+        WebSocketManager.instance.Dispatch("health_damage", healthJson2, true);
         
         // Change the UI elements appropriately.
         SetHealthUI();
@@ -90,7 +99,11 @@ public class HealthBar : Player
 
         // Turn the car off.
         gameObject.SetActive(false);
+        WebSocketManager.instance.Dispatch("disconnect", JsonUtility.ToJson(UserName), true);
+
     }
+
+    
 
     private float spriteBlinkingTimer = 0.0f;
     private float spriteBlinkingMiniDuration = 0.1f;
@@ -144,7 +157,7 @@ public class HealthBar : Player
         public HealthChangeObj(string _name, string _from, float _damage)
         {
             name = _name;
-            from = _from;
+            from = String.IsNullOrEmpty(_from) ? "none" : _from;
             damage = _damage;
         }
 

@@ -36,7 +36,7 @@ public class Projectile : Weapon
                 Debug.Log("return");
                 return;
             }
-            Debug.Log("take damage");
+            Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + Owner.name);
 
             healthBar.TakeDamage(10, collider.gameObject.name, Owner.name);
         }
