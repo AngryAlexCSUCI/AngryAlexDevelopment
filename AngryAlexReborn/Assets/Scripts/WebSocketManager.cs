@@ -922,10 +922,20 @@ public class WebSocketManager : Player
         public float damage;
         public string from;
 
+
+        public HealthChangeJson(string _name, string _from, float _damage)
+        {
+            name = _name;
+            from = _from;
+            damage = _damage;
+        }
+
         public static HealthChangeJson CreateFromJson(string data)
         {
             return JsonUtility.FromJson<HealthChangeJson>(data);
         }
+
+
 
     }
 

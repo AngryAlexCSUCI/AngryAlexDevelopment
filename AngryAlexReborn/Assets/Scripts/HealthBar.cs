@@ -62,16 +62,10 @@ public class HealthBar : Player
 
         if (dispatch)
         {
-            HealthChangeObj healthChange = new HealthChangeObj(UserName, from, amount);
-            Debug.Log("Health change dispatch to: " + UserName);
-            Debug.Log("Health change dispatch from: " + from);
-            Debug.Log("Health change dispatch amount: " + amount);
-            string healthJson = JsonUtility.ToJson(healthChange);
-            string healthJson2 = "{ \"name\": \"" + UserName + "\", \"from\": \"" + (String.IsNullOrEmpty(from) ? "\"none\"" : "\"" + from + "\"") +
-                                 ", \"damage\": " + amount + "}";
-            Debug.Log("Health change dispatch json string: " + healthJson);
-            Debug.Log("Health change dispatch man made string: " + healthJson2);
-            WebSocketManager.instance.Dispatch("health_damage", healthJson2, dispatch);
+            WebSocketManager.HealthChangeJson playerJson = new WebSocketManager.HealthChangeJson(UserName, from, amount);
+            string data = JsonUtility.ToJson(playerJson);
+            Debug.Log("Health change dispatch json string: " + data);
+            WebSocketManager.instance.Dispatch("health_damage", data, true);
         }
 
         // Change the UI elements appropriately.
@@ -155,20 +149,5 @@ public class HealthBar : Player
         }
     }
 
-
-    public class HealthChangeObj
-    {
-        public string name { get; set; }
-        public string from { get; set; }
-        public float damage { get; set; }
-
-        public HealthChangeObj(string _name, string _from, float _damage)
-        {
-            name = _name;
-            from = String.IsNullOrEmpty(_from) ? "none" : _from;
-            damage = _damage;
-        }
-
-    }
 
 }
