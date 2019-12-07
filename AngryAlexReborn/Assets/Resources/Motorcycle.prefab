@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 5289765049226041332, guid: 2917957a1b6a4434b9e8d9be568d14a2,
         type: 3}
       propertyPath: m_Name
-      value: MotorcycleNew
+      value: Motorcycle
       objectReference: {fileID: 0}
     - target: {fileID: 5289765049226041334, guid: 2917957a1b6a4434b9e8d9be568d14a2,
         type: 3}
@@ -70,33 +70,12 @@ PrefabInstance:
     - target: {fileID: 5289765049226041334, guid: 2917957a1b6a4434b9e8d9be568d14a2,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
-    - target: {fileID: 5289765049226041333, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+    - target: {fileID: 5289765049226041334, guid: 2917957a1b6a4434b9e8d9be568d14a2,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: f3ebbaea1754a3543a1dcb6c7bc3f2de,
-        type: 3}
-    - target: {fileID: 5289765049226041333, guid: 2917957a1b6a4434b9e8d9be568d14a2,
-        type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5289765049226041333, guid: 2917957a1b6a4434b9e8d9be568d14a2,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.44
-      objectReference: {fileID: 0}
-    - target: {fileID: 4560296760331980196, guid: 2917957a1b6a4434b9e8d9be568d14a2,
-        type: 3}
-      propertyPath: m_Offset.x
-      value: 0.008525968
-      objectReference: {fileID: 0}
-    - target: {fileID: 4560296760331980196, guid: 2917957a1b6a4434b9e8d9be568d14a2,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.5509652
+      propertyPath: m_LocalScale.x
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5289765050505337741, guid: 2917957a1b6a4434b9e8d9be568d14a2,
         type: 3}
@@ -127,6 +106,37 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5289765049226041333, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f3ebbaea1754a3543a1dcb6c7bc3f2de,
+        type: 3}
+    - target: {fileID: 5289765049226041333, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5289765049226041333, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 4560296760331980196, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+        type: 3}
+      propertyPath: m_Offset.x
+      value: 0.008525968
+      objectReference: {fileID: 0}
+    - target: {fileID: 4560296760331980196, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.5509652
+      objectReference: {fileID: 0}
+    - target: {fileID: 5289765049226041335, guid: 2917957a1b6a4434b9e8d9be568d14a2,
+        type: 3}
+      propertyPath: velocity
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 5953122849139502602, guid: 2917957a1b6a4434b9e8d9be568d14a2,
         type: 3}

@@ -468,7 +468,11 @@ public class WebSocketManager : Player
                 print("Instantiating other player: " + user.name);
                 Tuple<int, int> vehicleSelection = new Tuple<int, int>(user.vehicleSelection[0], user.vehicleSelection[1]);
                 print("Other players selection: " + user.vehicleSelection[0] + " " + user.vehicleSelection[1]);
-                player = (GameObject)Resources.Load(_vehicleWeaponNames[vehicleSelection]);
+
+                int vehicle = user.vehicleSelection[0] > 0 ? user.vehicleSelection[0] : 1;
+                int weapon = user.vehicleSelection[1] > 0 ? user.vehicleSelection[1] : 1;
+
+                player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(vehicle, weapon)]);
                 player.name = user.name;
 
                 GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
