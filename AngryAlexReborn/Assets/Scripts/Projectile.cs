@@ -43,7 +43,7 @@ public class Projectile : Weapon
 
             healthBar.TakeDamage(10);
 
-            WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name, 10, this.gameObject.name);
+            WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name, this.gameObject.name, 10);
             string jsonDamageRecord = JsonUtility.ToJson(damageRecord);
             WebSocketManager.instance.Dispatch("projectile_damage", jsonDamageRecord, true);
 
