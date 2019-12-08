@@ -76,7 +76,7 @@ public class WebSocketManager : Player
         print("Starting coroutine.");
         InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
         //InitWebSocket("ws://localhost:8080"); //First we create the connection.
-        //InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
+        //InitWebSocket("ws://ec2-3-85-119-215.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
         {
@@ -154,6 +154,10 @@ public class WebSocketManager : Player
                     else if (dataArr[0] == "fire")
                     {
                         Dispatch("fire", dataArr[1], false);
+                    }
+                    else if (dataArr[0] == "projectile_damage")
+                    {
+                        Dispatch("projectile_damage", dataArr[1], false);
                     }
                     else if (dataArr[0] == "turn")
                     {
@@ -347,6 +351,17 @@ public class WebSocketManager : Player
             else
             {
                 OnFire(msg);
+            }
+        }
+        else if (type == "projectile_damage")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnProjectileDamage(msg);
             }
         }
         else if (type == "turn") {
@@ -769,6 +784,52 @@ public class WebSocketManager : Player
         }
     }
 
+    private void OnFire(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            Weapon weapon = p.GetComponentInChildren<Weapon>();
+            weapon.transform.rotation = rotation;
+            weapon.fireWeapon();
+        }
+    }
+
+    private void OnProjectileDamage(string data)
+    {
+        HealthChangeJson hcJSON = HealthChangeJson.CreateFromJson(data);
+
+        GameObject playerDealtTo = GameObject.Find(hcJSON.name);
+        if (playerDealtTo != null)
+        {
+            //Works for local player receiving damage from bullets
+            //Possibly improve on this area so that damage is applied to enemy instances?
+            HealthBar[] dealtToHealthBars = playerDealtTo.GetComponents<HealthBar>();
+            foreach (HealthBar healthBar in dealtToHealthBars)
+            {
+                healthBar.TakeDamage(hcJSON.damage);
+            }
+        }
+    }
+
+    void OnPlayerDamage(string data)
+    {
+        print("Player was damaged");
+        UserJson userJson = UserJson.CreateFromJson(data);
+
+        // todo player damage, use UserHealthJson or HealthChangeJson?
+        // include damage calculation here for player then send message
+
+
+
+    }
 
     #endregion
      
@@ -897,6 +958,11 @@ public class WebSocketManager : Player
         public static HealthChangeJson CreateFromJson(string data)
         {
 
+            return JsonUtility.FromJson<HealthChangeJson>(data);
+        }
+
+        public static HealthChangeJson CreateFromJson(string data)
+        {
             return JsonUtility.FromJson<HealthChangeJson>(data);
         }
     }
