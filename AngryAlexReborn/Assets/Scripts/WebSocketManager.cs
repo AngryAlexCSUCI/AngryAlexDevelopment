@@ -747,8 +747,13 @@ public class WebSocketManager : Player
         GameObject playerDealtTo = GameObject.Find(hcJSON.name);
         if (playerDealtTo != null)
         {
-            HealthBar dealtToHealthBar = playerDealtTo.GetComponent<HealthBar>();
-            dealtToHealthBar.TakeDamage(hcJSON.damage);
+            //Works for local player receiving damage from bullets
+            //Possibly improve on this area so that damage is applied to enemy instances?
+            HealthBar[] dealtToHealthBars = playerDealtTo.GetComponents<HealthBar>();
+            foreach (HealthBar healthBar in dealtToHealthBars)
+            {
+                healthBar.TakeDamage(hcJSON.damage);
+            }
         }
     }
 
