@@ -176,8 +176,8 @@ public class WebSocketManager : Player
                     }
                     else if (dataArr[0] == "disconnect")
                     {
-                        print("Received message with data: 0 = " + dataArr[0]);
-                        print("Received message with data: 1 = " + dataArr[1]);
+//                        print("Received message with data: 0 = " + dataArr[0]);
+//                        print("Received message with data: 1 = " + dataArr[1]);
 
                         Dispatch("disconnect", dataArr[1], false);
                     }
@@ -516,14 +516,12 @@ public class WebSocketManager : Player
         try
         {
             print("Prefab name: " + _vehicleWeaponNames[Player.VehicleLoadout]);
-            // todo need to get player vehicle type from json and use that to determine player type
             player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
             print("Player loadout = " + player);
 
             player.name = playerNameStr;
             print("Player name: " + player.name);
             GameObject p = Instantiate(player, position, rotation) as GameObject;
-            //UserName = playerNameStr;
             p.name = playerNameStr;
             print("P.name = " + p.name);
             Camera[] camArr = Camera.allCameras;
@@ -810,54 +808,8 @@ public class WebSocketManager : Player
             HealthBar[] dealtToHealthBars = playerDealtTo.GetComponents<HealthBar>();
             foreach (HealthBar healthBar in dealtToHealthBars)
             {
-                healthBar.TakeDamage(hcJSON.damage);
+                healthBar.TakeDamage(hcJSON.damage, null, true);
             }
-        }
-    }
-
-    void OnPlayerDamage(string data)
-    {
-        print("Player was damaged");
-        UserJson userJson = UserJson.CreateFromJson(data);
-
-        // todo player damage, use UserHealthJson or HealthChangeJson?
-        // include damage calculation here for player then send message
-
-
-
-    }
-
-
-    void OnWeaponRotateAndFire(string data)
-    {
-        print("Player weapon rotated and possibly fired");
-        UserJson userJson = UserJson.CreateFromJson(data);
-
-        // todo weapon rotates and fires (true/false), use or rework BulletJson?
-
-    }
-
-
-    void OnOtherPlayerDisconnect(string data)
-    {
-        print("Player disconnected");
-        UserJson userJson = UserJson.CreateFromJson(data);
-        Destroy(GameObject.Find(userJson.name));
-    }
-
-
-    void OnNameRegistration(string data)
-    {
-        print("Name Registration Msg Received");
-        NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
-
-        if (nameRegistrationJson.name_registration_success)
-        {
-            SceneManager.LoadScene(1);
-        }
-        else
-        {
-            errorMessage.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 

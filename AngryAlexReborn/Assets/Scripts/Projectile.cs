@@ -40,13 +40,13 @@ public class Projectile : Weapon
             }
             Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + transform.parent.name);
 
-            healthBar.TakeDamage(10);
+            healthBar.TakeDamage(10, transform.parent.name, true);
 
-            WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name, 10, this.gameObject.name);
+            WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name,  this.gameObject.name, 10);
             string jsonDamageRecord = JsonUtility.ToJson(damageRecord);
             WebSocketManager.instance.Dispatch("projectile_damage", jsonDamageRecord, true);
 
-            // Send message that damage was dealt to another player (probably implementing in healthabr script)
+            // Send message that damage was dealt to another player (probably implementing in healthbar script)
             healthBar.TakeDamage(10, transform.parent.name, true);
         }
     }
