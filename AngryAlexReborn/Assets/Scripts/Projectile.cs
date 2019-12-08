@@ -43,7 +43,7 @@ public class Projectile : Weapon
 
             WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name, 10, this.gameObject.name);
             string jsonDamageRecord = JsonUtility.ToJson(damageRecord);
-            WebSocketManager.instance.Dispatch("projectileDamage", jsonDamageRecord, true);
+            WebSocketManager.instance.Dispatch("projectile_damage", jsonDamageRecord, true);
 
             // Send message that damage was dealt to another player (probably implementing in healthabr script)
         }

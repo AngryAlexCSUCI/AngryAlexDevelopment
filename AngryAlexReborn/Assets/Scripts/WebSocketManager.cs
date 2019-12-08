@@ -68,9 +68,9 @@ public class WebSocketManager : Player
     IEnumerator RecvEvent()
     {
         print("Starting coroutine."); 
-        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
         //InitWebSocket("ws://localhost:8080"); //First we create the connection.
-        //InitWebSocket("ws://ec2-54-90-73-105.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
+        InitWebSocket("ws://ec2-3-85-119-215.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
         {
@@ -149,9 +149,9 @@ public class WebSocketManager : Player
                     {
                         Dispatch("fire", dataArr[1], false);
                     }
-                    else if (dataArr[0] == "projectileDamage")
+                    else if (dataArr[0] == "projectile_damage")
                     {
-                        Dispatch("projectileDamage", dataArr[1], false);
+                        Dispatch("projectile_damage", dataArr[1], false);
                     }
                     else if (dataArr[0] == "turn")
                     {
@@ -341,7 +341,7 @@ public class WebSocketManager : Player
                 OnFire(msg);
             }
         }
-        else if (type == "projectileDamage")
+        else if (type == "projectile_damage")
         {
             if (sendMsg)
             {
@@ -745,9 +745,9 @@ public class WebSocketManager : Player
         HealthChangeJson hcJSON = HealthChangeJson.CreateFromJson(data);
 
         GameObject playerDealtTo = GameObject.Find(hcJSON.name);
-        if (player != null)
+        if (playerDealtTo != null)
         {
-            HealthBar dealtToHealthBar = player.GetComponent<HealthBar>();
+            HealthBar dealtToHealthBar = playerDealtTo.GetComponent<HealthBar>();
             dealtToHealthBar.TakeDamage(hcJSON.damage);
         }
     }
