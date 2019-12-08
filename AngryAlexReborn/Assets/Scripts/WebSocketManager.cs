@@ -603,6 +603,7 @@ public class WebSocketManager : Player
         }
     }
 
+
     #endregion
 
     #region Listening Movement 
@@ -784,24 +785,6 @@ public class WebSocketManager : Player
         }
     }
 
-    private void OnFire(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            Weapon weapon = p.GetComponentInChildren<Weapon>();
-            weapon.transform.rotation = rotation;
-            weapon.fireWeapon();
-        }
-    }
-
     private void OnProjectileDamage(string data)
     {
         HealthChangeJson hcJSON = HealthChangeJson.CreateFromJson(data);
@@ -814,22 +797,11 @@ public class WebSocketManager : Player
             HealthBar[] dealtToHealthBars = playerDealtTo.GetComponents<HealthBar>();
             foreach (HealthBar healthBar in dealtToHealthBars)
             {
-                healthBar.TakeDamage(hcJSON.damage);
+                healthBar.TakeDamage(hcJSON.damage, hcJSON.@from, false);
             }
         }
     }
 
-    void OnPlayerDamage(string data)
-    {
-        print("Player was damaged");
-        UserJson userJson = UserJson.CreateFromJson(data);
-
-        // todo player damage, use UserHealthJson or HealthChangeJson?
-        // include damage calculation here for player then send message
-
-
-
-    }
 
     #endregion
      
@@ -955,17 +927,23 @@ public class WebSocketManager : Player
         public float damage;
         public string from;
 
-        public static HealthChangeJson CreateFromJson(string data)
-        {
 
-            return JsonUtility.FromJson<HealthChangeJson>(data);
+        public HealthChangeJson(string _name, string _from, float _damage)
+        {
+            name = _name;
+            from = _from;
+            damage = _damage;
         }
 
         public static HealthChangeJson CreateFromJson(string data)
         {
             return JsonUtility.FromJson<HealthChangeJson>(data);
         }
+
+
+
     }
+
 
 
     [Serializable]

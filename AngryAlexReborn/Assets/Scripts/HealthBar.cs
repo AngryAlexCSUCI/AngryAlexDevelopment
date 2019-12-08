@@ -44,7 +44,7 @@ public class HealthBar : Player
     }
 
 
-    public void TakeDamage(float amount, string to, string from)
+    public void TakeDamage(float amount, string from, bool dispatch)
     {
         if (!isLocalPlayer)
         {
