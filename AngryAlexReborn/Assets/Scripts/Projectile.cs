@@ -32,6 +32,7 @@ public class Projectile : Weapon
 
             var healthBar = collider.gameObject.GetComponent<HealthBar>();// as HealthBar;
 
+
             if (!healthBar)
             {
                 Debug.Log("return");
