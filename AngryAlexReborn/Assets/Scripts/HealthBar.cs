@@ -46,10 +46,11 @@ public class HealthBar : Player
 
     public void TakeDamage(float amount, string from, bool dispatch)
     {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+
+//        if (!isLocalPlayer)
+//        {
+//            return;
+//        }
 
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
@@ -59,6 +60,7 @@ public class HealthBar : Player
             m_CurrentHealth = 0;
         }
         Debug.Log("Dealt " + amount + " damage");
+
 
         if (dispatch)
         {
@@ -81,17 +83,21 @@ public class HealthBar : Player
     private void SetHealthUI()
     {
 
-        if (!isLocalPlayer)
+        if (isLocalPlayer)
         {
-            return;
+            // Set the slider's value appropriately.
+            m_Slider.value = m_CurrentHealth;
+            // Interpolate the color of the bar between the chosen colors based on the current percentage of the starting health.
+            m_Fill.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
+
+        }
+        else
+        {
+            m_Slider_self.value = m_CurrentHealth;
+            m_Fill_self.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
         }
 
-        // Set the slider's value appropriately.
-        m_Slider.value = m_CurrentHealth;
-        m_Slider_self.value = m_CurrentHealth;
-        // Interpolate the color of the bar between the chosen colors based on the current percentage of the starting health.
-        m_Fill.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
-        m_Fill_self.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
+        
     }
 
     private void OnDeath()

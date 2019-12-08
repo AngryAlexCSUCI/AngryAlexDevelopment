@@ -497,7 +497,15 @@ public class WebSocketManager : Player
 
                 GameObject pOther = Instantiate(player, pos, rot) as GameObject;
                 pOther.name = user.name;
+                print("Updating leader board score for " + user.name);
                 leaderboardManager.ChangeScore(user.name, "kills", user.killCount);
+
+                HealthBar hb = pOther.GetComponent<HealthBar>();
+                hb.carObject = pOther;
+//                hb.m_Slider = healthSlider;
+//                hb.m_Fill = healthFill;
+                print("Instantiating player health bar for " + user.name);
+
             }
         }
         print("Done with other players");
@@ -533,8 +541,8 @@ public class WebSocketManager : Player
             HealthBar hb = p.GetComponent<HealthBar>();
             hb.carObject = p;
             hb.isLocalPlayer = true;
-            hb.m_Slider = healthSlider;
-            hb.m_Fill = healthFill;
+            hb.m_Slider_self = healthSlider;
+            hb.m_Fill_self = healthFill;
             print("here4");
 
             Weapon gun = p.GetComponent<Weapon>();
@@ -555,9 +563,13 @@ public class WebSocketManager : Player
         UserHealthUpdateJson userHealthUpdateJson = UserHealthUpdateJson.CreateFromJson(data);
 
         // todo get user name that was damaged and update health bar
+        GameObject p = GameObject.Find(userHealthUpdateJson.name) as GameObject;
+        if (p != null)
+        {
+            HealthBar hb = p.GetComponent<HealthBar>();
+            hb.TakeDamage(userHealthUpdateJson.damage, null, false);
+        }
 
-
-        // todo get kill count and update leader board
         if (userHealthUpdateJson.killerName != null)
         {
             leaderboardManager.ChangeScore(userHealthUpdateJson.killerName, "kills", userHealthUpdateJson.killerCount);
@@ -946,6 +958,7 @@ public class WebSocketManager : Player
     {
         public string name;
         public float health;
+        public float damage;
         public string killerName;
         public int killerCount;
 

@@ -31,21 +31,21 @@ public class Projectile : Weapon
         {
             Debug.Log("Bullet Hit!");
 
-            var healthBar = collider.gameObject.GetComponent<HealthBar>();// as HealthBar;
+            HealthBar healthBar = collider.gameObject.GetComponent<HealthBar>();
 
             if (!healthBar)
             {
                 Debug.Log("return");
                 return;
             }
-            Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + owner.name);
+            Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + transform.parent.name);
 
 //            WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name, 10, this.gameObject.name);
 //            string jsonDamageRecord = JsonUtility.ToJson(damageRecord);
 //            WebSocketManager.instance.Dispatch("projectile_damage", jsonDamageRecord, true);
 
             // Send message that damage was dealt to another player (probably implementing in healthabr script)
-            healthBar.TakeDamage(10, owner.name, true);
+            healthBar.TakeDamage(10, transform.parent.name, true);
         }
     }
 
