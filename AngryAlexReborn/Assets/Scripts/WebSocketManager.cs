@@ -174,7 +174,7 @@ public class WebSocketManager : Player
 
                         Dispatch("health_damage", dataArr[1], false);
                     }
-                    else if (dataArr[0] == "disconnect")
+                    else if (dataArr[0] == "disconnect" || dataArr[0] == "disconnected")
                     {
                         print("Received message with data: 0 = " + dataArr[0]);
                         print("Received message with data: 1 = " + dataArr[1]);
@@ -385,7 +385,7 @@ public class WebSocketManager : Player
                 OnPlayerDamage(msg);
             }
         }
-        else if (type == "disconnect")
+        else if (type == "disconnect" || type == "disconnected")
         {
             if (sendMsg)
             {

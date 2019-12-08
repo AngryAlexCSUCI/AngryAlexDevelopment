@@ -33,7 +33,7 @@ public class Projectile : Weapon
             var healthBar = collider.gameObject.GetComponent<HealthBar>();// as HealthBar;
 
             string from = transform.parent.transform.parent.name;
-            Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + this.gameObject.name);
+            Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + from);
 
             if (!healthBar)
             {
