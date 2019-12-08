@@ -32,13 +32,14 @@ public class Projectile : Weapon
 
             var healthBar = collider.gameObject.GetComponent<HealthBar>();// as HealthBar;
 
+            string from = transform.parent.transform.parent.name;
+            Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + from);
 
             if (!healthBar)
             {
-                Debug.Log("return");
+                Debug.Log("No health bar found for player" + collider.gameObject.name + ", return.");
                 return;
             }
-            Debug.Log("take damge");
 
             healthBar.TakeDamage(10);
 
@@ -46,7 +47,6 @@ public class Projectile : Weapon
             string jsonDamageRecord = JsonUtility.ToJson(damageRecord);
             WebSocketManager.instance.Dispatch("projectile_damage", jsonDamageRecord, true);
 
-            // Send message that damage was dealt to another player (probably implementing in healthabr script)
         }
     }
 

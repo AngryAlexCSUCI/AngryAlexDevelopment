@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,9 +22,9 @@ public class Burn : MonoBehaviour
             Debug.Log("return");
             return;
         }
-        Debug.Log("take damge");
+        Debug.Log(collider.gameObject.name + ": took damage from fire.");
         healthBar.startBlinking = true;
-        healthBar.TakeDamage(10);
+        healthBar.TakeDamage(10, null, true);
         healthBar.carObject = collider.gameObject;
 
     }

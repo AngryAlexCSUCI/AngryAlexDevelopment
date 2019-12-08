@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 public class HealthBar : Player
@@ -43,7 +44,7 @@ public class HealthBar : Player
     }
 
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, string from, bool dispatch)
     {
         if (!isLocalPlayer)
         {
@@ -79,7 +80,7 @@ public class HealthBar : Player
         // Set the slider's value appropriately.
         m_Slider.value = m_CurrentHealth;
         m_Slider_self.value = m_CurrentHealth;
-        // Interpolate the color of the bar between the choosen colours based on the current percentage of the starting health.
+        // Interpolate the color of the bar between the chosen colors based on the current percentage of the starting health.
         m_Fill.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
         m_Fill_self.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
@@ -91,7 +92,11 @@ public class HealthBar : Player
 
         // Turn the car off.
         gameObject.SetActive(false);
+        WebSocketManager.instance.Dispatch("disconnect", JsonUtility.ToJson(UserName), true);
+
     }
+
+    
 
     private float spriteBlinkingTimer = 0.0f;
     private float spriteBlinkingMiniDuration = 0.1f;
@@ -134,4 +139,21 @@ public class HealthBar : Player
             }
         }
     }
+
+
+    public class HealthChangeObj
+    {
+        public string name { get; set; }
+        public string from { get; set; }
+        public float damage { get; set; }
+
+        public HealthChangeObj(string _name, string _from, float _damage)
+        {
+            name = _name;
+            from = String.IsNullOrEmpty(_from) ? "none" : _from;
+            damage = _damage;
+        }
+
+    }
+
 }

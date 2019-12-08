@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +14,7 @@ public class DamageWhenContact : MonoBehaviour
             Debug.Log("return");
             return;
         }
-        healthBar.TakeDamage(10);
+        Debug.Log(collider.gameObject.name + ": took damage from obstacle.");
+        healthBar.TakeDamage(10, null, true);
     }
 }

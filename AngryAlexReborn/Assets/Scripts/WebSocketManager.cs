@@ -55,12 +55,18 @@ public class WebSocketManager : Player
     public Image healthFill;
     public bool skipPlay;
     public GameObject errorMessage;
-     
+
+    private LeaderboardManager leaderboardManager;
+
+
     void Start()
     {
         print("Starting web socket..");
         playerNameStr = UserName;
         StartCoroutine("RecvEvent");    //Then run the receive message loop
+
+        leaderboardManager = GameObject.FindObjectOfType<LeaderboardManager>();
+
     }
 
 
@@ -159,14 +165,20 @@ public class WebSocketManager : Player
                     }
                     else if (dataArr[0] == "weapon")
                     {
-                        Dispatch("turn", dataArr[1], false);
+                        Dispatch("weapon", dataArr[1], false);
                     }
                     else if (dataArr[0] == "health_damage")
                     {
-                        Dispatch("turn", dataArr[1], false);
+                        print("Received message with data: 0 = " + dataArr[0]);
+                        print("Received message with data: 1 = " + dataArr[1]);
+
+                        Dispatch("health_damage", dataArr[1], false);
                     }
-                    else if (dataArr[0] == "disconnect")
+                    else if (dataArr[0] == "disconnect" || dataArr[0] == "disconnected")
                     {
+                        print("Received message with data: 0 = " + dataArr[0]);
+                        print("Received message with data: 1 = " + dataArr[1]);
+
                         Dispatch("disconnect", dataArr[1], false);
                     }
                     else if (dataArr[0] == "name_registration")
@@ -361,21 +373,11 @@ public class WebSocketManager : Player
                 OnPlayerRotate(msg);
             }
         }
-        else if (type == "weapon")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnWeaponRotateAndFire(msg);
-            }
-        }
         else if (type == "health_damage")
         {
             if (sendMsg)
             {
+                print("dispatching " + type + " with data: " + msg);
                 Send(type + " " + msg);
             }
             else
@@ -383,10 +385,11 @@ public class WebSocketManager : Player
                 OnPlayerDamage(msg);
             }
         }
-        else if (type == "disconnect")
+        else if (type == "disconnect" || type == "disconnected")
         {
             if (sendMsg)
             {
+                print("dispatching " + type + " with data: " + msg);
                 Send(type + " " + msg);
             }
             else
@@ -491,8 +494,9 @@ public class WebSocketManager : Player
                 player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(vehicle, weapon)]);
                 player.name = user.name;
 
-                GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
-                pTemp.name = user.name;
+                GameObject pOther = Instantiate(player, pos, rot) as GameObject;
+                pOther.name = user.name;
+                leaderboardManager.ChangeScore(user.name, "kills", user.killCount);
             }
         }
         print("Done with other players");
@@ -535,6 +539,7 @@ public class WebSocketManager : Player
             Weapon gun = p.GetComponent<Weapon>();
             gun.isLocalPlayer = true;
             print("here5");
+            leaderboardManager.ChangeScore(p.name, "kills", 0);
         }
         catch (Exception e)
         {
@@ -542,6 +547,66 @@ public class WebSocketManager : Player
         }
 
     }
+
+    void OnPlayerDamage(string data)
+    {
+        print("Player was damaged, updating health and leader board");
+        UserHealthUpdateJson userHealthUpdateJson = UserHealthUpdateJson.CreateFromJson(data);
+
+        // todo get user name that was damaged and update health bar
+
+
+        // todo get kill count and update leader board
+        if (userHealthUpdateJson.killerName != null)
+        {
+            leaderboardManager.ChangeScore(userHealthUpdateJson.killerName, "kills", userHealthUpdateJson.killerCount);
+        }
+    }
+
+    void OnOtherPlayerDisconnect(string data)
+    {
+        UserJson userJson = UserJson.CreateFromJson(data);
+        print("Player disconnected: " + userJson.name);
+        Destroy(GameObject.Find(userJson.name) as GameObject);
+    }
+
+    void OnNameRegistration(string data)
+    {
+        print("Name Registration Msg Received");
+        NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
+
+        if (nameRegistrationJson.name_registration_success)
+        {
+            SceneManager.LoadScene(1);
+        }
+        else
+        {
+            errorMessage.transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
+
+    private void OnFire(string data)
+    {
+        UserJson userJSON = UserJson.CreateFromJson(data);
+        // if it is the current player exit
+        if (userJSON.name == playerNameStr)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
+        GameObject p = GameObject.Find(userJSON.name) as GameObject;
+        if (p != null)
+        {
+            Weapon weapon = p.GetComponentInChildren<Weapon>();
+            weapon.transform.rotation = rotation;
+            weapon.fireWeapon();
+        }
+    }
+
+
+    #endregion
+
+    #region Listening Movement 
 
     void OnPlayerMove(string data)
     {
@@ -632,8 +697,6 @@ public class WebSocketManager : Player
         }
     }
 
-
-
     void OnPlayerRotate(string data)
     {
         UserJson userJSON = UserJson.CreateFromJson(data);
@@ -722,24 +785,6 @@ public class WebSocketManager : Player
         }
     }
 
-    private void OnFire(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.weapon.rotation[0], userJSON.weapon.rotation[1], userJSON.weapon.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            Weapon weapon = p.GetComponentInChildren<Weapon>();
-            weapon.transform.rotation = rotation;
-            weapon.fireWeapon();
-        }
-    }
-
     private void OnProjectileDamage(string data)
     {
         HealthChangeJson hcJSON = HealthChangeJson.CreateFromJson(data);
@@ -752,54 +797,8 @@ public class WebSocketManager : Player
             HealthBar[] dealtToHealthBars = playerDealtTo.GetComponents<HealthBar>();
             foreach (HealthBar healthBar in dealtToHealthBars)
             {
-                healthBar.TakeDamage(hcJSON.damage);
+                healthBar.TakeDamage(hcJSON.damage, hcJSON.@from, false);
             }
-        }
-    }
-
-    void OnPlayerDamage(string data)
-    {
-        print("Player was damaged");
-        UserJson userJson = UserJson.CreateFromJson(data);
-
-        // todo player damage, use UserHealthJson or HealthChangeJson?
-        // include damage calculation here for player then send message
-
-
-
-    }
-
-
-    void OnWeaponRotateAndFire(string data)
-    {
-        print("Player weapon rotated and possibly fired");
-        UserJson userJson = UserJson.CreateFromJson(data);
-
-        // todo weapon rotates and fires (true/false), use or rework BulletJson?
-
-    }
-
-
-    void OnOtherPlayerDisconnect(string data)
-    {
-        print("Player disconnected");
-        UserJson userJson = UserJson.CreateFromJson(data);
-        Destroy(GameObject.Find(userJson.name));
-    }
-
-
-    void OnNameRegistration(string data)
-    {
-        print("Name Registration Msg Received");
-        NameRegistrationJson nameRegistrationJson = NameRegistrationJson.CreateFromJson(data);
-
-        if (nameRegistrationJson.name_registration_success)
-        {
-            SceneManager.LoadScene(1);
-        }
-        else
-        {
-            errorMessage.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
@@ -884,7 +883,8 @@ public class WebSocketManager : Player
         public string name;
         public float[] position;
         public float[] rotation;
-        public int health;
+        public float health;
+        public int killCount;
         public WeaponJson weapon;
         public int[] vehicleSelection;
 
@@ -920,58 +920,48 @@ public class WebSocketManager : Player
         }
     }
 
-
-
-    // todo finish health json
     [Serializable]
     public class HealthChangeJson
     {
         public string name;
-        public int damage;
+        public float damage;
         public string from;
-        // todo add damage from enemy?
 
-        public HealthChangeJson(string _name, int _damage, string _from)
+
+        public HealthChangeJson(string _name, string _from, float _damage)
         {
             name = _name;
-            damage = _damage;
             from = _from;
+            damage = _damage;
         }
 
         public static HealthChangeJson CreateFromJson(string data)
         {
             return JsonUtility.FromJson<HealthChangeJson>(data);
         }
+
+
+
     }
 
-    // todo add enemy json ? 
 
-    // todo add shoot json for when players shoot stuff 
 
     [Serializable]
-    public class BulletJson
+    public class UserHealthUpdateJson
     {
         public string name;
+        public float health;
+        public string killerName;
+        public int killerCount;
 
-        public static BulletJson CreateFromJson(string data)
+        public static UserHealthUpdateJson CreateFromJson(string data)
         {
-            return JsonUtility.FromJson<BulletJson>(data);
-        }
-    }
-
-    [Serializable]
-    public class UserHealthJson
-    {
-        public string name;
-        public int health;
-
-        public static UserHealthJson CreateFromJson(string data)
-        {
-            return JsonUtility.FromJson<UserHealthJson>(data);
+            return JsonUtility.FromJson<UserHealthUpdateJson>(data);
         }
 
     }
     
+
     [Serializable]
     public class NameRegistrationJson
     {
