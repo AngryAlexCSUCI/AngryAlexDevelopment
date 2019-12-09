@@ -49,19 +49,40 @@ public class LeaderboardManager : MonoBehaviour
     {
         Init();
         changeCounter++;
-        if (playerScores.ContainsKey(playerName) == false)
+        if (kills == -1)
         {
-            playerScores[playerName] = new Dictionary<string, int>();
+            if (playerScores.ContainsKey(playerName) != false)
+            {
+                playerScores.Remove(playerName);
+            }
         }
+        else
+        {
+            if (playerScores.ContainsKey(playerName) == false)
+            {
+                playerScores[playerName] = new Dictionary<string, int>();
+            }
 
-        playerScores[playerName][scoreType] = kills;
+            playerScores[playerName][scoreType] = kills;
+        }
+      
     }
 
     public void ChangeScore(string playerName, string scoreType, int kills)
     {
         Init();
-        int currentScore = GetScore(playerName, scoreType);
-        SetScore(playerName, scoreType, currentScore + kills);
+
+        if (kills == -1 && playerName != null)
+        {
+            SetScore(playerName, scoreType, kills);
+        }
+        else if (playerName != null)
+        {
+            int currentScore = GetScore(playerName, scoreType);
+            SetScore(playerName, scoreType, currentScore + kills);
+        }
+
+
     }
 
     public string[] GetPlayerNames()

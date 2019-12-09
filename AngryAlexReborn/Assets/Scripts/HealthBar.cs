@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 public class HealthBar : Player
@@ -18,6 +19,12 @@ public class HealthBar : Player
     [HideInInspector]
     public float m_CurrentHealth;            // How much health the tank currently has.
     private bool m_Dead;                     // Has the tank been reduced beyond zero health yet?
+
+
+
+    [HideInInspector]
+    public string playerName { get; set; }
+
 
     void FixedUpdate()
     {
@@ -91,6 +98,11 @@ public class HealthBar : Player
 
         // Turn the car off.
         gameObject.SetActive(false);
+      
+        Debug.Log("Player " + gameObject.name + " killed.");
+        WebSocketManager.HealthChangeJson player = new WebSocketManager.HealthChangeJson(gameObject.name, UserName);
+        string playerJson = JsonUtility.ToJson(player);
+        WebSocketManager.instance.Dispatch("disconnect", playerJson, true);
     }
 
     private float spriteBlinkingTimer = 0.0f;

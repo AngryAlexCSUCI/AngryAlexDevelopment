@@ -185,6 +185,10 @@ public class WebSocketManager : Player
                     {
                         Dispatch("name_registration", dataArr[1], false);
                     }
+                    else if (dataArr[0] == "killed")
+                    {
+                        Dispatch("killed", dataArr[1], false);
+                    }
                     else
                     {
                         Dispatch("default", message, false);
@@ -395,7 +399,7 @@ public class WebSocketManager : Player
                 OnPlayerDamage(msg);
             }
         }
-        else if (type == "disconnect")
+        else if (type == "disconnect" || type == "disconnected")
         {
             if (sendMsg)
             {
@@ -404,6 +408,17 @@ public class WebSocketManager : Player
             else
             {
                 OnOtherPlayerDisconnect(msg);
+            }
+        }
+        else if (type == "killed" || type == "killed")
+        {
+            if (sendMsg)
+            {
+                Send(type + " " + msg);
+            }
+            else
+            {
+                OnPlayerKilled(msg);
             }
         }
         else if (type == "name_registration")
@@ -437,7 +452,6 @@ public class WebSocketManager : Player
 
     void OnOtherPlayerConnected(string data)
     {
-        // todo send message with current active players when other player connects to all other users
         print("Another player joined Angry Alex.");
         UserJson userJson = UserJson.CreateFromJson(data);
         if (userJson.name != playerNameStr)
@@ -462,9 +476,20 @@ public class WebSocketManager : Player
             //player.tag = "LocalPlayer";
             //base.LocalPlayer = player;
 
-            // todo need to get player vehicle type from json and use that to determine player type
             GameObject p = Instantiate(player, position, rotation) as GameObject;
             p.name = userJson.name;
+
+            Weapon gun = p.GetComponent<Weapon>();
+            gun.playerName = userJson.name;
+            print("Weapon player name: " + gun.playerName + " for player " + userJson.name);
+
+            HealthBar hb = p.GetComponent<HealthBar>();
+            hb.carObject = p;
+            hb.m_Slider_self = healthSlider;
+            hb.m_Fill_self = healthFill;
+            hb.playerName = userJson.name;
+            print("Health bar player name: " + hb.playerName + " for player " + userJson.name);
+
 
             leaderboardManager.ChangeScore(userJson.name, "kills", userJson.killCount);
         }
@@ -494,7 +519,6 @@ public class WebSocketManager : Player
                 Vector3 pos = new Vector3(user.position[0], user.position[1], user.position[2]);
                 Quaternion rot = Quaternion.Euler(user.rotation[0], user.rotation[1], user.rotation[2]);
 
-                // todo need to get player vehicle type from json and use that to determine player type
                 print("Instantiating other player: " + user.name);
                 Tuple<int, int> vehicleSelection = new Tuple<int, int>(user.vehicleSelection[0], user.vehicleSelection[1]);
                 print("Other players selection: " + user.vehicleSelection[0] + " " + user.vehicleSelection[1]);
@@ -507,6 +531,18 @@ public class WebSocketManager : Player
 
                 GameObject pOther = Instantiate(player, pos, rot) as GameObject;
                 pOther.name = user.name;
+
+                Weapon gun = pOther.GetComponent<Weapon>();
+                gun.playerName = user.name;
+                print("Weapon player name: " + gun.playerName + " for player " + user.name);
+
+                HealthBar hb = pOther.GetComponent<HealthBar>();
+                hb.carObject = pOther;
+                hb.m_Slider_self = healthSlider;
+                hb.m_Fill_self = healthFill;
+                hb.playerName = user.name;
+                print("Health bar player name: " + hb.playerName + " for player " + user.name);
+
                 leaderboardManager.ChangeScore(user.name, "kills", user.killCount);
             }
         }
@@ -518,7 +554,6 @@ public class WebSocketManager : Player
         try
         {
             print("Prefab name: " + _vehicleWeaponNames[Player.VehicleLoadout]);
-            // todo need to get player vehicle type from json and use that to determine player type
             player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
             print("Player loadout = " + player);
 
@@ -545,11 +580,13 @@ public class WebSocketManager : Player
             hb.isLocalPlayer = true;
             hb.m_Slider = healthSlider;
             hb.m_Fill = healthFill;
-            print("here4");
+            hb.playerName = playerNameStr;
+            print("Health bar player name: " + hb.playerName + " for player " + playerNameStr);
 
             Weapon gun = p.GetComponent<Weapon>();
             gun.isLocalPlayer = true;
-            print("here5");
+            gun.playerName = playerNameStr;
+            print("Weapon player name: " + gun.playerName + " for player " + playerNameStr);
             leaderboardManager.ChangeScore(p.name, "kills", 0);
         }
         catch (Exception e)
@@ -773,6 +810,8 @@ public class WebSocketManager : Player
         }
     }
 
+
+
     void OnPlayerDamage(string data)
     {
         print("Player was damaged");
@@ -798,9 +837,22 @@ public class WebSocketManager : Player
 
     void OnOtherPlayerDisconnect(string data)
     {
-        print("Player disconnected");
         UserJson userJson = UserJson.CreateFromJson(data);
+        print("Player disconnected: " + userJson.name);
         Destroy(GameObject.Find(userJson.name));
+
+        leaderboardManager.ChangeScore(userJson.name, "kills", -1);
+            
+    }
+
+    void OnPlayerKilled(string data)
+    {
+        HealthChangeJson userJson = HealthChangeJson.CreateFromJson(data);
+        print("Player killed another player: " + userJson.killerName);
+        Destroy(GameObject.Find(userJson.name));
+
+        leaderboardManager.ChangeScore(userJson.killerName, "kills", userJson.killerCount);
+        
     }
 
 
@@ -905,6 +957,11 @@ public class WebSocketManager : Player
         public WeaponJson weapon;
         public int[] vehicleSelection;
 
+        public UserJson(string _name)
+        {
+            name = _name;
+        }
+
         public static UserJson CreateFromJson(string data)
         {
             return JsonUtility.FromJson<UserJson>(data);
@@ -946,6 +1003,8 @@ public class WebSocketManager : Player
         public string name;
         public int damage;
         public string from;
+        public string killerName;
+        public int killerCount;
         // todo add damage from enemy?
 
         public HealthChangeJson(string _name, int _damage, string _from)
@@ -954,6 +1013,23 @@ public class WebSocketManager : Player
             damage = _damage;
             from = _from;
         }
+
+        // when player is killed
+        public HealthChangeJson(string _name, string _from)
+        {
+            name = _name;
+            from = _from;
+        }
+
+        // updating player kill count
+        public HealthChangeJson(string _name, string _from, string _killerName, int _killerCount)
+        {
+            name = _name;
+            from = _from;
+            killerName = _killerName;
+            killerCount = _killerCount;
+        }
+
 
         public static HealthChangeJson CreateFromJson(string data)
         {
