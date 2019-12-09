@@ -55,12 +55,18 @@ public class WebSocketManager : Player
     public Image healthFill;
     public bool skipPlay;
     public GameObject errorMessage;
-     
+
+    private LeaderboardManager leaderboardManager;
+
+
     void Start()
     {
         print("Starting web socket..");
         playerNameStr = UserName;
         StartCoroutine("RecvEvent");    //Then run the receive message loop
+
+        leaderboardManager = GameObject.FindObjectOfType<LeaderboardManager>();
+
     }
 
 
@@ -159,14 +165,20 @@ public class WebSocketManager : Player
                     }
                     else if (dataArr[0] == "weapon")
                     {
-                        Dispatch("turn", dataArr[1], false);
+                        Dispatch("weapon", dataArr[1], false);
                     }
                     else if (dataArr[0] == "health_damage")
                     {
-                        Dispatch("turn", dataArr[1], false);
+                        print("Received message with data: 0 = " + dataArr[0]);
+                        print("Received message with data: 1 = " + dataArr[1]);
+
+                        Dispatch("health_damage", dataArr[1], false);
                     }
-                    else if (dataArr[0] == "disconnect")
+                    else if (dataArr[0] == "disconnect" || dataArr[0] == "disconnected")
                     {
+                        print("Received message with data: 0 = " + dataArr[0]);
+                        print("Received message with data: 1 = " + dataArr[1]);
+
                         Dispatch("disconnect", dataArr[1], false);
                     }
                     else if (dataArr[0] == "name_registration")
@@ -491,8 +503,9 @@ public class WebSocketManager : Player
                 player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(vehicle, weapon)]);
                 player.name = user.name;
 
-                GameObject pTemp = Instantiate(player, pos, rot) as GameObject;
-                pTemp.name = user.name;
+                GameObject pOther = Instantiate(player, pos, rot) as GameObject;
+                pOther.name = user.name;
+                leaderboardManager.ChangeScore(user.name, "kills", user.killCount);
             }
         }
         print("Done with other players");
@@ -535,6 +548,7 @@ public class WebSocketManager : Player
             Weapon gun = p.GetComponent<Weapon>();
             gun.isLocalPlayer = true;
             print("here5");
+            leaderboardManager.ChangeScore(p.name, "kills", 0);
         }
         catch (Exception e)
         {
@@ -763,7 +777,7 @@ public class WebSocketManager : Player
         UserJson userJson = UserJson.CreateFromJson(data);
 
         // todo player damage, use UserHealthJson or HealthChangeJson?
-        // include damage calculation here for player then send message
+        // send message with damage = true and calculate damage and possible kill in server
 
 
 
@@ -885,6 +899,7 @@ public class WebSocketManager : Player
         public float[] position;
         public float[] rotation;
         public int health;
+        public int killCount;
         public WeaponJson weapon;
         public int[] vehicleSelection;
 
