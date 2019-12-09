@@ -303,6 +303,7 @@ public class CarController : Player
         isLocalPlayer = true;
         Weapon weapon = GetComponentInChildren<Weapon>();
         weapon.isLocalPlayer = true;
+        weapon.playerName = UserName;
     }
 
     Vector2 getForwardVelocity()

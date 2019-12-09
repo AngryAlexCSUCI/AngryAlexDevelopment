@@ -19,7 +19,6 @@ public class Weapon : Player
     public string playerName { get; set; }
 
 
-
     // Start is called before the first frame update
     void Start()
     {
