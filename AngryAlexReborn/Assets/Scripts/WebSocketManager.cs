@@ -465,6 +465,8 @@ public class WebSocketManager : Player
             // todo need to get player vehicle type from json and use that to determine player type
             GameObject p = Instantiate(player, position, rotation) as GameObject;
             p.name = userJson.name;
+
+            leaderboardManager.ChangeScore(userJson.name, "kills", userJson.killCount);
         }
     }
 
