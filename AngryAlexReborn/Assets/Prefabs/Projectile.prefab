@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7736413131117050345}
   - component: {fileID: 7736413131117050346}
   - component: {fileID: 7918408240783645805}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 693f6c6b95a416743a9a7c7ad6cfb28f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Projectile: {fileID: 0}
+  ProjectileSpawn: {fileID: 0}
+  FireRate: 0.02
+  isLocalPlayer: 0
   Speed: 40
   Damage: 10
-  Owner: {fileID: 5289765049226041332, guid: 2917957a1b6a4434b9e8d9be568d14a2, type: 3}
-  Tag: 
+  owner: {fileID: 0}

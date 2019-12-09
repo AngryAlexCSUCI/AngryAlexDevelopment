@@ -24,15 +24,15 @@ public class Projectile : Weapon
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        //if (collider.gameObject.name != this.gameObject.name)
-        //if (collider.gameObject.tag != this.gameObject.tag)
+        if (collider.gameObject.layer != owner.gameObject.layer)
+            return;
+
         if (owner.isLocalPlayer && !collider.gameObject.GetComponent<CarController>().isLocalPlayer)
         {
             Debug.Log("Bullet Hit!");
 
-            var healthBar = collider.gameObject.GetComponent<HealthBar>();// as HealthBar;
-
-
+            var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
+ 
             string from = owner.playerName;
             Debug.Log(collider.gameObject.name + ": took damage from bullet from: " + from);
 
