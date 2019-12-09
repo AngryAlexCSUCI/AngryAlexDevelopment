@@ -28,9 +28,11 @@ public class HealthBar : Player
 
     void FixedUpdate()
     {
+        SetHealthUI();
     }
     private void Awake()
     {
+        SetHealthUI();
     }
     void Start()
     {
@@ -119,6 +121,7 @@ public class HealthBar : Player
         {
             SpriteBlinkingEffect(carObject);
         }
+        SetHealthUI();
     }
 
     public void SpriteBlinkingEffect(GameObject carObject)
