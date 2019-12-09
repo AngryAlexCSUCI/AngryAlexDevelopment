@@ -804,7 +804,10 @@ public class WebSocketManager : Player
             //Possibly improve on this area so that damage is applied to enemy instances?
             HealthBar dealtToHealthBar = playerDealtTo.GetComponent<HealthBar>();
             dealtToHealthBar.TakeDamage(hcJSON.damage);
-            
+            if (hcJSON.killerName != null)
+            {
+                leaderboardManager.ChangeScore(hcJSON.killerName, "kills", hcJSON.killerCount);
+            }
         }
     }
 
