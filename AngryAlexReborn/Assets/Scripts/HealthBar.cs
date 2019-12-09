@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class HealthBar : Player
 {
@@ -105,6 +106,8 @@ public class HealthBar : Player
         WebSocketManager.HealthChangeJson player = new WebSocketManager.HealthChangeJson(gameObject.name, UserName);
         string playerJson = JsonUtility.ToJson(player);
         WebSocketManager.instance.Dispatch("disconnect", playerJson, true);
+
+        SceneManager.LoadScene("GameOver");
     }
 
     private float spriteBlinkingTimer = 0.0f;

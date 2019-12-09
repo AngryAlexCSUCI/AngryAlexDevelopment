@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BigMap.unity
     guid: 1fa872e4af7a4be46a60c4d4502bdeb3
+  - enabled: 1
+    path: Assets/Scenes/GameOver.unity
+    guid: 3b2b8c8558ed41f45a1a7f8ce9d035a3
   m_configObjects: {}
