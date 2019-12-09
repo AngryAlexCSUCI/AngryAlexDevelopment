@@ -76,7 +76,7 @@ public class WebSocketManager : Player
         print("Starting coroutine.");
         InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
         //InitWebSocket("ws://localhost:8080"); //First we create the connection.
-        //InitWebSocket("ws://ec2-3-85-119-215.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
+        //InitWebSocket("ws://ec2-3-88-230-113.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
         {
@@ -802,10 +802,11 @@ public class WebSocketManager : Player
         {
             //Works for local player receiving damage from bullets
             //Possibly improve on this area so that damage is applied to enemy instances?
-            HealthBar[] dealtToHealthBars = playerDealtTo.GetComponents<HealthBar>();
-            foreach (HealthBar healthBar in dealtToHealthBars)
+            HealthBar dealtToHealthBar = playerDealtTo.GetComponent<HealthBar>();
+            dealtToHealthBar.TakeDamage(hcJSON.damage);
+            if (hcJSON.killerName != null)
             {
-                healthBar.TakeDamage(hcJSON.damage);
+                leaderboardManager.ChangeScore(hcJSON.killerName, "kills", hcJSON.killerCount);
             }
         }
     }
