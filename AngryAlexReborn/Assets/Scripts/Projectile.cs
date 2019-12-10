@@ -43,6 +43,7 @@ public class Projectile : Weapon
             }
 
             healthBar.TakeDamage(10);
+            healthBar.startBlinking = true;
 
             WebSocketManager.HealthChangeJson damageRecord = new WebSocketManager.HealthChangeJson(collider.gameObject.name, 10, from);
             string jsonDamageRecord = JsonUtility.ToJson(damageRecord);
