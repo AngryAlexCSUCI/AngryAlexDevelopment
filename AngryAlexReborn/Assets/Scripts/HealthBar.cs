@@ -26,6 +26,7 @@ public class HealthBar : Player
     [HideInInspector]
     public string playerName { get; set; }
 
+    private LeaderboardManager leaderboardManager;
 
     void FixedUpdate()
     {
@@ -37,10 +38,11 @@ public class HealthBar : Player
     }
     void Start()
     {
-        if (isLocalPlayer)
-        {
+//        if (isLocalPlayer)
+//        {
             GetComponentInChildren<Canvas>().enabled = false;
-        }
+//        }
+        leaderboardManager = GameObject.FindObjectOfType<LeaderboardManager>();
     }
     private void OnEnable()
     {
@@ -54,6 +56,12 @@ public class HealthBar : Player
 
 
     public void TakeDamage(float amount)
+    {
+        this.TakeDamage(amount, null);
+
+    }
+
+    public void TakeDamage(float amount, string from)
     {
         if (!isLocalPlayer)
         {
@@ -74,7 +82,7 @@ public class HealthBar : Player
         // If the current health is at or below zero and it has not yet been registered, call OnDeath.
         if (m_CurrentHealth <= 0f && !m_Dead)
         {
-            OnDeath();
+            OnDeath(from);
         }
     }
 
@@ -94,7 +102,7 @@ public class HealthBar : Player
         m_Fill_self.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
 
-    private void OnDeath()
+     private void OnDeath(string from)
     {
         // Set the flag so that this function is only called once.
         m_Dead = true;
@@ -103,9 +111,10 @@ public class HealthBar : Player
         gameObject.SetActive(false);
       
         Debug.Log("Player " + gameObject.name + " killed.");
-        WebSocketManager.HealthChangeJson player = new WebSocketManager.HealthChangeJson(gameObject.name, UserName);
+        WebSocketManager.HealthChangeJson player = new WebSocketManager.HealthChangeJson(gameObject.name, from);
         string playerJson = JsonUtility.ToJson(player);
         WebSocketManager.instance.Dispatch("disconnect", playerJson, true);
+//        leaderboardManager.ChangeScore(UserName, "kills", 1);
 
         SceneManager.LoadScene("GameOver");
     }

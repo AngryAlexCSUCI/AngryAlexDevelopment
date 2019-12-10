@@ -816,11 +816,22 @@ public class WebSocketManager : Player
     void OnPlayerDamage(string data)
     {
         print("Player was damaged");
-        UserJson userJson = UserJson.CreateFromJson(data);
+        HealthChangeJson hcJSON = HealthChangeJson.CreateFromJson(data);
 
         // todo player damage, use UserHealthJson or HealthChangeJson?
         // send message with damage = true and calculate damage and possible kill in server
-
+        GameObject playerDealtTo = GameObject.Find(hcJSON.name);
+        if (playerDealtTo != null)
+        {
+            //Works for local player receiving damage from bullets
+            //Possibly improve on this area so that damage is applied to enemy instances?
+            HealthBar dealtToHealthBar = playerDealtTo.GetComponent<HealthBar>();
+            dealtToHealthBar.TakeDamage(hcJSON.damage);
+            if (hcJSON.killerName != null)
+            {
+                leaderboardManager.ChangeScore(hcJSON.killerName, "kills", 1);
+            }
+        }
 
 
     }
@@ -838,7 +849,7 @@ public class WebSocketManager : Player
 
     void OnOtherPlayerDisconnect(string data)
     {
-        UserJson userJson = UserJson.CreateFromJson(data);
+        HealthChangeJson userJson = HealthChangeJson.CreateFromJson(data);
         print("Player disconnected: " + userJson.name);
         Destroy(GameObject.Find(userJson.name));
 
