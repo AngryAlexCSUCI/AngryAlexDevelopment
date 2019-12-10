@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 5125508446118596280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -39.3817, y: -6.98741, z: 0}
-  m_LocalScale: {x: 0.35984373, y: 0.29468748, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2102675487332183173}
   m_Father: {fileID: 0}
@@ -71,9 +71,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1401348563
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 4c6f5b211567e9c4293460b94c031b6c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1afb962ab0272874f82d7a19749c26b6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -96,12 +96,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7460024ff3e7fa94bb127ab9d162107d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteBlinkingTimer: 0
-  spriteBlinkingMiniDuration: 0.1
-  spriteBlinkingTotalTimer: 0
-  spriteBlinkingTotalDuration: 1
-  startBlinking: 0
-  carObject: {fileID: 0}
 --- !u!50 &2829108275748745607
 Rigidbody2D:
   serializedVersion: 4

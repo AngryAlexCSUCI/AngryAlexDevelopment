@@ -13,7 +13,7 @@ public class Burn : MonoBehaviour
     // Update is called once per frame
     void OnTriggerEnter2D(Collider2D collider)
     {
-        Debug.Log("Burn!");
+        Debug.Log("heal!");
 
         var healthBar = collider.gameObject.GetComponent<HealthBar>() as HealthBar;
 
@@ -24,7 +24,7 @@ public class Burn : MonoBehaviour
         }
         Debug.Log("take damge");
         healthBar.startBlinking = true;
-        healthBar.TakeDamage(10);
+        healthBar.TakeDamage(-10);
         healthBar.carObject = collider.gameObject;
 
     }

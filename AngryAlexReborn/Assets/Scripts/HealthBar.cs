@@ -13,7 +13,7 @@ public class HealthBar : Player
     public Image m_Fill_self;                           // The image component of the slider.
     public Color m_FullHealthColor = Color.green;       // The color the health bar will be when on full health.
     public Color m_ZeroHealthColor = Color.red;         // The color the health bar will be when on no health.
-   
+
     [HideInInspector]
     public bool isLocalPlayer = false;
 
@@ -37,7 +37,7 @@ public class HealthBar : Player
     }
     void Start()
     {
-        if (isLocalPlayer)
+        //if (isLocalPlayer)
         {
             GetComponentInChildren<Canvas>().enabled = false;
         }
@@ -62,11 +62,7 @@ public class HealthBar : Player
 
         // Reduce current health by the amount of damage done.
         m_CurrentHealth -= amount;
-        //make sure health doesn't go negative
-        if (m_CurrentHealth < 0)
-        {
-            m_CurrentHealth = 0;
-        }
+
         Debug.Log("Dealt " + amount + " damage");
         // Change the UI elements appropriately.
         SetHealthUI();
@@ -83,15 +79,16 @@ public class HealthBar : Player
 
         if (!isLocalPlayer)
         {
+          
             return;
         }
 
         // Set the slider's value appropriately.
         m_Slider.value = m_CurrentHealth;
-        m_Slider_self.value = m_CurrentHealth;
         // Interpolate the color of the bar between the choosen colours based on the current percentage of the starting health.
-        m_Fill.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
-        m_Fill_self.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
+        m_Fill.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth); 
+        m_Slider_self.value = m_CurrentHealth;
+            m_Fill_self.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
 
     private void OnDeath()
@@ -101,7 +98,7 @@ public class HealthBar : Player
 
         // Turn the car off.
         gameObject.SetActive(false);
-      
+
         Debug.Log("Player " + gameObject.name + " killed.");
         WebSocketManager.HealthChangeJson player = new WebSocketManager.HealthChangeJson(gameObject.name, UserName);
         string playerJson = JsonUtility.ToJson(player);
