@@ -17,6 +17,7 @@ public class UsernameScene : Player
     
     public void StartButtonPress()
     {
+        print("StartButtonPress invoked.");
         //input sanitization
         string nameString = userNameField.text;
         nameString = nameString.Replace(" ", "");
@@ -26,7 +27,6 @@ public class UsernameScene : Player
         string data = JsonUtility.ToJson(nameJson);
         WebSocketManager.instance.Dispatch("name_registration", data, true);
 
-        print("StartButtonPress invoked.");
     }
 
     public void RandomizeUsername()

@@ -61,7 +61,7 @@ public class WebSocketManager : Player
 
     void Start()
     {
-        print("Starting web socket..");
+        print("Starting web socket.");
         playerNameStr = UserName;
         StartCoroutine("RecvEvent");    //Then run the receive message loop
 
@@ -73,9 +73,12 @@ public class WebSocketManager : Player
     //Receive message loop function
     IEnumerator RecvEvent()
     {
-        print("Starting coroutine.");
-        InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        //InitWebSocket("ws://localhost:8080"); //First we create the connection.
+        print("Starting RecvEvent coroutine.");
+        //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
+        print("Opening web socket to ws://47.144.13.214:8080");
+        InitWebSocket("ws://47.144.13.214:8080"); //First we create the connection.
+        print("Web socket open");
+        //InitWebSocket("ws://47.144.8.185");
         //InitWebSocket("ws://ec2-3-88-230-113.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.
 
         while (true)
@@ -85,10 +88,9 @@ public class WebSocketManager : Player
                 //When our message queue has string coming.
                 // check message type: play, other_player_connected, move, turn, disconnect
                 string message = recvList.Dequeue();
-                //                print("Received message: " + message);
+                print("Message received from server: " + message);
 
-                if (message == "You are connected to the server!" && !skipPlay)
-                {
+                if (message == "You are connected to the server!" && !skipPlay) {
                     print("--- Sending play message!");
                     // send server player name and let server randomly pick spawn point from list of spawn points
                     // spawn point for player
@@ -97,100 +99,59 @@ public class WebSocketManager : Player
                     PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints, Player.VehicleLoadout);
                     string data = JsonUtility.ToJson(playerJson);
                     Dispatch("play", data, true);
-                }
-                else
-                {
+                } else {
                     string[] dataArr = message.Split(' ');
                     
-                    print("Received message with data: 0 = " + dataArr[0]);
-                    print("1 = " + dataArr[1]);
+                    print("Client message at [0]: " + dataArr[0]);
+                    print("Client message at [1]: " + dataArr[1]);
                     
-                    if (dataArr[0] == "play")
-                    {
+                    if (dataArr[0] == "play") {
                         // receive play from server means you need to get the spawn point from here and assign to player. 
                         Dispatch("play", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "other_player_connected")
-                    {
+                    } else if (dataArr[0] == "other_player_connected") {
                         // receive other player connected means you need to spawn another player in that spot to represent them
                         Dispatch("other_player_connected", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "move")
-                    {
+                    } else if (dataArr[0] == "move") {
                         Dispatch("move", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "wpressed")
-                    {
+                    } else if (dataArr[0] == "wpressed") {
                         Dispatch("wpressed", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "wrelease")
-                    {
+                    } else if (dataArr[0] == "wrelease") {
                         Dispatch("wrelease", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "spressed")
-                    {
+                    } else if (dataArr[0] == "spressed") {
                         Dispatch("spressed", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "srelease")
-                    {
+                    } else if (dataArr[0] == "srelease") {
                         Dispatch("srelease", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "apressed")
-                    {
+                    } else if (dataArr[0] == "apressed") {
                         Dispatch("apressed", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "arelease")
-                    {
+                    } else if (dataArr[0] == "arelease") {
                         Dispatch("arelease", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "dpressed")
-                    {
+                    } else if (dataArr[0] == "dpressed") {
                         Dispatch("dpressed", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "drelease")
-                    {
+                    } else if (dataArr[0] == "drelease") {
                         Dispatch("drelease", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "fire")
-                    {
+                    } else if (dataArr[0] == "fire") {
                         Dispatch("fire", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "projectile_damage")
-                    {
+                    } else if (dataArr[0] == "projectile_damage") {
                         Dispatch("projectile_damage", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "turn")
-                    {
+                    } else if (dataArr[0] == "turn") {
                         Dispatch("turn", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "weapon")
-                    {
+                    } else if (dataArr[0] == "weapon") {
                         Dispatch("weapon", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "health_damage")
-                    {
+                    } else if (dataArr[0] == "health_damage") {
                         print("Received message with data: 0 = " + dataArr[0]);
                         print("Received message with data: 1 = " + dataArr[1]);
 
                         Dispatch("health_damage", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "disconnect" || dataArr[0] == "disconnected")
-                    {
+                    } else if (dataArr[0] == "disconnect" || dataArr[0] == "disconnected") {
                         print("Received message with data: 0 = " + dataArr[0]);
                         print("Received message with data: 1 = " + dataArr[1]);
 
                         Dispatch("disconnect", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "name_registration")
-                    {
+                    } else if (dataArr[0] == "name_registration") {
                         Dispatch("name_registration", dataArr[1], false);
-                    }
-                    else if (dataArr[0] == "killed")
-                    {
+                    } else if (dataArr[0] == "killed") {
                         Dispatch("killed", dataArr[1], false);
-                    }
-                    else
-                    {
+                    } else {
                         Dispatch("default", message, false);
                         //We will dequeue message and send to Dispatch function.
                     }
@@ -225,221 +186,128 @@ public class WebSocketManager : Player
         //         { position: [ x, y, z], rotation: [x, y, z] }
         // }"
         print("dispatching " + type + " with data: " + msg);
-        if (type == "play")
-        {
-            if (sendMsg)
-            {
+        if (type == "play") {
+            if (sendMsg) {
+                print("In Dispatch, sending 'play' to server");
                 Send(type + " " + msg);
-            }
-            else
-            {
+            } else {
+                print("In Dispatch, received 'play' from server");
                 OnPlay(msg);
             }
-        }
-        else if (type == "other_player_connected")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnOtherPlayerConnected(msg);
-            }
-        }
-        else if (type == "move")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnPlayerMove(msg);
-            }
-        }
-        else if (type == "wpressed")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnWPressed(msg);
-            }
-        }
-        else if (type == "wrelease")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnWRelease(msg);
-            }
-        }
-        else if (type == "spressed")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnSPressed(msg);
-            }
-        }
-        else if (type == "srelease")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnSRelease(msg);
-            }
-        }
-        else if (type == "apressed")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnAPressed(msg);
-            }
-        }
-        else if (type == "arelease")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnARelease(msg);
-            }
-        }
-        else if (type == "dpressed")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnDPressed(msg);
-            }
-        }
-        else if (type == "drelease")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnDRelease(msg);
-            }
-        }
-        else if (type == "fire")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnFire(msg);
-            }
-        }
-        else if (type == "projectile_damage")
-        {
-            if (sendMsg)
-            {
-                Send(type + " " + msg);
-            }
-            else
-            {
-                OnProjectileDamage(msg);
-            }
-        }
-        else if (type == "turn") {
+        } else if (type == "other_player_connected") {
             if (sendMsg) {
                 Send(type + " " + msg);
+            } else {
+                OnOtherPlayerConnected(msg);
             }
-            else
-            {
+        } else if (type == "move") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnPlayerMove(msg);
+            }
+        } else if (type == "wpressed") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnWPressed(msg);
+            }
+        } else if (type == "wrelease") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnWRelease(msg);
+            }
+        } else if (type == "spressed") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnSPressed(msg);
+            }
+        } else if (type == "srelease") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnSRelease(msg);
+            }
+        } else if (type == "apressed") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnAPressed(msg);
+            }
+        } else if (type == "arelease") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnARelease(msg);
+            }
+        } else if (type == "dpressed") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnDPressed(msg);
+            }
+        } else if (type == "drelease") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnDRelease(msg);
+            }
+        } else if (type == "fire") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnFire(msg);
+            }
+        } else if (type == "projectile_damage") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
+                OnProjectileDamage(msg);
+            }
+        } else if (type == "turn") {
+            if (sendMsg) {
+                Send(type + " " + msg);
+            } else {
                 OnPlayerRotate(msg);
             }
-        }
-        else if (type == "weapon")
-        {
-            if (sendMsg)
-            {
+        } else if (type == "weapon") {
+            if (sendMsg) {
                 Send(type + " " + msg);
-            }
-            else
-            {
+            } else {
                 OnWeaponRotateAndFire(msg);
             }
-        }
-        else if (type == "health_damage")
-        {
-            if (sendMsg)
-            {
+        } else if (type == "health_damage") {
+            if (sendMsg) {
                 Send(type + " " + msg);
-            }
-            else
-            {
+            } else {
                 OnPlayerDamage(msg);
             }
-        }
-        else if (type == "disconnect" || type == "disconnected")
-        {
-            if (sendMsg)
-            {
+        } else if (type == "disconnect" || type == "disconnected") {
+            if (sendMsg) {
                 Send(type + " " + msg);
-            }
-            else
-            {
+            } else {
                 OnOtherPlayerDisconnect(msg);
             }
-        }
-        else if (type == "killed" || type == "killed")
-        {
-            if (sendMsg)
-            {
+        } else if (type == "killed" || type == "killed") {
+            if (sendMsg) {
                 Send(type + " " + msg);
-            }
-            else
-            {
+            } else {
                 OnPlayerKilled(msg);
             }
-        }
-        else if (type == "name_registration")
-        {
-            if (sendMsg)
-            {
+        } else if (type == "name_registration") {
+            if (sendMsg) {
                 print("Attempting to send name registration message...");
                 Send(type + " " + msg);
-            }
-            else
-            {
+            } else {
                 print("Received name registration response message");
                 OnNameRegistration(msg);
             }
-        }
-        else
-        {
+        } else {
             print("Unrecognized message: " + msg);
             Send("dispatch " + msg);
         }
-
     }
 
     #endregion
@@ -454,35 +322,41 @@ public class WebSocketManager : Player
     {
         print("Another player joined Angry Alex.");
         UserJson userJson = UserJson.CreateFromJson(data);
-        if (userJson.name != playerNameStr)
-        {
-            print("Player name: " + userJson.name);
-            Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
-            Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
 
+        // Check to make sure we're not adding ourselves
+        if (userJson.name != playerNameStr) {
+            print("Player name: " + userJson.name);
+
+            // Check to see if we don't already have this player in the game, return if we do
             GameObject obj = GameObject.Find(userJson.name) as GameObject;
-            if (obj != null)
-            {
+            if (obj != null) {
                 print("Found reference to obj associated with " + userJson.name + ", ending OnOtherPlayerConnected");
                 return;
             }
+
+            // Get position and rotation for new player
+            Vector3 position = new Vector3(userJson.position[0], userJson.position[1], userJson.position[2]);
+            Quaternion rotation = Quaternion.Euler(userJson.rotation[0], userJson.rotation[1], userJson.rotation[2]);
+
+            // Assign vehicle and weapon
             int vehicle = userJson.vehicleSelection[0] > 0 ? userJson.vehicleSelection[0] : 1;
             int weapon = userJson.vehicleSelection[1] > 0 ? userJson.vehicleSelection[1] : 1;
-            
             print("Other player selection: " + vehicle + " " + weapon);
 
+            // Get a vehicle/weapon combo object to assign to our new player
             player = (GameObject)Resources.Load(_vehicleWeaponNames[new Tuple<int, int>(vehicle, weapon)]);
             player.name = userJson.name;
             //player.tag = "LocalPlayer";
             //base.LocalPlayer = player;
 
+            // Instantiate player object at position and rotation, assign name to vehicle and gun objects
             GameObject p = Instantiate(player, position, rotation) as GameObject;
             p.name = userJson.name;
-
             Weapon gun = p.GetComponent<Weapon>();
             gun.playerName = userJson.name;
             print("Weapon player name: " + gun.playerName + " for player " + userJson.name);
 
+            // Add health bar to vehicle
             HealthBar hb = p.GetComponent<HealthBar>();
             hb.carObject = p;
             hb.m_Slider_self = healthSlider;
@@ -490,7 +364,7 @@ public class WebSocketManager : Player
             hb.playerName = userJson.name;
             print("Health bar player name: " + hb.playerName + " for player " + userJson.name);
 
-
+            // Set leaderboard for new player
             leaderboardManager.ChangeScore(userJson.name, "kills", userJson.killCount);
         }
     }
@@ -503,16 +377,13 @@ public class WebSocketManager : Player
         UserJson[] players = playInfo.otherPlayers;
         print("pre-other player loop");
         // instantiate all current players as objects
-        foreach (UserJson user in players)
-        {
+        foreach (UserJson user in players) {
             print("currentplayername = " + playerNameStr);
             print("username = " + user.name);
-            if (user.name != playerNameStr)
-            {
+            if (user.name != playerNameStr) {
                 print("other player");
                 GameObject obj = GameObject.Find(user.name) as GameObject;
-                if (obj != null)
-                {
+                if (obj != null) {
                     return;
                 }
                 print("setting position");
@@ -551,8 +422,7 @@ public class WebSocketManager : Player
         Vector3 position = new Vector3(currentUserJson.position[0], currentUserJson.position[1], currentUserJson.position[2]);
         Quaternion rotation = Quaternion.Euler(currentUserJson.rotation[0], currentUserJson.rotation[1], currentUserJson.rotation[2]);
         print("Vehicle loadout = " + Player.VehicleLoadout);
-        try
-        {
+        try {
             print("Prefab name: " + _vehicleWeaponNames[Player.VehicleLoadout]);
             player = (GameObject)Resources.Load(_vehicleWeaponNames[Player.VehicleLoadout]);
             print("Player loadout = " + player);
@@ -564,8 +434,7 @@ public class WebSocketManager : Player
             p.name = playerNameStr;
             print("P.name = " + p.name);
             Camera[] camArr = Camera.allCameras;
-            foreach (Camera cam in camArr)
-            {
+            foreach (Camera cam in camArr) {
                 CameraController cc = cam.GetComponent<CameraController>();
                 cc.isLocalPlayer = true;
                 cc.target = p.GetComponent<Rigidbody2D>();
@@ -589,8 +458,7 @@ public class WebSocketManager : Player
             print("Weapon player name: " + gun.playerName + " for player " + playerNameStr);
             leaderboardManager.ChangeScore(p.name, "kills", 0);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             print(e.Message);
         }
 
@@ -600,15 +468,15 @@ public class WebSocketManager : Player
     {
         UserJson userJSON = UserJson.CreateFromJson(data);
         Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
         // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
+        if (userJSON.name == playerNameStr) {
             return;
         }
         GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.position = position;
+        if (p != null) {
+            CarController carController = p.GetComponent<CarController>();
+            carController.updateDestination(position, rotation);
         }
 
     }
@@ -864,10 +732,18 @@ public class WebSocketManager : Player
 
         if (nameRegistrationJson.name_registration_success)
         {
+            print("Successfully registered name with server!");
             SceneManager.LoadScene(1);
-        }
-        else
+            print("Main scene loaded");
+            List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
+            print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + "" + Player.VehicleLoadout.Item2);
+            PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints, Player.VehicleLoadout);
+            string playerData = JsonUtility.ToJson(playerJson);
+            print("Dispatching 'play' to server");
+            Dispatch("play", playerData, true);
+        } else
         {
+            print("ERROR: Failed to register name with server");
             errorMessage.transform.localScale = new Vector3(1, 1, 1);
         }
     }
@@ -944,6 +820,19 @@ public class WebSocketManager : Player
             rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
 
         }
+    }
+
+    [Serializable]
+    public class PositionRotationJson
+    {
+        public float[] position;
+        public float[] rotation;
+        public PositionRotationJson(Vector3 _position, Quaternion _rotation)
+        {
+            position = new float[] { _position.x, _position.y, _position.z };
+            rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
+        }
+        
     }
 
 
