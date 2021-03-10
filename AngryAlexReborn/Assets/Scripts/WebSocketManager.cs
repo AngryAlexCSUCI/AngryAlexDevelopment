@@ -63,10 +63,11 @@ public class WebSocketManager : Player
     {
         print("Starting web socket.");
         playerNameStr = UserName;
+        print("Importing playerNameStr as: " + playerNameStr);
         StartCoroutine("RecvEvent");    //Then run the receive message loop
 
         leaderboardManager = GameObject.FindObjectOfType<LeaderboardManager>();
-
+        DontDestroyOnLoad(this.gameObject);
     }
 
 
@@ -95,7 +96,7 @@ public class WebSocketManager : Player
                     // send server player name and let server randomly pick spawn point from list of spawn points
                     // spawn point for player
                     List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
-                    print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + "" + Player.VehicleLoadout.Item2);
+                    print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + " " + Player.VehicleLoadout.Item2);
                     PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints, Player.VehicleLoadout);
                     string data = JsonUtility.ToJson(playerJson);
                     Dispatch("play", data, true);
@@ -365,7 +366,10 @@ public class WebSocketManager : Player
             print("Health bar player name: " + hb.playerName + " for player " + userJson.name);
 
             // Set leaderboard for new player
-            leaderboardManager.ChangeScore(userJson.name, "kills", userJson.killCount);
+            print("About to update leaderboard for player " + userJson.name);
+            //leaderboardManager.ChangeScore(userJson.name, "kills", userJson.killCount);
+            print("Leaderboard updated for player " + userJson.name);
+
         }
     }
 
@@ -733,14 +737,15 @@ public class WebSocketManager : Player
         if (nameRegistrationJson.name_registration_success)
         {
             print("Successfully registered name with server!");
+            playerNameStr = UserName;
             SceneManager.LoadScene(1);
-            print("Main scene loaded");
-            List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
-            print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + "" + Player.VehicleLoadout.Item2);
-            PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints, Player.VehicleLoadout);
-            string playerData = JsonUtility.ToJson(playerJson);
-            print("Dispatching 'play' to server");
-            Dispatch("play", playerData, true);
+            print("Vehicle/weapon scene loaded");
+            //List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
+            //print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + "" + Player.VehicleLoadout.Item2);
+            //PlayerJson playerJson = new PlayerJson(playerNameStr, playerSpawnPoints, Player.VehicleLoadout);
+            //string playerData = JsonUtility.ToJson(playerJson);
+            //print("Dispatching 'play' to server");
+            //Dispatch("play", playerData, true);
         } else
         {
             print("ERROR: Failed to register name with server");

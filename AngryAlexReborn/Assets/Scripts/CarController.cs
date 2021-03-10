@@ -46,15 +46,27 @@ public class CarController : Player
 
     // Network send properties
     protected int networkStep = 0;
-    protected int sendOnStep = 15;
+    protected int sendOnStep = 15; // This will determine how often we send our network state to the other player
+                                   // If this is too low we will clog up the network so don't drop it to hard.
+                                   // 15 is a nice amount for a baseline.
+                                   // IMPORTANT should tweak this to experiment with slower send rate (30, 45, 60 might be good to test)
 
     // REMOTE PLAYER VARIABLES
     protected Vector3 vec3Current; // Origin of movement, used to lerp from current to correct position
     protected Quaternion quatCurrent; // Origin of rotation, used to lerp from current to correct rotation
     protected Vector3 vec3Destination; // Destination of movement, used to lerp from current to correct position
     protected Quaternion quatDestination; // Destination of rotation, used to lerp from current to correct rotation
-    protected float interpolationAmount = 0f; // amount ot be passed to lerp to get current interpolated position and rotation
-    protected float interpolationStep = 0.1f; // amount to increase interpolation per update
+    protected float interpolationAmount = 0f; // amount to be passed to lerp to get current interpolated position and rotation
+    protected float interpolationStep = 0.05f; // amount to increase interpolation per update // Attempting high amout for faster prediction
+
+
+    // Collision blend variables
+    protected int blendFramesRemaining = 0;
+
+    // Acceleration variables
+    protected Vector3 acceleration;
+    protected Vector3 lastVelocity;
+
 
     // Start is called before the first frame update
     void Start()
@@ -145,13 +157,44 @@ public class CarController : Player
 
     // FixedUpdate is called whenever the screen is refreshed
     void FixedUpdate() {
+        Debug.Log("CarController FixedUpdate: ENTER");
 
         if (!isLocalPlayer) {
 
+            // Determine what our acceleration is. Will be useful to interpolate on remote players
+            acceleration = (rigidbody.velocity - lastVelocity) / Time.fixedDeltaTime;
+            lastVelocity = rigidbody.velocity;
+            Debug.Log("CarController FixedUpdate: Acceleration: " + acceleration);
+
             // Interpolate current position/rotation with destination
-            transform.position = Vector3.Lerp(vec3Current, vec3Destination, interpolationAmount);
-            transform.rotation = Quaternion.Lerp(quatCurrent, quatDestination, interpolationAmount);
-            interpolationAmount += interpolationStep;
+            if (blendFramesRemaining > 0)
+            {
+                blendFramesRemaining--;
+            } else
+            {
+                transform.position = Vector3.LerpUnclamped(vec3Current, vec3Destination, interpolationAmount);
+                transform.rotation = Quaternion.LerpUnclamped(quatCurrent, quatDestination, interpolationAmount);
+                interpolationAmount += interpolationStep;
+            }
+
+            // Recall that goal of original algorithm from watchdogs presentation was to "represent something
+            // believable locally, and then blend into snapshots that take collision into account"
+
+            // Here we'll want to develop something close to the watchdogs algorithm for collision for comparison purposes.
+
+            // Our personal approch is to then switch to lockstep at the start of the collision, then resume the simulation as soon
+            // as we have received the synchronization position from the other player.
+            // A pseudocode for that might look something like:
+            // On collide
+            //     Stop simulation
+            //     Send message notifying other player that we have engaged in a collision (collision should be uniquely tracked by the players involved in the collision if we plan on adding more players to this mix)
+            // Wait until receive confirmation package from remote player
+            // Once packet is received:
+            //     Apply position/rotation/angular velocity that car reported at the moment we collided
+            //     Resume simulation
+            // Both the packet that we send to start the collision and the packet we receive from the remote player
+            // should contain the pos/rot/velocity at the moment of collision so that we can set the simulation to a
+            // somewhat deterministic state, which should allow us to properly simulate how the physics simulation actually went down
 
         } else {
 
@@ -213,7 +256,7 @@ public class CarController : Player
                 if (slow_time_remaining <= 0)
                 {
                     current_velocity = velocity;
-                    Debug.Log("Restoring behicle speed");
+                    Debug.Log("Restoring vehicle speed");
                 }
             }
 
@@ -245,7 +288,34 @@ public class CarController : Player
         quatCurrent = transform.rotation;
         vec3Destination = newVec3Dest;
         quatDestination = newQuatDest;
-        interpolationAmount = 0f;
+        interpolationAmount = 0.0f;
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("CarController OnCollisionEnter2D: ENTER");
+        // Only check collisions for the local player, the remote players will check on their end
+        Debug.Log("CarController OnCollisionEnter2D: Test if this is the collision call from the local player");
+        if (isLocalPlayer)
+        {
+            Debug.Log("CarController OnCollisionEnter2D: Collided with object: " + collision.gameObject.name + ", Object component: " + collision.gameObject.GetComponent("CarController"));
+            if (collision.gameObject.GetComponent("CarController") != null && collision.gameObject.name != UserName)
+            {
+                // We have collided with a remote player
+                Debug.Log("CarController OnCollisionEnter2D: This is a remote collision!");
+                // We must notify the other player
+
+                // WATCHDOGS ATTEMPT
+                Debug.Log("CarController OnCollisionEnter2D: Call startBlendCollision on other player's CarController");
+                collision.gameObject.GetComponent<CarController>().startBlendCollision();
+            }
+        }
+    }
+
+    // Called on the remote player, will blend the interpolation between local physics in a similar fashion to the Watchdogs 2 algorithm
+    public void startBlendCollision()
+    {
+        blendFramesRemaining = 30;
     }
 
     public void slowDebuff()
@@ -340,6 +410,20 @@ public class CarController : Player
 
 
 
+    string positionVelocityAccelerationRotationJson()
+    {
+        // Get Current Position Vec 3 and rotation quat
+        Vector3 position = rb.position;
+        Vector3 velocity = rb.velocity;
+        // Vector3 acceleration = defined above
+        Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
+
+        // JSON-ify position and rotation
+        WebSocketManager.PositionRotationJson posrot = new WebSocketManager.PositionRotationJson(position, quat);
+
+        // Then return as string
+        return JsonUtility.ToJson(posrot);
+    }
 
     string posRotJson()
     {

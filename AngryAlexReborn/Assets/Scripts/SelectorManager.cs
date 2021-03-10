@@ -219,8 +219,16 @@ public class SelectorManager : MonoBehaviour
     public void LoadNextScene(int sceneIndex)
     {
         SceneManager.LoadScene(sceneIndex);
+        print("Main scene loaded");
         Player.VehicleLoadout = new Tuple<int, int>(_vehicleNumber, _weaponNumber);
-
         Debug.Log(Player.VehicleLoadout);
+
+
+
+        List<SpawnPoint> playerSpawnPoints = GetComponent<PlayerSpawner>().playerSpawnPoints;
+        print("Current vehicle selection: " + Player.VehicleLoadout.Item1 + " " + Player.VehicleLoadout.Item2);
+        WebSocketManager.PlayerJson playerJson = new WebSocketManager.PlayerJson(Player.UserName, playerSpawnPoints, Player.VehicleLoadout);
+        string data = JsonUtility.ToJson(playerJson);
+        WebSocketManager.instance.Dispatch("play", data, true);
     }
 }
