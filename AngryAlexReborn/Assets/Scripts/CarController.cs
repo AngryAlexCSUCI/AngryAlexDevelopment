@@ -9,7 +9,7 @@ public class CarController : Player
     protected AudioSource engineSound;
     public int height;
 
-    [HideInInspector]
+    // [HideInInspector]
     public bool isLocalPlayer = false;
 
     protected float current_velocity;
@@ -46,27 +46,34 @@ public class CarController : Player
 
     // Network send properties
     protected int networkStep = 0;
-    protected int sendOnStep = 15; // This will determine how often we send our network state to the other player
+    protected static int sendOnStep = 10; // This will determine how often we send our network state to the other player
                                    // If this is too low we will clog up the network so don't drop it to hard.
                                    // 15 is a nice amount for a baseline.
                                    // IMPORTANT should tweak this to experiment with slower send rate (30, 45, 60 might be good to test)
 
     // REMOTE PLAYER VARIABLES
-    protected Vector3 vec3Current; // Origin of movement, used to lerp from current to correct position
-    protected Quaternion quatCurrent; // Origin of rotation, used to lerp from current to correct rotation
-    protected Vector3 vec3Destination; // Destination of movement, used to lerp from current to correct position
-    protected Quaternion quatDestination; // Destination of rotation, used to lerp from current to correct rotation
-    protected float interpolationAmount = 0f; // amount to be passed to lerp to get current interpolated position and rotation
-    protected float interpolationStep = 0.05f; // amount to increase interpolation per update // Attempting high amout for faster prediction
+    protected Vector3 positionCurrent; // Origin of movement, used to lerp from current to correct position
+    protected Vector2 velocityCurrent; // V0
+    protected Quaternion rotationCurrent; // Origin of rotation, used to lerp from current to correct rotation
+    protected Vector3 positionDestination; // Destination of movement, used to lerp from current to correct position
+    protected Vector2 velocityDestination; // V0'
+    protected Quaternion rotationDestination; // Destination of rotation, used to lerp from current to correct rotation
 
 
     // Collision blend variables
     protected int blendFramesRemaining = 0;
 
     // Acceleration variables
-    protected Vector3 acceleration;
-    protected Vector3 lastVelocity;
+    protected Vector2 acceleration;
 
+
+
+    protected float timeSinceLastFrame = 0f; // Tt
+    protected float increasePerFrame = (float)(sendOnStep) / 60f; // Tdelta
+    protected float tHat = 0f; //T^
+    protected Vector2 blendedVelocity; //Vb
+    protected Vector3 positionProjWhereWeWere; // Pt
+    protected Vector3 positionProjLastKnown; // Pt'
 
     // Start is called before the first frame update
     void Start()
@@ -88,10 +95,12 @@ public class CarController : Player
         slow_velocity = velocity / 2;
 
         // Initialize remote player variables
-        vec3Current = transform.position;
-        quatCurrent = transform.rotation;
-        vec3Destination = transform.position;
-        quatDestination = transform.rotation;
+        positionCurrent = transform.position;
+        rotationCurrent = transform.rotation;
+        positionDestination = transform.position;
+        rotationDestination = transform.rotation;
+
+        velocityDestination = rb.velocity;
     }
 
     // Update is called on every tick
@@ -104,53 +113,40 @@ public class CarController : Player
 
         if (Input.GetKeyDown("w") || Input.GetKeyDown("up"))
         {
-            //sendWPressed();
             wPressed = true;
         }
         if (Input.GetKeyUp("w") || Input.GetKeyUp("up"))
         {
-            //sendWReleased();
             wPressed = false;
         }
 
         if (Input.GetKeyDown("s") || Input.GetKeyDown("down"))
         {
-            //sendSPressed();
             sPressed = true;
         }
         if (Input.GetKeyUp("s") || Input.GetKeyUp("down"))
         {
-            //sendSReleased();
             sPressed = false;
         }
 
         if (Input.GetKeyDown("a") || Input.GetKeyDown("left"))
         {
-            //sendAPressed();
             torqueAmt = LEFT;
         }
         if (Input.GetKeyUp("a") || Input.GetKeyUp("left"))
         {
-            //sendAReleased();
             torqueAmt = 0;
         }
 
         if (Input.GetKeyDown("d") || Input.GetKeyDown("right"))
         {
-            //sendDPressed();
             torqueAmt = RIGHT;
         }
         if (Input.GetKeyUp("d") || Input.GetKeyUp("right"))
         {
-            //sendDReleased();
             torqueAmt = 0;
         }
-
-        if (networkStep == 0)
-        {
-            sendUpdate();
-        }
-        networkStep = (networkStep + 1) % sendOnStep;
+        
     }
 
 
@@ -160,21 +156,39 @@ public class CarController : Player
         Debug.Log("CarController FixedUpdate: ENTER");
 
         if (!isLocalPlayer) {
-
-            // Determine what our acceleration is. Will be useful to interpolate on remote players
-            acceleration = (rigidbody.velocity - lastVelocity) / Time.fixedDeltaTime;
-            lastVelocity = rigidbody.velocity;
-            Debug.Log("CarController FixedUpdate: Acceleration: " + acceleration);
-
+            Debug.Log("CarController FixedUpdate: remote player");
             // Interpolate current position/rotation with destination
             if (blendFramesRemaining > 0)
             {
                 blendFramesRemaining--;
-            } else
-            {
-                transform.position = Vector3.LerpUnclamped(vec3Current, vec3Destination, interpolationAmount);
-                transform.rotation = Quaternion.LerpUnclamped(quatCurrent, quatDestination, interpolationAmount);
-                interpolationAmount += interpolationStep;
+                rb.velocity = velocityDestination;
+                if (blendFramesRemaining == 0)
+                {
+                    // If we've finished blending reset the current pos/rot vars
+                    positionCurrent = transform.position;
+                    rotationCurrent = transform.rotation;
+                    //velocityCurrent = velocityDestination;
+                }
+            } else {
+                Debug.Log("CarController FixedUpdate: CALCULATING NEW INTERPOLATED POSITION");
+                // Interpolate through a technique called Projective Velocity Blending as described by Curtiss Murphy in Game Engine Gems 2, just as was done for Watchdogs 2
+                timeSinceLastFrame += Time.fixedDeltaTime; // Tt = Tt + Tf
+                tHat = timeSinceLastFrame / increasePerFrame;
+                Debug.Log("CarController FixedUpdate: Time since last frame: " + timeSinceLastFrame + ", tHat: " + tHat);
+
+                blendedVelocity = velocityCurrent + ((velocityDestination - velocityCurrent) * tHat);
+                Debug.Log("CarController FixedUpdate: Blended velocity: " + blendedVelocity);
+
+                positionProjWhereWeWere = positionCurrent + (Vector3)(velocityCurrent * timeSinceLastFrame) + (Vector3)(0.5f * acceleration * timeSinceLastFrame * timeSinceLastFrame);
+                Debug.Log("CarController FixedUpdate: Where we were: " + positionProjWhereWeWere);
+
+                positionProjLastKnown = positionDestination + (Vector3)(velocityDestination * timeSinceLastFrame) + (Vector3)(0.5f * acceleration * timeSinceLastFrame * timeSinceLastFrame);
+                Debug.Log("CarController FixedUpdate: Last known: " + positionProjLastKnown);
+
+                transform.position = positionProjWhereWeWere + ((positionProjLastKnown - positionProjWhereWeWere) * tHat);
+                Debug.Log("CarController FixedUpdate: NEW POSITION: " + transform.position);
+
+                transform.rotation = Quaternion.LerpUnclamped(rotationCurrent, rotationDestination, tHat);
             }
 
             // Recall that goal of original algorithm from watchdogs presentation was to "represent something
@@ -197,6 +211,11 @@ public class CarController : Player
             // somewhat deterministic state, which should allow us to properly simulate how the physics simulation actually went down
 
         } else {
+            Debug.Log("CarController FixedUpdate: LOCAL player");
+            // Determine what our acceleration is. Will be useful to interpolate on remote players
+            acceleration = (rb.velocity - velocityDestination) / Time.fixedDeltaTime;
+            velocityDestination = rb.velocity;
+            Debug.Log("CarController FixedUpdate: Acceleration: " + acceleration);
 
             if (wPressed)
             {
@@ -260,9 +279,15 @@ public class CarController : Player
                 }
             }
 
-
+            // up our networkStep counter, and if we have looped, send an update
+            if (networkStep == 0)
+            {
+                sendUpdate();
+            }
+            networkStep = (networkStep + 1) % sendOnStep;
         }
 
+        
 
         // send position and turn updates
         //if (getForwardVelocity().magnitude > 0)
@@ -282,13 +307,18 @@ public class CarController : Player
         //}
     }
 
-    public void updateDestination(Vector3 newVec3Dest, Quaternion newQuatDest)
+    public void updateDestination(Vector3 newVec3Dest, Vector2 newVelocity, Vector2 newAcceleration, Quaternion newQuatDest)
     {
-        vec3Current = transform.position;
-        quatCurrent = transform.rotation;
-        vec3Destination = newVec3Dest;
-        quatDestination = newQuatDest;
-        interpolationAmount = 0.0f;
+        positionCurrent = transform.position;
+        rotationCurrent = transform.rotation;
+        velocityCurrent = velocityDestination;
+        positionDestination = newVec3Dest;
+        rotationDestination = newQuatDest;
+        velocityDestination = newVelocity;
+        acceleration = newAcceleration;
+
+
+        timeSinceLastFrame = 0f;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -298,6 +328,7 @@ public class CarController : Player
         Debug.Log("CarController OnCollisionEnter2D: Test if this is the collision call from the local player");
         if (isLocalPlayer)
         {
+            wPressed = false;
             Debug.Log("CarController OnCollisionEnter2D: Collided with object: " + collision.gameObject.name + ", Object component: " + collision.gameObject.GetComponent("CarController"));
             if (collision.gameObject.GetComponent("CarController") != null && collision.gameObject.name != UserName)
             {
@@ -315,7 +346,9 @@ public class CarController : Player
     // Called on the remote player, will blend the interpolation between local physics in a similar fashion to the Watchdogs 2 algorithm
     public void startBlendCollision()
     {
-        blendFramesRemaining = 30;
+        // this might not do anything, but i suspect the velocity isnt carrying over on this last frame since we're hard-setting the position on every frame
+        rb.velocity = velocityDestination;
+        blendFramesRemaining = 5;
     }
 
     public void slowDebuff()
@@ -329,51 +362,8 @@ public class CarController : Player
 
     void sendUpdate()
     {
-        WebSocketManager.instance.Dispatch("move", posRotJson(), true);
+        WebSocketManager.instance.Dispatch("move", positionVelocityAccelerationRotationJson(), true);
     }
-
-    void sendWPressed()
-    {
-        WebSocketManager.instance.Dispatch("wpressed", vectorJson(), true);
-    }
-
-    void sendWReleased()
-    {
-        WebSocketManager.instance.Dispatch("wrelease", vectorJson(), true);
-    }
-
-    void sendSPressed()
-    {
-        WebSocketManager.instance.Dispatch("spressed", vectorJson(), true);
-    }
-
-    void sendSReleased()
-    {
-        WebSocketManager.instance.Dispatch("srelease", vectorJson(), true);
-    }
-
-    void sendAPressed()
-    {
-        WebSocketManager.instance.Dispatch("apressed", quatJson(), true);
-    }
-
-    void sendAReleased()
-    {
-        WebSocketManager.instance.Dispatch("arelease", quatJson(), true);
-    }
-
-    void sendDPressed()
-    {
-        WebSocketManager.instance.Dispatch("dpressed", quatJson(), true);
-    }
-
-    void sendDReleased()
-    {
-        WebSocketManager.instance.Dispatch("drelease", quatJson(), true);
-    }
-
-
-
 
     public void setWPressed(bool isPressed)
     {
@@ -419,10 +409,10 @@ public class CarController : Player
         Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
 
         // JSON-ify position and rotation
-        WebSocketManager.PositionRotationJson posrot = new WebSocketManager.PositionRotationJson(position, quat);
+        WebSocketManager.PositionVelocityAccelerationRotationJson posVelAccRot = new WebSocketManager.PositionVelocityAccelerationRotationJson(position, velocity, acceleration, quat);
 
         // Then return as string
-        return JsonUtility.ToJson(posrot);
+        return JsonUtility.ToJson(posVelAccRot);
     }
 
     string posRotJson()

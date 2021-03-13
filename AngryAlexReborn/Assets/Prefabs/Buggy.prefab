@@ -10,13 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 5289765049226041334}
   - component: {fileID: 5289765049226041333}
-  - component: {fileID: 4560296760331980196}
+  - component: {fileID: 8681165645058519931}
   - component: {fileID: 5289765049226041337}
   - component: {fileID: 5289765049226041335}
   - component: {fileID: 5289765049226041338}
   - component: {fileID: 2955973396925997609}
   - component: {fileID: 6185596194416715102}
-  - component: {fileID: 1429420263155196545}
   m_Layer: 0
   m_Name: Buggy
   m_TagString: Player
@@ -91,8 +90,8 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!70 &4560296760331980196
-CapsuleCollider2D:
+--- !u!60 &8681165645058519931
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -105,8 +104,25 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
-  m_Direction: 0
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.3703223, y: -0.49476418}
+      - {x: -0.35541344, y: -0.4949316}
+      - {x: -0.4921835, y: -0.42167896}
+      - {x: -0.49254158, y: 0.42300418}
+      - {x: -0.37102884, y: 0.5}
+      - {x: 0.35275772, y: 0.5}
+      - {x: 0.50390816, y: 0.4242896}
+      - {x: 0.4960918, y: -0.40340403}
 --- !u!50 &5289765049226041337
 Rigidbody2D:
   serializedVersion: 4
@@ -123,7 +139,7 @@ Rigidbody2D:
   m_LinearDrag: 3
   m_AngularDrag: 5
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9a486e97e415c034a9782b9f89cfe988, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -257,7 +273,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 7d97811d222c993438267ca52872672b, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.113
+  m_Volume: 0.091
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -354,33 +370,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_StartingHealth: 100
-  m_Slider: {fileID: 0}
-  m_Fill: {fileID: 0}
   m_Slider_self: {fileID: 2749938205519918765}
   m_Fill_self: {fileID: 4171068101551534570}
-  m_FullHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  m_ZeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
-  isLocalPlayer: 0
-  m_CurrentHealth: 0
-  startBlinking: 0
-  carObject: {fileID: 0}
---- !u!114 &1429420263155196545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5289765049226041332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44897add60750db4bbae69ab2541dac3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_StartingHealth: 100
-  m_Slider: {fileID: 0}
-  m_Fill: {fileID: 0}
-  m_Slider_self: {fileID: 0}
-  m_Fill_self: {fileID: 0}
   m_FullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   m_ZeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
   isLocalPlayer: 0

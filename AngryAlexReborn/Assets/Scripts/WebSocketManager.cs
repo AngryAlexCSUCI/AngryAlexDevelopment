@@ -451,8 +451,8 @@ public class WebSocketManager : Player
             HealthBar hb = p.GetComponent<HealthBar>();
             hb.carObject = p;
             hb.isLocalPlayer = true;
-            hb.m_Slider = healthSlider;
-            hb.m_Fill = healthFill;
+            //hb.m_Slider = healthSlider;
+            //hb.m_Fill = healthFill;
             hb.playerName = playerNameStr;
             print("Health bar player name: " + hb.playerName + " for player " + playerNameStr);
 
@@ -470,8 +470,12 @@ public class WebSocketManager : Player
 
     void OnPlayerMove(string data)
     {
+        print("WebSocketManager OnPlayerMove: START");
         UserJson userJSON = UserJson.CreateFromJson(data);
+        print("Got userJSON: " + userJSON);
         Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+        Vector2 velocity = new Vector2(userJSON.velocity[0], userJSON.velocity[1]);
+        Vector2 acceleration = new Vector2(userJSON.acceleration[0], userJSON.acceleration[1]);
         Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
         // if it is the current player exit
         if (userJSON.name == playerNameStr) {
@@ -480,7 +484,7 @@ public class WebSocketManager : Player
         GameObject p = GameObject.Find(userJSON.name) as GameObject;
         if (p != null) {
             CarController carController = p.GetComponent<CarController>();
-            carController.updateDestination(position, rotation);
+            carController.updateDestination(position, velocity, acceleration, rotation);
         }
 
     }
@@ -842,10 +846,30 @@ public class WebSocketManager : Player
 
 
     [Serializable]
+    public class PositionVelocityAccelerationRotationJson
+    {
+        public float[] position;
+        public float[] velocity;
+        public float[] acceleration;
+        public float[] rotation;
+        public PositionVelocityAccelerationRotationJson(Vector3 _position, Vector2 _velocity, Vector2 _acceleration, Quaternion _rotation)
+        {
+            position = new float[] { _position.x, _position.y, _position.z };
+            velocity = new float[] { _velocity.x, _velocity.y };
+            acceleration = new float[] { _acceleration.x, _acceleration.y };
+            rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
+        }
+
+    }
+
+
+    [Serializable]
     public class UserJson
     {
         public string name;
         public float[] position;
+        public float[] velocity;
+        public float[] acceleration;
         public float[] rotation;
         public int health;
         public int killCount;
