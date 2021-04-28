@@ -89,7 +89,7 @@ public class WebSocketManager : Player
                 //When our message queue has string coming.
                 // check message type: play, other_player_connected, move, turn, disconnect
                 string message = recvList.Dequeue();
-                print("Message received from server: " + message);
+                //print("Message received from server: " + message);
 
                 if (message == "You are connected to the server!" && !skipPlay) {
                     print("--- Sending play message!");
@@ -103,8 +103,8 @@ public class WebSocketManager : Player
                 } else {
                     string[] dataArr = message.Split(' ');
                     
-                    print("Client message at [0]: " + dataArr[0]);
-                    print("Client message at [1]: " + dataArr[1]);
+                    //print("Client message at [0]: " + dataArr[0]);
+                    //print("Client message at [1]: " + dataArr[1]);
                     
                     if (dataArr[0] == "play") {
                         // receive play from server means you need to get the spawn point from here and assign to player. 
@@ -114,28 +114,18 @@ public class WebSocketManager : Player
                         Dispatch("other_player_connected", dataArr[1], false);
                     } else if (dataArr[0] == "move") {
                         Dispatch("move", dataArr[1], false);
-                    } else if (dataArr[0] == "wpressed") {
-                        Dispatch("wpressed", dataArr[1], false);
-                    } else if (dataArr[0] == "wrelease") {
-                        Dispatch("wrelease", dataArr[1], false);
-                    } else if (dataArr[0] == "spressed") {
-                        Dispatch("spressed", dataArr[1], false);
-                    } else if (dataArr[0] == "srelease") {
-                        Dispatch("srelease", dataArr[1], false);
-                    } else if (dataArr[0] == "apressed") {
-                        Dispatch("apressed", dataArr[1], false);
-                    } else if (dataArr[0] == "arelease") {
-                        Dispatch("arelease", dataArr[1], false);
-                    } else if (dataArr[0] == "dpressed") {
-                        Dispatch("dpressed", dataArr[1], false);
-                    } else if (dataArr[0] == "drelease") {
-                        Dispatch("drelease", dataArr[1], false);
+                    } else if (dataArr[0] == "ackMessage") {
+                        Dispatch("ackMessage", dataArr[1], false);
+                    } else if (dataArr[0] == "collision") {
+                        print("Received collision message! Data: " + dataArr[1]);
+                        Dispatch("collision", dataArr[1], false);
+                    } else if (dataArr[0] == "collisionAck") {
+                        print("Received collisionAck message! Data: " + dataArr[1]);
+                        Dispatch("collisionAck", dataArr[1], false);
                     } else if (dataArr[0] == "fire") {
                         Dispatch("fire", dataArr[1], false);
                     } else if (dataArr[0] == "projectile_damage") {
                         Dispatch("projectile_damage", dataArr[1], false);
-                    } else if (dataArr[0] == "turn") {
-                        Dispatch("turn", dataArr[1], false);
                     } else if (dataArr[0] == "weapon") {
                         Dispatch("weapon", dataArr[1], false);
                     } else if (dataArr[0] == "health_damage") {
@@ -186,7 +176,7 @@ public class WebSocketManager : Player
         //         { position: [ x, y, z], rotation: [x, y, z] },
         //         { position: [ x, y, z], rotation: [x, y, z] }
         // }"
-        print("dispatching " + type + " with data: " + msg);
+        //print("dispatching " + type + " with data: " + msg);
         if (type == "play") {
             if (sendMsg) {
                 print("In Dispatch, sending 'play' to server");
@@ -207,53 +197,24 @@ public class WebSocketManager : Player
             } else {
                 OnPlayerMove(msg);
             }
-        } else if (type == "wpressed") {
+        } else if (type == "ackMessage") {
             if (sendMsg) {
                 Send(type + " " + msg);
             } else {
-                OnWPressed(msg);
+                OnAckMessage(msg);
             }
-        } else if (type == "wrelease") {
+        }  else if (type == "collision") {
             if (sendMsg) {
                 Send(type + " " + msg);
             } else {
-                OnWRelease(msg);
+                OnCollision(msg);
             }
-        } else if (type == "spressed") {
+        } else if (type == "collisionAck") {
             if (sendMsg) {
+                print("Sending collisionAck message: " + type + " " + msg);
                 Send(type + " " + msg);
             } else {
-                OnSPressed(msg);
-            }
-        } else if (type == "srelease") {
-            if (sendMsg) {
-                Send(type + " " + msg);
-            } else {
-                OnSRelease(msg);
-            }
-        } else if (type == "apressed") {
-            if (sendMsg) {
-                Send(type + " " + msg);
-            } else {
-                OnAPressed(msg);
-            }
-        } else if (type == "arelease") {
-            if (sendMsg) {
-                Send(type + " " + msg);
-            } else {
-                OnARelease(msg);
-            }
-        } else if (type == "dpressed") {
-            if (sendMsg) {
-                Send(type + " " + msg);
-            } else {
-                OnDPressed(msg);
-            }
-        } else if (type == "drelease") {
-            if (sendMsg) {
-                Send(type + " " + msg);
-            } else {
-                OnDRelease(msg);
+                OnCollisionAck(msg);
             }
         } else if (type == "fire") {
             if (sendMsg) {
@@ -266,12 +227,6 @@ public class WebSocketManager : Player
                 Send(type + " " + msg);
             } else {
                 OnProjectileDamage(msg);
-            }
-        } else if (type == "turn") {
-            if (sendMsg) {
-                Send(type + " " + msg);
-            } else {
-                OnPlayerRotate(msg);
             }
         } else if (type == "weapon") {
             if (sendMsg) {
@@ -470,184 +425,107 @@ public class WebSocketManager : Player
 
     void OnPlayerMove(string data)
     {
-        print("WebSocketManager OnPlayerMove: START");
+        //print("WebSocketManager OnPlayerMove: START");
+        //print("WebSocketManager OnPlayerMove: Received string: " + data);
         UserJson userJSON = UserJson.CreateFromJson(data);
-        print("Got userJSON: " + userJSON);
-        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
-        Vector2 velocity = new Vector2(userJSON.velocity[0], userJSON.velocity[1]);
-        Vector2 acceleration = new Vector2(userJSON.acceleration[0], userJSON.acceleration[1]);
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        // if it is the current player exit
+        // if it is the current player, exit
         if (userJSON.name == playerNameStr) {
             return;
         }
         GameObject p = GameObject.Find(userJSON.name) as GameObject;
         if (p != null) {
+            //print("Got userJSON: " + userJSON);
+            Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+            Vector2 velocity = new Vector2(userJSON.velocity[0], userJSON.velocity[1]);
+            Vector2 acceleration = new Vector2(userJSON.acceleration[0], userJSON.acceleration[1]);
+            Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
             CarController carController = p.GetComponent<CarController>();
             carController.updateDestination(position, velocity, acceleration, rotation);
+            // Send back an ack to the player that sent this message to get a RTT estimate
+            simStepAckJson simStepAck = new simStepAckJson( userJSON.simulationStep, userJSON.name );
+            Dispatch("ackMessage", JsonUtility.ToJson(simStepAck), true);
         }
 
     }
 
-    private void OnWPressed(string data)
+    void OnAckMessage(string data)
     {
+        print("WebSocketManager OnAckMessage: START");
         UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
+        // We only care to continue if this is the current player
         if (userJSON.name == playerNameStr)
         {
+            GameObject p = GameObject.Find(userJSON.name) as GameObject;
+            if (p != null)
+            {
+                print("Got userJSON: " + userJSON);
+                CarController carController = p.GetComponent<CarController>();
+                carController.processAcknowledgement(userJSON.simulationStep);
+            }
             return;
-        }
-        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.position = position;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setWPressed(true);
         }
     }
 
-    private void OnWRelease(string data)
+    void OnCollision(string data)
     {
+        print("WebSocketManager OnCollision: START, data:\n" + data);
         UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
+        // We only care to continue if this is the remote player
+        if (userJSON.name != playerNameStr)
         {
+            GameObject p = GameObject.Find(userJSON.name) as GameObject;
+            if (p != null)
+            {
+                print("Got userJSON: " + userJSON);
+                // Set remote car player's position
+                Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+                Vector2 velocity = new Vector2(userJSON.velocity[0], userJSON.velocity[1]);
+                Vector2 acceleration = new Vector2(userJSON.acceleration[0], userJSON.acceleration[1]);
+                Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+                CarController carController = p.GetComponent<CarController>();
+                carController.setCollisionPosVelAccRot(position, velocity, acceleration, rotation);
+
+                // Set ourselves back by RTT/2 and wait RTT/2 before resuming simulation
+                GameObject selfObj = GameObject.Find(playerNameStr) as GameObject;
+                CarController selfCarController = selfObj.GetComponent<CarController>();
+                if (selfCarController.inCollision) // If we are already in a collision, we can resolve now
+                {
+                    print("We were already in collision, set lockStep to false and startBlendCollision");
+                    selfCarController.lockStep = false;
+                    selfCarController.startBlendCollision();
+                } else { // Otherwise, we need to go back half a RTT and see where we were when the other player said we collided
+                    print("We were not aware of a collision, sending new collision with prior position");
+                    selfCarController.inCollision = true;
+                    int updateIndex = selfCarController.currentSimulationStep - selfCarController.rtt;
+                    CarController.PositionVelocityAccelerationRotationJson updateAtCollision = selfCarController.updateBuffer[updateIndex];
+                    Dispatch("collision", JsonUtility.ToJson(updateAtCollision), true);
+                }
+            }
             return;
-        }
-        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.position = position;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setWPressed(false);
         }
     }
 
-    private void OnSPressed(string data)
+    void OnCollisionAck(string data)
     {
+        print("WebSocketManager OnCollisionAck: START, data:\n" + data);
         UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
+        // We only care to continue if this is the remote player
+        if (userJSON.name != playerNameStr)
         {
+            GameObject p = GameObject.Find(userJSON.name) as GameObject;
+            if (p != null)
+            {
+                print("Got userJSON: " + userJSON);
+                // Set remote car player's position
+                Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
+                Vector2 velocity = new Vector2(userJSON.velocity[0], userJSON.velocity[1]);
+                Vector2 acceleration = new Vector2(userJSON.acceleration[0], userJSON.acceleration[1]);
+                Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
+                CarController carController = p.GetComponent<CarController>();
+                carController.setCollisionPosVelAccRot(position, velocity, acceleration, rotation);
+                // Set ourselves back by RTT/2 and wait RTT/2 before resuming simulation
+            }
             return;
-        }
-        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.position = position;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setSPressed(true);
-        }
-    }
-
-    private void OnSRelease(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Vector3 position = new Vector3(userJSON.position[0], userJSON.position[1], userJSON.position[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.position = position;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setSPressed(false);
-        }
-    }
-
-
-
-    void OnPlayerRotate(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.rotation = rotation;
-        }
-    }
-
-    private void OnAPressed(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.rotation = rotation;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setAPressed(true);
-        }
-    }
-
-    private void OnARelease(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.rotation = rotation;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setAPressed(false);
-        }
-    }
-
-    private void OnDPressed(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.rotation = rotation;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setDPressed(true);
-        }
-    }
-
-    private void OnDRelease(string data)
-    {
-        UserJson userJSON = UserJson.CreateFromJson(data);
-        // if it is the current player exit
-        if (userJSON.name == playerNameStr)
-        {
-            return;
-        }
-        Quaternion rotation = Quaternion.Euler(userJSON.rotation[0], userJSON.rotation[1], userJSON.rotation[2]);
-        GameObject p = GameObject.Find(userJSON.name) as GameObject;
-        if (p != null)
-        {
-            p.transform.rotation = rotation;
-            CarController carController = p.GetComponent<CarController>();
-            carController.setDPressed(false);
         }
     }
 
@@ -841,19 +719,31 @@ public class WebSocketManager : Player
             position = new float[] { _position.x, _position.y, _position.z };
             rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
         }
-        
     }
 
+    [Serializable]
+    public class simStepAckJson
+    {
+        public int simulationStep;
+        public string name;
+        public simStepAckJson(int _simulationStep, string _name)
+        {
+            simulationStep = _simulationStep;
+            name = _name;
+        }
+    }
 
     [Serializable]
     public class PositionVelocityAccelerationRotationJson
     {
+        public int simulationStep;
         public float[] position;
         public float[] velocity;
         public float[] acceleration;
         public float[] rotation;
-        public PositionVelocityAccelerationRotationJson(Vector3 _position, Vector2 _velocity, Vector2 _acceleration, Quaternion _rotation)
+        public PositionVelocityAccelerationRotationJson(int _simulationStep, Vector3 _position, Vector2 _velocity, Vector2 _acceleration, Quaternion _rotation)
         {
+            simulationStep = _simulationStep;
             position = new float[] { _position.x, _position.y, _position.z };
             velocity = new float[] { _velocity.x, _velocity.y };
             acceleration = new float[] { _acceleration.x, _acceleration.y };
@@ -871,6 +761,7 @@ public class WebSocketManager : Player
         public float[] velocity;
         public float[] acceleration;
         public float[] rotation;
+        public int simulationStep;
         public int health;
         public int killCount;
         public WeaponJson weapon;

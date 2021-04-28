@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     public Rigidbody2D target;
     public float zValue;
     public int orthographicFloor;
-    protected new Camera camera; //reference to camera object that this script should be attached to
+    protected Camera camera; //reference to camera object that this script should be attached to
 
     
     public bool isLocalPlayer = false;
@@ -45,7 +45,7 @@ public class CameraController : MonoBehaviour
         //follow target and zoom out slightly based off magnitude of the velocity of object we are following
         transform.position = new Vector3(target.position.x, target.position.y, zValue);
         camera.orthographicSize = this.orthographicFloor + target.velocity.magnitude / 3;
-        Debug.Log("CameraController: Update postion to track target");
+        // Debug.Log("CameraController: Update postion to track target"); 
     }
 
     public void setTarget(Rigidbody2D _target)

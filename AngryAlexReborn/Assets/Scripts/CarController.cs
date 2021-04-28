@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CarController : Player
 {
@@ -75,6 +77,21 @@ public class CarController : Player
     protected Vector3 positionProjWhereWeWere; // Pt
     protected Vector3 positionProjLastKnown; // Pt'
 
+
+
+    // Update buffer variables
+    private const int BUFFER_SIZE = 60;
+    public int currentSimulationStep = 0;
+    public int rtt;
+    public PositionVelocityAccelerationRotationJson[] updateBuffer;
+
+
+    protected int collisionMode = 2; // 0 = off, 1 = WatchDogs replicated attempt, 2 = personal approach
+
+    // MODE 2 STUFF
+    public bool inCollision = false;
+    public bool lockStep = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -101,6 +118,9 @@ public class CarController : Player
         rotationDestination = transform.rotation;
 
         velocityDestination = rb.velocity;
+
+        // Initialize update buffer
+        updateBuffer = new PositionVelocityAccelerationRotationJson[BUFFER_SIZE];
     }
 
     // Update is called on every tick
@@ -152,16 +172,26 @@ public class CarController : Player
 
 
     // FixedUpdate is called whenever the screen is refreshed
+    Boolean fixedUpdateDebug = false;
     void FixedUpdate() {
-        Debug.Log("CarController FixedUpdate: ENTER");
+        if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: ENTER");
+
+        if (lockStep)
+        {
+            Debug.Log("WE ARE IN LOCKSTEP");
+            return;
+        }
 
         if (!isLocalPlayer) {
-            Debug.Log("CarController FixedUpdate: remote player");
+            if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: remote player");
             // Interpolate current position/rotation with destination
             if (blendFramesRemaining > 0)
             {
                 blendFramesRemaining--;
-                rb.velocity = velocityDestination;
+                // While we are blending the vehicle hit, make the assumption that the other vehicle will continue to move forwards/backwards in whatever direction they were going
+                // To achieve that effect we just apply a transform.up force as we would when holding W or S.
+                // This seems to be a safe assumption in a general case.
+                rb.AddForce(transform.up * current_velocity);
                 if (blendFramesRemaining == 0)
                 {
                     // If we've finished blending reset the current pos/rot vars
@@ -170,52 +200,34 @@ public class CarController : Player
                     //velocityCurrent = velocityDestination;
                 }
             } else {
-                Debug.Log("CarController FixedUpdate: CALCULATING NEW INTERPOLATED POSITION");
+                if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: CALCULATING NEW INTERPOLATED POSITION");
                 // Interpolate through a technique called Projective Velocity Blending as described by Curtiss Murphy in Game Engine Gems 2, just as was done for Watchdogs 2
                 timeSinceLastFrame += Time.fixedDeltaTime; // Tt = Tt + Tf
                 tHat = timeSinceLastFrame / increasePerFrame;
-                Debug.Log("CarController FixedUpdate: Time since last frame: " + timeSinceLastFrame + ", tHat: " + tHat);
+                if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: Time since last frame: " + timeSinceLastFrame + ", tHat: " + tHat);
 
                 blendedVelocity = velocityCurrent + ((velocityDestination - velocityCurrent) * tHat);
-                Debug.Log("CarController FixedUpdate: Blended velocity: " + blendedVelocity);
+                if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: Blended velocity: " + blendedVelocity);
 
                 positionProjWhereWeWere = positionCurrent + (Vector3)(velocityCurrent * timeSinceLastFrame) + (Vector3)(0.5f * acceleration * timeSinceLastFrame * timeSinceLastFrame);
-                Debug.Log("CarController FixedUpdate: Where we were: " + positionProjWhereWeWere);
+                if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: Where we were: " + positionProjWhereWeWere);
 
                 positionProjLastKnown = positionDestination + (Vector3)(velocityDestination * timeSinceLastFrame) + (Vector3)(0.5f * acceleration * timeSinceLastFrame * timeSinceLastFrame);
-                Debug.Log("CarController FixedUpdate: Last known: " + positionProjLastKnown);
+                if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: Last known: " + positionProjLastKnown);
 
                 transform.position = positionProjWhereWeWere + ((positionProjLastKnown - positionProjWhereWeWere) * tHat);
-                Debug.Log("CarController FixedUpdate: NEW POSITION: " + transform.position);
+                if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: NEW POSITION: " + transform.position);
 
                 transform.rotation = Quaternion.LerpUnclamped(rotationCurrent, rotationDestination, tHat);
             }
-
-            // Recall that goal of original algorithm from watchdogs presentation was to "represent something
-            // believable locally, and then blend into snapshots that take collision into account"
-
-            // Here we'll want to develop something close to the watchdogs algorithm for collision for comparison purposes.
-
-            // Our personal approch is to then switch to lockstep at the start of the collision, then resume the simulation as soon
-            // as we have received the synchronization position from the other player.
-            // A pseudocode for that might look something like:
-            // On collide
-            //     Stop simulation
-            //     Send message notifying other player that we have engaged in a collision (collision should be uniquely tracked by the players involved in the collision if we plan on adding more players to this mix)
-            // Wait until receive confirmation package from remote player
-            // Once packet is received:
-            //     Apply position/rotation/angular velocity that car reported at the moment we collided
-            //     Resume simulation
-            // Both the packet that we send to start the collision and the packet we receive from the remote player
-            // should contain the pos/rot/velocity at the moment of collision so that we can set the simulation to a
-            // somewhat deterministic state, which should allow us to properly simulate how the physics simulation actually went down
+            
 
         } else {
-            Debug.Log("CarController FixedUpdate: LOCAL player");
+            if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: LOCAL player");
             // Determine what our acceleration is. Will be useful to interpolate on remote players
             acceleration = (rb.velocity - velocityDestination) / Time.fixedDeltaTime;
             velocityDestination = rb.velocity;
-            Debug.Log("CarController FixedUpdate: Acceleration: " + acceleration);
+            if (fixedUpdateDebug) Debug.Log("CarController FixedUpdate: Acceleration: " + acceleration);
 
             if (wPressed)
             {
@@ -275,7 +287,7 @@ public class CarController : Player
                 if (slow_time_remaining <= 0)
                 {
                     current_velocity = velocity;
-                    Debug.Log("Restoring vehicle speed");
+                    if (fixedUpdateDebug) Debug.Log("Restoring vehicle speed");
                 }
             }
 
@@ -287,31 +299,13 @@ public class CarController : Player
             networkStep = (networkStep + 1) % sendOnStep;
         }
 
-        
-
-        // send position and turn updates
-        //if (getForwardVelocity().magnitude > 0)
-        //{
-        //    Vector3 vec = new Vector3(rb.position.x, rb.position.y, 0); // todo what if the player is up in the air? 
-        //    WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
-        //    string data = JsonUtility.ToJson(pos);
-        //    WebSocketManager.instance.Dispatch("move", data, true);
-        //}
-
-        //if (rb.angularVelocity > 0)
-        //{
-        //    Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
-        //    WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
-        //    string data2 = JsonUtility.ToJson(rot);
-        //    WebSocketManager.instance.Dispatch("turn", data2, true);
-        //}
     }
 
     public void updateDestination(Vector3 newVec3Dest, Vector2 newVelocity, Vector2 newAcceleration, Quaternion newQuatDest)
     {
         positionCurrent = transform.position;
         rotationCurrent = transform.rotation;
-        velocityCurrent = velocityDestination;
+        velocityCurrent = newVelocity;
         positionDestination = newVec3Dest;
         rotationDestination = newQuatDest;
         velocityDestination = newVelocity;
@@ -328,17 +322,28 @@ public class CarController : Player
         Debug.Log("CarController OnCollisionEnter2D: Test if this is the collision call from the local player");
         if (isLocalPlayer)
         {
-            wPressed = false;
             Debug.Log("CarController OnCollisionEnter2D: Collided with object: " + collision.gameObject.name + ", Object component: " + collision.gameObject.GetComponent("CarController"));
             if (collision.gameObject.GetComponent("CarController") != null && collision.gameObject.name != UserName)
             {
                 // We have collided with a remote player
                 Debug.Log("CarController OnCollisionEnter2D: This is a remote collision!");
                 // We must notify the other player
-
-                // WATCHDOGS ATTEMPT
-                Debug.Log("CarController OnCollisionEnter2D: Call startBlendCollision on other player's CarController");
-                collision.gameObject.GetComponent<CarController>().startBlendCollision();
+                if (collisionMode == 2)
+                {
+                    if (inCollision) return;
+                    Debug.Log("CarController OnCollisionEnter2D: MY ATEMPT");
+                    PositionVelocityAccelerationRotationJson updateAtCollision = getPositionVelocityAccelerationRotationJson();
+                    WebSocketManager.instance.Dispatch("collision", JsonUtility.ToJson(updateAtCollision), true);
+                    // Now we have to temporarily enter lockstep until we get a response from the other client
+                    inCollision = true;
+                    lockStep = true;
+                } else if (collisionMode == 1)
+                {
+                    // WATCHDOGS ATTEMPT
+                    Debug.Log("CarController OnCollisionEnter2D: WATCHDOGS ATTEMPT");
+                    Debug.Log("CarController OnCollisionEnter2D: Call startBlendCollision on other player's CarController");
+                    collision.gameObject.GetComponent<CarController>().startBlendCollision();
+                }
             }
         }
     }
@@ -362,45 +367,45 @@ public class CarController : Player
 
     void sendUpdate()
     {
-        WebSocketManager.instance.Dispatch("move", positionVelocityAccelerationRotationJson(), true);
+        PositionVelocityAccelerationRotationJson newUpdate = getPositionVelocityAccelerationRotationJson();
+        WebSocketManager.instance.Dispatch("move", JsonUtility.ToJson(newUpdate), true);
+        updateBuffer[currentSimulationStep] = newUpdate;
+        currentSimulationStep = (currentSimulationStep+1) % BUFFER_SIZE;
     }
 
-    public void setWPressed(bool isPressed)
+    public void processAcknowledgement(int acknowledgedSimStep)
     {
-        wPressed = isPressed;
-    }
-
-    public void setSPressed(bool isPressed)
-    {
-        sPressed = isPressed;
-    }
-
-    public void setAPressed(bool isPressed)
-    {
-        if (isPressed)
+        rtt = currentSimulationStep - acknowledgedSimStep;
+        if (rtt < 0)
         {
-            torqueAmt = LEFT;
-        } else
-        {
-            torqueAmt = 0;
+            rtt += BUFFER_SIZE;
         }
+        Debug.Log("In processAck function, acknowledged step:" + acknowledgedSimStep + ", current Step: " + currentSimulationStep + ", estimated RTT: " + rtt);
+        // TODO, store this RTT somewhere, then use in collision code to set our position back to the correct place when receiving a collision message
     }
 
-    public void setDPressed(bool isPressed)
+    public void setCollisionPosVelAccRot(Vector3 newVec3Pos, Vector2 newVelocity, Vector2 newAcceleration, Quaternion newQuat)
     {
-        if (isPressed)
+        Debug.Log("CarController setCollisionPosVelAccRot: ENTER");
+        transform.position = newVec3Pos;
+        transform.rotation = newQuat;
+        velocityCurrent = velocityDestination;
+        acceleration = newAcceleration;
+        timeSinceLastFrame = 0f;
+
+        // Now send back an ack with OUR position to let the remote player know where we were at the approximate time of collision
+        int halfRTT = rtt / 2;
+        int previousLocationIndex = currentSimulationStep - halfRTT;
+        if (previousLocationIndex < 0)
         {
-            torqueAmt = RIGHT;
-        } else
-        {
-            torqueAmt = 0;
+            previousLocationIndex += BUFFER_SIZE;
         }
+        PositionVelocityAccelerationRotationJson previousPos = updateBuffer[previousLocationIndex];
+        //Debug.Log("CarController setCollisionPosVelAccRot: Dispatching collisionAck to WebSocketManager");
+        //WebSocketManager.instance.Dispatch("collisionAck", JsonUtility.ToJson(previousPos), true);
     }
 
-
-
-
-    string positionVelocityAccelerationRotationJson()
+    PositionVelocityAccelerationRotationJson getPositionVelocityAccelerationRotationJson()
     {
         // Get Current Position Vec 3 and rotation quat
         Vector3 position = rb.position;
@@ -409,44 +414,32 @@ public class CarController : Player
         Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
 
         // JSON-ify position and rotation
-        WebSocketManager.PositionVelocityAccelerationRotationJson posVelAccRot = new WebSocketManager.PositionVelocityAccelerationRotationJson(position, velocity, acceleration, quat);
+        PositionVelocityAccelerationRotationJson posVelAccRot = new PositionVelocityAccelerationRotationJson(currentSimulationStep, position, velocity, acceleration, quat);
 
-        // Then return as string
-        return JsonUtility.ToJson(posVelAccRot);
+        // Then return
+        return posVelAccRot;
+        //return JsonUtility.ToJson(posVelAccRot);
     }
 
-    string posRotJson()
+
+    [Serializable]
+    public class PositionVelocityAccelerationRotationJson
     {
-        // Get Current Position Vec 3 and rotation quat
-        Vector3 vec = rb.position;
-        Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
+        public int simulationStep;
+        public float[] position;
+        public float[] velocity;
+        public float[] acceleration;
+        public float[] rotation;
+        public PositionVelocityAccelerationRotationJson(int _simulationStep, Vector3 _position, Vector2 _velocity, Vector2 _acceleration, Quaternion _rotation)
+        {
+            simulationStep = _simulationStep;
+            position = new float[] { _position.x, _position.y, _position.z };
+            velocity = new float[] { _velocity.x, _velocity.y };
+            acceleration = new float[] { _acceleration.x, _acceleration.y };
+            rotation = new float[] { _rotation.eulerAngles.x, _rotation.eulerAngles.y, _rotation.eulerAngles.z };
+        }
 
-        // JSON-ify position and rotation
-        WebSocketManager.PositionRotationJson posrot = new WebSocketManager.PositionRotationJson(vec, quat);
-
-        // Then return as string
-        return JsonUtility.ToJson(posrot);
     }
-
-    string vectorJson()
-    {
-        // Get Current Position Vec 3
-        Vector3 vec = rb.position;
-        // JSON it
-        WebSocketManager.PositionJson pos = new WebSocketManager.PositionJson(vec);
-        // Then return as string
-        return JsonUtility.ToJson(pos);
-    }
-
-    string quatJson()
-    {
-        Quaternion quat = Quaternion.Euler(0, 0, rb.rotation); // todo rotation is only in z plane?
-        WebSocketManager.RotationJson rot = new WebSocketManager.RotationJson(quat);
-        return JsonUtility.ToJson(rot);
-    }
-
-
-
 
     public void setLocalPlayer()
     {
