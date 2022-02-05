@@ -675,6 +675,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WebSocketManager
       objectReference: {fileID: 0}
+    - target: {fileID: 5160951968077827120, guid: f450b11cd764ebf478a196a28b4a504d,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 5160951968077827122, guid: f450b11cd764ebf478a196a28b4a504d,
         type: 3}
       propertyPath: m_LocalPosition.x
