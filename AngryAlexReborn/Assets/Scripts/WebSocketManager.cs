@@ -76,8 +76,8 @@ public class WebSocketManager : Player
     {
         print("Starting RecvEvent coroutine.");
         //InitWebSocket("ws://ec2-3-84-148-203.compute-1.amazonaws.com:8080"); //First we create the connection.
-        print("Opening web socket to ws://47.144.13.214:8080");
-        InitWebSocket("ws://47.144.13.214:8080"); //First we create the connection.
+        print("Opening web socket to ws://47.144.17.150:8080");
+        InitWebSocket("ws://47.144.17.150:8080"); //First we create the connection.
         print("Web socket open");
         //InitWebSocket("ws://47.144.8.185");
         //InitWebSocket("ws://ec2-3-88-230-113.compute-1.amazonaws.com:8080"); //TEMPORARY TEST CONNECTION FOR CHRISTIAN'S EC2.

@@ -86,7 +86,7 @@ public class CarController : Player
     public PositionVelocityAccelerationRotationJson[] updateBuffer;
 
 
-    protected int collisionMode = 2; // 0 = off, 1 = WatchDogs replicated attempt, 2 = personal approach
+    protected int collisionMode = 2; // 0 = off(control), 1 = WatchDogs replicated attempt, 2 = personal approach
 
     // MODE 2 STUFF
     public bool inCollision = false;
@@ -328,8 +328,7 @@ public class CarController : Player
                 // We have collided with a remote player
                 Debug.Log("CarController OnCollisionEnter2D: This is a remote collision!");
                 // We must notify the other player
-                if (collisionMode == 2)
-                {
+                if (collisionMode == 2) {
                     if (inCollision) return;
                     Debug.Log("CarController OnCollisionEnter2D: MY ATEMPT");
                     PositionVelocityAccelerationRotationJson updateAtCollision = getPositionVelocityAccelerationRotationJson();
@@ -337,8 +336,7 @@ public class CarController : Player
                     // Now we have to temporarily enter lockstep until we get a response from the other client
                     inCollision = true;
                     lockStep = true;
-                } else if (collisionMode == 1)
-                {
+                } else if (collisionMode == 1) {
                     // WATCHDOGS ATTEMPT
                     Debug.Log("CarController OnCollisionEnter2D: WATCHDOGS ATTEMPT");
                     Debug.Log("CarController OnCollisionEnter2D: Call startBlendCollision on other player's CarController");
