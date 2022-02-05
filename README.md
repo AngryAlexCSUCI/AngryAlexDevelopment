@@ -1,27 +1,24 @@
 # angry-alex-csuci
-Angry Alex - The Game - CSU Channel Islands Project for Advance Software Engineering
+Angry Alex - The Game - CSU Channel Islands Project for Advanced Software Engineering
 <br>
 ![GitHub Logo](/logo.png)
 
 # Angry Alex
 ## He is Fast. He is Angery. He is Alex.
-### This is a game project for Advance Software Engineering class at CSU Channel Islands
+### This is a game project for the Advanced Software Engineering class at CSU Channel Islands
 <br>
 Members:
  
-* Christain Guiterrez
-* Lampsson Nguyen
+* Christian Gutierrez
+* Lampson Nguyen
 * Gabriel Orellana
 * Travis Padour
 * Samuel Decanio
 * Sarah Schmidt
-<br><br>
-[Play Here](http://angryalex.s3-website-us-east-1.amazonaws.com/)
-<br><br>
 
  
 <br>
-Welcome to Angry Alex! A multiplayer game where you can collect and shoot things at other players!
+Welcome to Angry Alex! A multiplayer game where you can drive fast and shoot at other players!
 
 Storyline: 
 
@@ -29,9 +26,5 @@ You are in a post apocalyptic world where the land is desolate and resources are
 
 How to play:
 
-Use the Up arrow to move forward and the down arrow to move backwards. Use the Left and Right arrow keys to turn while in motion. Use the space key to shoot your weapon.
-<br><br>
-
-Dcoumentations:
-<br><br>
+Use the Up arrow to move forward and the down arrow to move backwards. Use the Left and Right arrow keys to turn while in motion. Aim and shoot with the mouse.
 
